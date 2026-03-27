@@ -699,6 +699,33 @@ body {
   margin-top: 0.15rem;
   line-height: 1.2;
 }
+.ann-meta-group {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  margin: 0.15rem 0.3rem 0 0;
+}
+.ann-meta-label {
+  display: inline-block;
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  vertical-align: middle;
+  margin-right: 0.35rem;
+  padding: 0.1rem 0.35rem;
+  border-radius: 3px;
+  font-weight: 600;
+}
+.ann-meta-archive { color: var(--c-text-secondary); }
+.ann-meta-archive .ann-meta-label {
+  background: var(--c-bg-secondary);
+  color: var(--c-text-tertiary);
+}
+.ann-meta-mine { color: var(--c-accent, #2563eb); }
+.ann-meta-mine .ann-meta-label {
+  background: rgba(37,99,235,0.1);
+  color: var(--c-accent, #2563eb);
+}
 .annotator-img-group {
   font-family: var(--font-display);
   font-style: italic;
@@ -766,6 +793,9 @@ body {
 }
 .ann-tag:hover { background: var(--c-accent); color: #fff; border-color: var(--c-accent); }
 .ann-readonly .ann-tag { cursor: default; }
+.ann-tag.prefill-lock { border-style: dashed; cursor: not-allowed; }
+.ann-tag.prefill-lock.sel-where     { background: #1e8449; color:#fff; border-color:#1e8449; }
+.ann-tag.prefill-lock.sel-secondary { background: #555; color:#fff; border-color:#555; }
 
 #ann-tag-tooltip {
   display: none;
@@ -842,6 +872,33 @@ body {
   gap: 0.5rem;
   background: var(--c-bg-warm);
   border-top: 2px solid var(--c-border-light);
+}
+.ann-json-preview {
+  margin: 0.8rem 1.1rem 0;
+  border: 1px solid var(--c-border-light);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.ann-json-preview summary {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--c-text-secondary);
+  padding: 0.35rem 0.7rem;
+  cursor: pointer;
+  background: var(--c-bg-warm);
+  user-select: none;
+}
+.ann-json-preview pre {
+  margin: 0;
+  padding: 0.7rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  line-height: 1.55;
+  color: var(--c-text);
+  background: var(--c-bg-card);
+  overflow-x: auto;
+  max-height: 260px;
+  overflow-y: auto;
 }
 .ann-save-feedback {
   font-family: var(--font-mono);
@@ -1965,17 +2022,15 @@ function postAnnotationsToServer() {
 function annGet(sha) {
   const ls = annStore()[sha];
   if (ls) return ls;
-  // fall back to seed from annotator_index.json
   const item = annItems.find(i => i.sha === sha);
   if (item) return {
-    human_where:     item.human_where    || [],
-    human_primary:   item.human_primary  || [],
-    human_secondary: item.human_secondary|| [],
-    maurer_tc:       item.maurer_tc      || [],
-    status:          item.status         || 'seeded_unconfirmed',
-    updated_at:      item.updated_at     || null,
+    human_where:     item.human_where     || [],
+    human_secondary: item.human_secondary || [],
+    maurer_tc:       item.maurer_tc       || [],
+    status:          item.status          || 'seeded_unconfirmed',
+    updated_at:      item.updated_at      || null,
   };
-  return { human_where:[], human_primary:[], human_secondary:[], maurer_tc:[], status:'unconfirmed', updated_at:null };
+  return { human_where:[], human_secondary:[], maurer_tc:[], status:'unconfirmed', updated_at:null };
 }
 
 function annSet(sha, data) {
@@ -1988,7 +2043,7 @@ function annCountDone() {
   const store = annStore();
   return annItems.filter(item => {
     const a = store[item.sha] || item;
-    return a.human_where?.length || a.human_primary?.length || a.human_secondary?.length || a.maurer_tc?.length;
+    return a.human_where?.length || a.human_secondary?.length || a.maurer_tc?.length;
   }).length;
 }
 
@@ -2001,7 +2056,7 @@ function exportAnnotationsJSON() {
       img_url:         item.img_url,
       prefill_labels:  item.prefill_labels,
       human_where:     a.human_where     || [],
-      human_primary:   a.human_primary   || [],
+      human_primary:   item.prefill_labels,
       human_secondary: a.human_secondary || [],
       maurer_tc:       a.maurer_tc       || [],
       status:          a.status          || 'unconfirmed',
@@ -2192,9 +2247,7 @@ function annLoad(idx) {
   document.getElementById('ann-img').src = BASE_URL + item.img_url;
   document.getElementById('ann-img').alt = sha;
   document.getElementById('ann-meta-code').textContent = `${idx + 1} / ${annItems.length}`;
-  document.getElementById('ann-meta-name').textContent = item.prefill_labels.length
-    ? item.prefill_labels.join('  ·  ')
-    : sha.slice(0, 16) + '…';
+  annUpdateMetaName(item, ann.human_secondary || []);
   annBadge(ann.status || 'unconfirmed');
 
   const done = annCountDone();
@@ -2202,38 +2255,39 @@ function annLoad(idx) {
   document.getElementById('ann-pfill').style.width = `${(done / annItems.length * 100).toFixed(1)}%`;
 
   annBuildPanel(item, ann);
+  annUpdateJsonPreview(item.sha, item, ann);
 }
 
 function annBuildPanel(item, ann) {
   const panel = document.getElementById('ann-panel');
   if (READONLY) panel.classList.add('ann-readonly');
 
-  // WHERE (K-B) — single-select
-  const whereTags = taxEntries('K-B').map(([code, name]) => {
-    const sel = ann.human_where.includes(code) ? ' sel-where' : '';
-    return `<span class="ann-tag${sel}" data-code="${code}">${code}</span>`;
+  // Prefill codes that exist as actual chips (leaf codes in ANN_TAXONOMY)
+  const prefillSet = new Set(item.prefill_labels || []);
+  const isLeaf = code => {
+    const g = code.substring(0, 3);
+    return !!(ANN_TAXONOMY[g] && ANN_TAXONOMY[g][code]);
+  };
+
+  // WHERE (K-B) — single-select; prefill K-B codes pre-selected + locked
+  const whereTags = taxEntries('K-B').map(([code]) => {
+    const locked  = prefillSet.has(code) && isLeaf(code);
+    const sel     = (ann.human_where.includes(code) || locked) ? ' sel-where' : '';
+    const lock    = locked ? ' prefill-lock' : '';
+    return `<span class="ann-tag${sel}${lock}" data-code="${code}">${code}</span>`;
   }).join('');
 
-  // PRIMARY — tabbed, single-select
-  const primaryTabs = ANN_NON_B.map((l, i) =>
-    `<button class="ann-macro-tab${i===0?' active':''}" data-letter="${l}" onclick="annTab(this,'primary')">${l}. ${ANN_GROUP_NAMES[l]}</button>`
-  ).join('');
-  const primaryGroups = ANN_NON_B.map((l, i) => {
-    const tags = taxEntries(`K-${l}`).map(([code, name]) => {
-      const sel = ann.human_primary.includes(code) ? ' sel-primary' : '';
-      return `<span class="ann-tag${sel}" data-code="${code}">${code}</span>`;
-    }).join('');
-    return `<div class="ann-tags" id="ann-pg-${l}" style="display:${i===0?'flex':'none'};flex-wrap:wrap;gap:0.28rem;">${tags}</div>`;
-  }).join('');
-
-  // SECONDARY — tabbed, multi-select
-  const secTabs = ANN_NON_B.map((l, i) =>
+  // KELLOGG CATEGORY — tabbed, multi-select
+  // prefill leaf codes: pre-selected + locked; user can freely add others
+  const catTabs = ANN_NON_B.map((l, i) =>
     `<button class="ann-macro-tab${i===0?' active':''}" data-letter="${l}" onclick="annTab(this,'secondary')">${l}. ${ANN_GROUP_NAMES[l]}</button>`
   ).join('');
-  const secGroups = ANN_NON_B.map((l, i) => {
-    const tags = taxEntries(`K-${l}`).map(([code, name]) => {
-      const sel = ann.human_secondary.includes(code) ? ' sel-secondary' : '';
-      return `<span class="ann-tag${sel}" data-code="${code}">${code}</span>`;
+  const catGroups = ANN_NON_B.map((l, i) => {
+    const tags = taxEntries(`K-${l}`).map(([code]) => {
+      const locked = prefillSet.has(code) && isLeaf(code);
+      const sel    = (ann.human_secondary.includes(code) || locked) ? ' sel-secondary' : '';
+      const lock   = locked ? ' prefill-lock' : '';
+      return `<span class="ann-tag${sel}${lock}" data-code="${code}">${code}</span>`;
     }).join('');
     return `<div class="ann-tags" id="ann-sg-${l}" style="display:${i===0?'flex':'none'};flex-wrap:wrap;gap:0.28rem;">${tags}</div>`;
   }).join('');
@@ -2258,14 +2312,9 @@ function annBuildPanel(item, ann) {
       <div class="ann-tags" id="ann-where-tags">${whereTags}</div>
     </div>
     <div class="ann-section">
-      <div class="ann-section-label">PRIMARY · Kellogg Category<span class="ann-hint">single choice</span></div>
-      <div class="ann-macro-tabs" id="ann-primary-tabs">${primaryTabs}</div>
-      <div id="ann-primary-groups">${primaryGroups}</div>
-    </div>
-    <div class="ann-section">
-      <div class="ann-section-label">SECONDARY · Additional Categories<span class="ann-hint">multiple</span></div>
-      <div class="ann-macro-tabs" id="ann-secondary-tabs">${secTabs}</div>
-      <div id="ann-secondary-groups">${secGroups}</div>
+      <div class="ann-section-label">KELLOGG CATEGORY<span class="ann-hint">dashed = from archive · click to add more</span></div>
+      <div class="ann-macro-tabs" id="ann-secondary-tabs">${catTabs}</div>
+      <div id="ann-secondary-groups">${catGroups}</div>
     </div>
     <div class="ann-section">
       <div class="ann-section-label">MAURER T–C · Spatial Arrangements<span class="ann-hint">multiple</span></div>
@@ -2276,17 +2325,18 @@ function annBuildPanel(item, ann) {
       <button class="ann-btn" onclick="annClear()">Clear</button>
       <span class="ann-save-feedback" id="ann-save-fb"></span>
     </div>
+    <details class="ann-json-preview" id="ann-json-preview">
+      <summary>JSON preview</summary>
+      <pre id="ann-json-pre">{}</pre>
+    </details>
   `;
 
   annAttach('ann-where-tags', 'sel-where', false);
-  ANN_NON_B.forEach(l => {
-    annAttach(`ann-pg-${l}`, 'sel-primary', false);
-    annAttach(`ann-sg-${l}`, 'sel-secondary', true);
-  });
+  ANN_NON_B.forEach(l => annAttach(`ann-sg-${l}`, 'sel-secondary', true));
   annAttach('ann-maurer-tags', 'sel-maurer', true);
 
   // Hover tooltips — active in both readonly and editable mode
-  ['ann-where-tags', ...ANN_NON_B.flatMap(l => [`ann-pg-${l}`, `ann-sg-${l}`]), 'ann-maurer-tags']
+  ['ann-where-tags', ...ANN_NON_B.map(l => `ann-sg-${l}`), 'ann-maurer-tags']
     .forEach(id => { const el = document.getElementById(id); if (el) annAddHoverHandlers(el); });
 }
 
@@ -2296,6 +2346,7 @@ function annAttach(id, selClass, multi) {
   if (!container) return;
   container.querySelectorAll('.ann-tag').forEach(tag => {
     tag.addEventListener('click', () => {
+      if (tag.classList.contains('prefill-lock')) return;
       if (multi) {
         tag.classList.toggle(selClass);
       } else {
@@ -2321,16 +2372,55 @@ function annSelCodes(selector) {
   return Array.from(document.querySelectorAll(selector)).map(t => t.dataset.code).filter(Boolean);
 }
 
+function annMetaHTML(prefill, userAdded) {
+  const pHtml = prefill.length
+    ? `<span class="ann-meta-group ann-meta-archive"><span class="ann-meta-label">archivio</span>${prefill.join(' · ')}</span>`
+    : '';
+  const userOnly = userAdded.filter(c => !prefill.includes(c));
+  const uHtml = userOnly.length
+    ? `<span class="ann-meta-group ann-meta-mine"><span class="ann-meta-label">miei</span>${userOnly.join(' · ')}</span>`
+    : '';
+  return pHtml + uHtml || '—';
+}
+
+function annUpdateMetaName(item, userSecondary) {
+  const el = document.getElementById('ann-meta-name');
+  if (!el) return;
+  el.innerHTML = annMetaHTML(item.prefill_labels || [], userSecondary || []);
+}
+
+function annUpdateJsonPreview(sha, item, ann) {
+  const el = document.getElementById('ann-json-pre');
+  if (!el) return;
+  const obj = {
+    sha,
+    img_url:         item.img_url,
+    prefill_labels:  item.prefill_labels,
+    human_primary:   item.prefill_labels,
+    human_where:     ann.human_where     || [],
+    human_secondary: ann.human_secondary || [],
+    maurer_tc:       ann.maurer_tc       || [],
+    status:          ann.status          || 'unconfirmed',
+    updated_at:      ann.updated_at      || null,
+  };
+  el.textContent = JSON.stringify(obj, null, 2);
+}
+
 function annSave() {
-  const sha = annItems[annIdx].sha;
+  const sha  = annItems[annIdx].sha;
+  const item = annItems[annIdx];
+  const human_primary   = item.prefill_labels;   // always from archive
   const human_where     = annSelCodes('#ann-where-tags .ann-tag.sel-where');
-  const human_primary   = annSelCodes('#ann-panel .ann-tag.sel-primary');
-  const human_secondary = annSelCodes('#ann-panel .ann-tag.sel-secondary').filter(c => !human_primary.includes(c));
-  const maurer_tc       = annSelCodes('#ann-maurer-tags .ann-tag.sel-maurer');
-  const hasData = human_where.length || human_primary.length || human_secondary.length || maurer_tc.length;
+  // secondary = user-selected codes (exclude locked prefill ones)
+  const human_secondary = annSelCodes('#ann-panel .ann-tag.sel-secondary')
+    .filter(c => !new Set(item.prefill_labels).has(c));
+  const maurer_tc = annSelCodes('#ann-maurer-tags .ann-tag.sel-maurer');
+  const hasData = human_where.length || human_secondary.length || maurer_tc.length;
   const status = hasData ? 'confirmed' : 'unconfirmed';
   annSet(sha, { human_where, human_primary, human_secondary, maurer_tc, status });
+  annUpdateJsonPreview(sha, item, { human_where, human_primary, human_secondary, maurer_tc, status, updated_at: new Date().toISOString() });
   annBadge(status);
+  annUpdateMetaName(item, human_secondary);
   const done = annCountDone();
   document.getElementById('ann-counter').textContent = `${annIdx + 1} / ${annItems.length}  ·  ${done} annotated`;
   document.getElementById('ann-pfill').style.width = `${(done / annItems.length * 100).toFixed(1)}%`;
@@ -2340,7 +2430,8 @@ function annSave() {
 }
 
 function annClear() {
-  annSet(annItems[annIdx].sha, { human_where:[], human_primary:[], human_secondary:[], maurer_tc:[], status:'unconfirmed' });
+  const item = annItems[annIdx];
+  annSet(item.sha, { human_where:[], human_primary: item.prefill_labels, human_secondary:[], maurer_tc:[], status:'unconfirmed' });
   annLoad(annIdx);
 }
 
