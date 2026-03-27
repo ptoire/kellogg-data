@@ -765,6 +765,7 @@ body {
   white-space: nowrap;
 }
 .ann-tag:hover { background: var(--c-accent); color: #fff; border-color: var(--c-accent); }
+.ann-readonly .ann-tag { cursor: default; pointer-events: none; }
 .ann-tag.sel-where     { background: #27AE60; color: #fff; border-color: #27AE60; }
 .ann-tag.sel-primary   { background: var(--c-text); color: #fff; border-color: var(--c-text); }
 .ann-tag.sel-secondary { background: #2980B9; color: #fff; border-color: #2980B9; }
@@ -1821,6 +1822,7 @@ function buildFooter() {
    ANNOTATOR
    ═══════════════════════════════════════════════════════════ */
 const ANN_KEY = 'kellogg_full_annotations';
+const READONLY = !['localhost', '127.0.0.1'].includes(location.hostname);
 let annIdx = 0;
 let annItems = [];  // items from annotator_index.json
 
@@ -1836,6 +1838,7 @@ function annStore() {
   try { return JSON.parse(localStorage.getItem(ANN_KEY) || '{}'); } catch { return {}; }
 }
 function annStoreSet(s) {
+  if (READONLY) return;
   try { localStorage.setItem(ANN_KEY, JSON.stringify(s)); } catch {}
   postAnnotationsToServer();
 }
@@ -1931,8 +1934,8 @@ function buildAnnotatorSection() {
   annItems = ANN_INDEX_DATA.items || [];
 
   section.innerHTML = `
-    <h2>Annotator</h2>
-    <p class="section-subtitle">Children's drawings from dataset Kellogg / Maurer · annote K-categories and Maurer T–C · export JSON </p>
+    <h2>Annotator${READONLY ? ' <span style="font-size:0.55em;font-family:var(--font-mono);font-weight:400;letter-spacing:0.05em;vertical-align:middle;background:var(--c-tag-bg);color:var(--c-text-secondary);padding:0.15em 0.5em;border-radius:3px;">view only</span>' : ''}</h2>
+    <p class="section-subtitle">${READONLY ? 'Read-only view of annotations — Kellogg K-categories and Maurer T–C spatial arrangements' : 'Children\'s drawings from dataset Kellogg / Maurer · annote K-categories and Maurer T–C · export JSON'}</p>
     <div class="annotator-toolbar">
       <div class="ann-counter-wrap">
         <span class="annotator-counter" id="ann-counter">—</span>
@@ -1940,7 +1943,7 @@ function buildAnnotatorSection() {
       </div>
       <button class="ann-btn" onclick="annNav(-1)">← Prev</button>
       <button class="ann-btn" onclick="annNav(1)">Next →</button>
-      <button class="ann-btn ann-export" onclick="exportAnnotationsJSON()">⬇ Export JSON</button>
+      ${READONLY ? '' : '<button class="ann-btn ann-export" onclick="exportAnnotationsJSON()">⬇ Export JSON</button>'}
     </div>
     <div class="annotator-body">
       <div class="annotator-image-panel" id="ann-img-panel">
@@ -1988,6 +1991,7 @@ function annLoad(idx) {
 
 function annBuildPanel(item, ann) {
   const panel = document.getElementById('ann-panel');
+  if (READONLY) panel.classList.add('ann-readonly');
 
   // WHERE (K-B) — single-select, sorted numerically
   const whereTags = taxEntries('K-B').map(([num, name]) => {
@@ -2055,7 +2059,7 @@ function annBuildPanel(item, ann) {
       <div class="ann-section-label">MAURER T–C · Spatial Arrangements<span class="ann-hint">multiple</span></div>
       <div class="ann-tags" id="ann-maurer-tags">${maurerTags}</div>
     </div>
-    <div class="ann-save-bar">
+    <div class="ann-save-bar"${READONLY ? ' style="display:none"' : ''}>
       <button class="ann-btn ann-primary" onclick="annSave()">Save</button>
       <button class="ann-btn" onclick="annClear()">Clear</button>
       <span class="ann-save-feedback" id="ann-save-fb"></span>
@@ -2071,6 +2075,7 @@ function annBuildPanel(item, ann) {
 }
 
 function annAttach(id, selClass, multi) {
+  if (READONLY) return;
   const container = document.getElementById(id);
   if (!container) return;
   container.querySelectorAll('.ann-tag').forEach(tag => {
