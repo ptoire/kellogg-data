@@ -602,16 +602,77 @@ body {
 }
 .annotator-toolbar {
   display: flex;
-  align-items: center;
-  gap: 0.8rem;
+  flex-direction: column;
+  gap: 0.55rem;
   margin-bottom: 1.5rem;
-  padding: 0.8rem 1rem;
+  padding: 0.75rem 1rem;
   background: var(--c-bg-warm);
   border: 1px solid var(--c-border-light);
   border-radius: 4px;
+}
+.ann-toolbar-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
   flex-wrap: wrap;
 }
 .ann-counter-wrap { display: flex; flex-direction: column; flex: 1; min-width: 180px; }
+/* Jump-to-number input */
+.ann-jump-wrap {
+  display: flex; align-items: center; gap: 0.3rem;
+  font-family: var(--font-mono); font-size: 0.7rem; color: var(--c-text-tertiary);
+}
+.ann-jump-input {
+  font-family: var(--font-mono); font-size: 0.72rem;
+  width: 68px; padding: 0.25rem 0.4rem;
+  border: 1px solid var(--c-border); border-radius: 3px;
+  background: var(--c-bg-card); color: var(--c-text);
+  outline: none;
+}
+.ann-jump-input:focus { border-color: var(--c-accent); }
+/* Category search */
+.ann-cat-search-wrap {
+  position: relative;
+  flex: 1; min-width: 180px;
+}
+.ann-cat-search-input {
+  width: 100%;
+  font-family: var(--font-mono); font-size: 0.72rem;
+  padding: 0.28rem 0.5rem 0.28rem 1.5rem;
+  border: 1px solid var(--c-border); border-radius: 3px;
+  background: var(--c-bg-card); color: var(--c-text);
+  outline: none; box-sizing: border-box;
+}
+.ann-cat-search-input:focus { border-color: var(--c-accent); }
+.ann-cat-search-icon {
+  position: absolute; left: 0.45rem; top: 50%; transform: translateY(-50%);
+  font-size: 0.75rem; color: var(--c-text-tertiary); pointer-events: none;
+}
+.ann-cat-dropdown {
+  position: fixed; z-index: 3000;
+  background: var(--c-bg-card);
+  border: 1px solid var(--c-border); border-radius: 3px;
+  box-shadow: var(--shadow-md);
+  max-height: 220px; overflow-y: auto;
+}
+.ann-cat-option {
+  padding: 0.28rem 0.7rem;
+  font-family: var(--font-mono); font-size: 0.68rem;
+  cursor: pointer; display: flex; gap: 0.6rem; align-items: baseline;
+}
+.ann-cat-option:hover, .ann-cat-option.ann-cat-focused { background: var(--c-bg-warm); }
+.ann-cat-option .aco-code { font-weight: 600; color: var(--c-text); flex-shrink: 0; }
+.ann-cat-option .aco-name { color: var(--c-text-secondary); }
+.ann-cat-option .aco-count {
+  margin-left: auto; color: var(--c-text-tertiary);
+  font-size: 0.62rem; flex-shrink: 0;
+}
+/* Resume button */
+.ann-btn-resume {
+  background: var(--c-bg-card); color: #5C3D2E;
+  border-color: #5C3D2E;
+}
+.ann-btn-resume:hover { background: #5C3D2E; color: #fff; border-color: #5C3D2E; }
 .annotator-counter {
   font-family: var(--font-mono);
   font-size: 0.8rem;
@@ -668,23 +729,160 @@ body {
   align-items: center;
   gap: 1rem;
 }
-.annotator-img-wrap {
-  width: 100%;
-  background: var(--c-canvas);
+.ann-img-viewport {
+  overflow: auto;
   border: 1px solid var(--c-border);
   border-radius: 3px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 220px;
-  overflow: hidden;
+  background: var(--c-canvas);
+  /* size set dynamically by JS to match image at zoom=1 */
+}
+.annotator-img-wrap {
+  display: inline-block;
+  position: relative;
+  cursor: crosshair;
 }
 .annotator-img-wrap img {
-  max-width: 100%;
-  max-height: 380px;
-  object-fit: contain;
   display: block;
+  pointer-events: none;
+  user-select: none;
 }
+.ann-draw-canvas {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+}
+.ann-draw-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  width: 100%;
+  padding-top: 0.3rem;
+}
+.ann-draw-btn {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  padding: 0.2rem 0.5rem;
+  border: 1px solid var(--c-border);
+  border-radius: 3px;
+  background: var(--c-bg-card);
+  color: var(--c-text-secondary);
+  cursor: pointer;
+  transition: all 0.12s;
+}
+.ann-draw-btn:hover { background: var(--c-accent); color: #fff; border-color: var(--c-accent); }
+.ann-draw-btn.active { background: #C0392B; color: #fff; border-color: #C0392B; }
+.ann-draw-brush-wrap {
+  display: flex; align-items: center; gap: 0.3rem;
+  font-family: var(--font-mono); font-size: 0.65rem; color: var(--c-text-tertiary);
+}
+.ann-draw-brush-wrap input[type=range] {
+  width: 60px; height: 3px; accent-color: #C0392B; cursor: pointer;
+}
+/* Spatial annotation list */
+.spatial-ann-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  margin-top: 0.4rem;
+  max-height: 130px;
+  overflow-y: auto;
+}
+.spatial-ann-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 3px;
+  border: 1px solid var(--c-border-light);
+  background: var(--c-bg-warm);
+  cursor: pointer;
+  transition: all 0.12s;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+}
+.spatial-ann-item:hover { background: var(--c-border-light); }
+.spatial-ann-item.selected {
+  border-color: #C0392B;
+  background: #fff0ee;
+}
+.spatial-ann-item .sa-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.spatial-ann-item .sa-label {
+  flex: 1;
+  color: var(--c-text);
+}
+.spatial-ann-item .sa-label.unlabeled { color: var(--c-text-tertiary); font-style: italic; }
+.spatial-ann-item .sa-del {
+  font-size: 0.7rem;
+  color: var(--c-text-tertiary);
+  cursor: pointer;
+  padding: 0 0.15rem;
+  line-height: 1;
+}
+.spatial-ann-item .sa-del:hover { color: #C0392B; }
+.spatial-ann-item.sa-active { border-color: #C0392B; background: #fff5f4; }
+.spatial-ann-item.sa-active .sa-label { font-weight: 600; }
+/* Panel label-mode banner */
+.ann-labeling-banner {
+  display: none;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  padding: 0.3rem 0.7rem;
+  background: #fff0ee;
+  border-bottom: 1px solid #f5c6c0;
+  color: #C0392B;
+  letter-spacing: 0.02em;
+}
+.ann-labeling-banner.visible { display: block; }
+/* Spatial label editor */
+.sa-label-editor { flex: 1; }
+.sa-assign-btn {
+  font-family: var(--font-mono); font-size: 0.63rem; font-weight: 600;
+  padding: 0.2rem 0.55rem; border: none; border-radius: 3px;
+  background: #C0392B; color: #fff; cursor: pointer; white-space: nowrap;
+  flex-shrink: 0; transition: background 0.12s; letter-spacing: 0.02em;
+}
+.sa-assign-btn:hover { background: #922B21; }
+.sa-label-input {
+  width: 100%;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  border: 1px solid #C0392B;
+  border-radius: 3px;
+  padding: 0.1rem 0.3rem;
+  outline: none;
+  background: #fff;
+  color: var(--c-text);
+  box-sizing: border-box;
+}
+.sa-label-dropdown {
+  position: fixed;
+  z-index: 3000;
+  background: var(--c-bg-card);
+  border: 1px solid var(--c-border);
+  border-radius: 3px;
+  box-shadow: var(--shadow-md);
+  max-height: 180px;
+  overflow-y: auto;
+}
+.sa-label-option {
+  padding: 0.22rem 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  cursor: pointer;
+  display: flex;
+  gap: 0.5rem;
+  align-items: baseline;
+}
+.sa-label-option:hover, .sa-label-option.sa-focused { background: var(--c-bg-warm); }
+.sa-label-option .so-code { color: var(--c-text); font-weight: 500; flex-shrink: 0; }
+.sa-label-option .so-name { color: var(--c-text-secondary); }
 .annotator-img-meta { width: 100%; text-align: center; }
 .annotator-img-code {
   font-family: var(--font-mono);
@@ -794,6 +992,12 @@ body {
 .ann-tag:hover { background: var(--c-accent); color: #fff; border-color: var(--c-accent); }
 .ann-readonly .ann-tag { cursor: default; }
 .ann-readonly .ann-tag:hover { background: var(--c-tag-bg); color: var(--c-tag-text); border-color: var(--c-border-light); }
+/* Placement cards: always show pre-rendered canvas, hide cropped thumb */
+.card--placement .card-canvas-wrap img { display: none; }
+.card--placement .card-canvas-wrap canvas { opacity: 1 !important; }
+/* Placement mode: non-K-B tags look frozen (no hover effect, cursor default) */
+#ann-panel.ann-placement-mode .ann-tag:not([data-code^="K-B"]) { cursor: default; opacity: 0.38; }
+#ann-panel.ann-placement-mode .ann-tag:not([data-code^="K-B"]):hover { background: inherit; color: inherit; border-color: inherit; }
 .ann-tag.prefill-lock { border-style: dashed; cursor: not-allowed; }
 .ann-tag.prefill-lock.sel-where     { background: #1e8449; color:#fff; border-color:#1e8449; }
 .ann-tag.prefill-lock.sel-secondary { background: #555; color:#fff; border-color:#555; }
@@ -917,6 +1121,70 @@ body {
 @media (max-width: 900px) {
   .annotator-body { grid-template-columns: 1fr; }
   .annotator-image-panel { position: static; }
+}
+.ann-zoom-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-left: auto;
+  font-size: 0.8rem;
+}
+.ann-zoom-btn {
+  background: var(--c-bg-card);
+  border: 1px solid var(--c-border);
+  border-radius: 3px;
+  padding: 0.15rem 0.4rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+  line-height: 1;
+}
+.ann-zoom-btn:hover { background: var(--c-border-light); }
+.ann-zoom-pct {
+  width: 3.5rem;
+  text-align: center;
+  border: 1px solid var(--c-border);
+  border-radius: 3px;
+  padding: 0.1rem 0.2rem;
+  font-size: 0.8rem;
+  font-family: var(--font-mono);
+}
+#ann-data-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 9000;
+  align-items: center;
+  justify-content: center;
+}
+#ann-data-modal.open { display: flex; }
+#ann-data-modal-box {
+  background: var(--c-bg-card);
+  border-radius: 6px;
+  width: min(900px, 95vw);
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+#ann-data-modal-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--c-border);
+  font-size: 0.85rem;
+}
+#ann-data-modal-toolbar h3 { margin: 0; font-size: 1rem; }
+#ann-data-modal-toolbar .spacer { flex: 1; }
+#ann-data-modal-pre {
+  flex: 1;
+  overflow: auto;
+  padding: 1rem;
+  font-size: 0.78rem;
+  font-family: var(--font-mono);
+  white-space: pre;
+  background: var(--c-bg);
 }
 </style>
 </head>
@@ -1468,6 +1736,8 @@ async function init() {
   } catch(e) {}
   buildNav();
   buildGrid();
+  // K-B: pre-render full-page blurred previews (needs layout to be settled)
+  requestAnimationFrame(() => requestAnimationFrame(initPlacementPreviews));
   buildAnnotatorSection();
   buildMaurerAnnotationSection();
   buildBand3Section();
@@ -1538,11 +1808,18 @@ function buildGrid() {
       const card = document.createElement('div');
 
       if (session) {
-        card.className = 'card';
+        card.className = 'card' + (prefix === 'K-B' ? ' card--placement' : '');
+        const wrapStyle = (prefix === 'K-B' && session.canvas_w && session.canvas_h)
+          ? ` style="padding-top:${(session.canvas_h / session.canvas_w * 100).toFixed(2)}%"`
+          : '';
         card.innerHTML = `
-          <div class="card-canvas-wrap">
+          <div class="card-canvas-wrap"${wrapStyle}>
             <img src="${BASE_URL}img/${session.session_id}_thumb.png" alt="${name}" loading="lazy">
-            <canvas data-sid="${session.session_id}"></canvas>
+            <canvas data-sid="${session.session_id}"
+                    data-canvas-w="${session.canvas_w || 1580}"
+                    data-canvas-h="${session.canvas_h || 1009}"
+                    data-offset-x="${session.crop_offset_x || 0}"
+                    data-offset-y="${session.crop_offset_y || 0}"></canvas>
           </div>
           <div class="card-info">
             <div class="card-code">${code}</div>
@@ -1574,6 +1851,67 @@ function buildGrid() {
 /* ═══════════════════════════════════════════════════════════
    CARD ANIMATION
    ═══════════════════════════════════════════════════════════ */
+
+// Draw ALL strokes as real black lines at full-page scale (static preview for K-B cards).
+// Coordinates in anim are relative to the crop bounding box; we shift by crop_offset
+// to place the drawing at its true position within the full page.
+function renderPlacementStatic(canvas, anim) {
+  const wrap = canvas.parentElement;
+  const pageW  = parseInt(canvas.dataset.canvasW) || 1580;
+  const pageH  = parseInt(canvas.dataset.canvasH) || 1009;
+  const offX   = parseInt(canvas.dataset.offsetX)  || 0;
+  const offY   = parseInt(canvas.dataset.offsetY)  || 0;
+
+  // Wrapper = full page aspect ratio so empty page areas stay visible
+  wrap.style.paddingTop = (pageH / pageW * 100).toFixed(2) + '%';
+
+  const rect = wrap.getBoundingClientRect();
+  if (!rect.width) return;
+  canvas.width  = Math.round(rect.width * 2);
+  canvas.height = Math.round(canvas.width * pageH / pageW);
+
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Single uniform scale over the full page
+  const scale = canvas.width / pageW;
+
+  ctx.filter = 'none';
+  ctx.strokeStyle = '#1a1a1a';
+  ctx.lineWidth = 1.5;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  anim.strokes.forEach(stroke => {
+    ctx.beginPath();
+    let started = false;
+    for (const p of stroke) {
+      const px = (p.x + offX) * scale;
+      const py = (p.y + offY) * scale;
+      if (!started) { ctx.moveTo(px, py); started = true; }
+      else { ctx.lineTo(px, py); }
+    }
+    if (started) ctx.stroke();
+  });
+}
+
+// Fetch anim data for every K-B card and render static full-page preview
+async function initPlacementPreviews() {
+  for (const card of document.querySelectorAll('.card--placement')) {
+    const canvas = card.querySelector('canvas');
+    if (!canvas) continue;
+    const sid = canvas.dataset.sid;
+    if (!sid) continue;
+    if (!ANIM_CACHE[sid]) {
+      try {
+        const resp = await fetch(BASE_URL + `data/${sid}_anim.json`);
+        if (!resp.ok) continue;
+        ANIM_CACHE[sid] = await resp.json();
+      } catch(e) { continue; }
+    }
+    renderPlacementStatic(canvas, ANIM_CACHE[sid]);
+  }
+}
+
 async function startCardAnim(card, session) {
   const canvas = card.querySelector('canvas');
   if (!canvas) return;
@@ -1585,9 +1923,23 @@ async function startCardAnim(card, session) {
     } catch(e) { return; }
   }
   const anim = ANIM_CACHE[sid];
-  const rect = canvas.parentElement.getBoundingClientRect();
-  canvas.width = rect.width * 2;
-  canvas.height = rect.height * 2;
+  const isPlacement = session.code && session.code.startsWith('K-B');
+  const wrap = canvas.parentElement;
+  const rect = wrap.getBoundingClientRect();
+
+  // Full-page dimensions and crop offset for correct placement positioning
+  const pageW = session.canvas_w || 1580;
+  const pageH = session.canvas_h || 1009;
+  const offX  = session.crop_offset_x || 0;
+  const offY  = session.crop_offset_y || 0;
+
+  if (isPlacement) {
+    canvas.width  = Math.round(rect.width * 2);
+    canvas.height = Math.round(canvas.width * pageH / pageW);
+  } else {
+    canvas.width  = rect.width * 2;
+    canvas.height = rect.height * 2;
+  }
   const ctx = canvas.getContext('2d');
   const allPts = [];
   anim.strokes.forEach(s => s.forEach(p => allPts.push(p)));
@@ -1595,22 +1947,36 @@ async function startCardAnim(card, session) {
   const tStart = allPts[0].t, tEnd = allPts[allPts.length-1].t;
   const duration = tEnd - tStart;
   const animDuration = 2000;
-  const scaleX = canvas.width / anim.w;
-  const scaleY = canvas.height / anim.h;
+
+  // For placement: single scale over full page + apply crop offset
+  const scale = isPlacement ? (canvas.width / pageW) : null;
+  const scaleX = isPlacement ? scale : (canvas.width  / anim.w);
+  const scaleY = isPlacement ? scale : (canvas.height / anim.h);
+
   let startTime = performance.now();
   let animId;
   function drawFrame(now) {
     const progress = Math.min(1, (now - startTime) / animDuration);
     const tCurrent = tStart + progress * duration;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.strokeStyle = '#C0392B';
-    ctx.lineWidth = 3; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    if (isPlacement) {
+      ctx.filter = 'blur(18px)';
+      ctx.strokeStyle = 'rgba(50, 70, 200, 0.6)';
+      ctx.lineWidth = 28;
+    } else {
+      ctx.filter = 'none';
+      ctx.strokeStyle = '#C0392B';
+      ctx.lineWidth = 3;
+    }
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
     anim.strokes.forEach(stroke => {
       let started = false; ctx.beginPath();
       for (const p of stroke) {
         if (p.t > tCurrent) break;
-        if (!started) { ctx.moveTo(p.x*scaleX, p.y*scaleY); started = true; }
-        else { ctx.lineTo(p.x*scaleX, p.y*scaleY); }
+        const px = isPlacement ? (p.x + offX) * scale : p.x * scaleX;
+        const py = isPlacement ? (p.y + offY) * scale : p.y * scaleY;
+        if (!started) { ctx.moveTo(px, py); started = true; }
+        else { ctx.lineTo(px, py); }
       }
       if (started) ctx.stroke();
     });
@@ -1627,8 +1993,12 @@ function stopCardAnim(card) {
   if (!canvas) return;
   const sid = canvas.dataset.sid;
   if (cardAnimFrames[sid]) { cancelAnimationFrame(cardAnimFrames[sid]); delete cardAnimFrames[sid]; }
-  const ctx = canvas.getContext('2d');
-  if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (card.classList.contains('card--placement') && ANIM_CACHE[sid]) {
+    renderPlacementStatic(canvas, ANIM_CACHE[sid]);
+  } else {
+    const ctx = canvas.getContext('2d');
+    if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -2183,6 +2553,47 @@ function annTagHoverOff() {
   if (tt) tt.style.display = 'none';
 }
 
+function saShowCanvasTooltip(code, label_type, mouseX, mouseY) {
+  ensureAnnTooltip();
+  const group = code.substring(0, 3);
+  const name = label_type === 'maurer'
+    ? (MAURER_TC.find(x => x.code === code)?.name || code)
+    : (ANN_TAXONOMY[group]?.[code] || code);
+
+  const sess = ANN_TO_SESSION[code] || null;
+  const ownPool = ANN_PREFILL_INDEX[code] || [];
+  const own = ownPool.length ? ownPool[Math.floor(Math.random() * ownPool.length)] : null;
+
+  document.getElementById('att-code').textContent = code;
+  document.getElementById('att-name').textContent = name;
+  const descEl = document.getElementById('att-desc');
+  if (descEl) descEl.textContent = '';
+
+  const imgs = document.getElementById('att-imgs');
+  imgs.innerHTML = '';
+  if (sess) {
+    const wrap = document.createElement('div');
+    wrap.innerHTML = `<img src="${BASE_URL}img/${sess.session_id}_thumb.png" alt="${sess.code}">
+      <div class="att-img-label">archive · ${sess.code}</div>`;
+    imgs.appendChild(wrap);
+  }
+  if (own) {
+    const wrap = document.createElement('div');
+    wrap.innerHTML = `<img src="${BASE_URL}${own.img_url}" alt="">
+      <div class="att-img-label">${code}</div>`;
+    imgs.appendChild(wrap);
+  }
+
+  const tt = document.getElementById('ann-tag-tooltip');
+  tt.style.display = 'block';
+  let left = mouseX + 16;
+  let top = mouseY - 20;
+  if (left + 330 > window.innerWidth) left = mouseX - 330 - 8;
+  if (top + 200 > window.innerHeight) top = window.innerHeight - 200;
+  tt.style.left = Math.max(4, left) + 'px';
+  tt.style.top = Math.max(4, top) + 'px';
+}
+
 function annAddHoverHandlers(container) {
   container.querySelectorAll('.ann-tag').forEach(tag => {
     tag.addEventListener('mouseenter', e => annTagHoverOn(e, tag));
@@ -2220,19 +2631,63 @@ function buildAnnotatorSection() {
     <h2>Annotator${READONLY ? ' <span style="font-size:0.55em;font-family:var(--font-mono);font-weight:400;letter-spacing:0.05em;vertical-align:middle;background:var(--c-tag-bg);color:var(--c-text-secondary);padding:0.15em 0.5em;border-radius:3px;">view only</span>' : ''}</h2>
     <p class="section-subtitle">${READONLY ? 'Read-only view of annotations — Kellogg K-categories and Maurer T–C spatial arrangements' : 'Children\'s drawings from dataset Kellogg / Maurer · annotate K-categories and Maurer T–C · export JSON'}</p>
     <div class="annotator-toolbar">
-      <div class="ann-counter-wrap">
-        <span class="annotator-counter" id="ann-counter">—</span>
-        <div class="annotator-progress-bar"><div class="annotator-progress-fill" id="ann-pfill" style="width:0%"></div></div>
+      <div class="ann-toolbar-row">
+        <div class="ann-counter-wrap">
+          <span class="annotator-counter" id="ann-counter">—</span>
+          <div class="annotator-progress-bar"><div class="annotator-progress-fill" id="ann-pfill" style="width:0%"></div></div>
+        </div>
+        <button class="ann-btn" onclick="annNav(-1)">← Prev</button>
+        <button class="ann-btn" onclick="annNav(1)">Next →</button>
       </div>
-      <button class="ann-btn" onclick="annNav(-1)">← Prev</button>
-      <button class="ann-btn" onclick="annNav(1)">Next →</button>
-      ${READONLY ? '' : '<button class="ann-btn ann-export" onclick="exportAnnotationsJSON()">⬇ Export JSON</button>'}
+      <div class="ann-toolbar-row">
+        <button class="ann-btn ann-btn-resume" id="ann-resume-btn" onclick="annGoToLast()" style="display:none">↩ Resume</button>
+        <button class="ann-draw-btn" onclick="annDataOpen()" title="View all annotation data as JSON">📊 Data</button>
+        <div class="ann-jump-wrap">
+          <span>go to</span>
+          <input type="number" class="ann-jump-input" id="ann-jump-input" min="1" placeholder="#"
+            onkeydown="if(event.key==='Enter')annJumpTo(this.value)">
+          <span>/ ${annItems.length}</span>
+        </div>
+        <div class="ann-cat-search-wrap">
+          <span class="ann-cat-search-icon">⌕</span>
+          <input type="text" class="ann-cat-search-input" id="ann-cat-input"
+            placeholder="search by category — e.g. Sun Faces, K-HE, T-CAE…"
+            autocomplete="off"
+            oninput="annCatSearch(this.value)"
+            onkeydown="annCatKeyDown(event)"
+            onfocus="annCatSearch(this.value)"
+            onblur="setTimeout(annCatHide,180)">
+        </div>
+      </div>
     </div>
     <div class="annotator-body">
       <div class="annotator-image-panel" id="ann-img-panel">
-        <div class="annotator-img-wrap">
-          <img id="ann-img" src="" alt="" style="max-width:100%;max-height:380px;object-fit:contain;">
+        <div class="ann-img-viewport" id="ann-img-viewport">
+        <div class="annotator-img-wrap" id="ann-img-wrap">
+          <img id="ann-img" src="" alt="">
+          <canvas class="ann-draw-canvas" id="ann-draw-canvas"></canvas>
         </div>
+        </div>
+        ${READONLY ? '' : `<div class="ann-draw-toolbar">
+          <button class="ann-draw-btn active" id="ann-draw-toggle" onclick="saToggleDraw()">✏ Draw</button>
+          <button class="ann-draw-btn" onclick="saNewAnnotation()" title="New annotation group (Alt+Enter)">+ New</button>
+          <button class="ann-draw-btn" onclick="saDeleteSelected()">✕ Delete</button>
+          <span class="ann-zoom-wrap">
+            <button class="ann-zoom-btn" onclick="saZoomStep(-1)" title="Zoom out (Ctrl+-)">−</button>
+            <input type="text" class="ann-zoom-pct" id="ann-zoom-pct" value="100%"
+              onchange="saZoomFromInput(this.value)"
+              onkeydown="if(event.key==='Enter')saZoomFromInput(this.value)">
+            <input type="range" id="ann-zoom-slider" min="25" max="400" value="100" style="width:70px;cursor:pointer;"
+              oninput="saSetZoom(this.value/100)">
+            <button class="ann-zoom-btn" onclick="saZoomStep(1)" title="Zoom in (Ctrl+=)">+</button>
+            <button class="ann-zoom-btn" onclick="saResetZoom()" title="Reset zoom to 100% (Ctrl+0)">⟳</button>
+          </span>
+          <button class="ann-draw-btn" id="ann-soft-btn" onclick="saToggleSoft()" title="Activate placement pattern mode (Maurer T-C, soft brush)">◎ Placement</button>
+          <label class="ann-draw-brush-wrap">brush
+            <input type="range" id="ann-brush-size" min="2" max="40" value="8">
+          </label>
+        </div>`}
+        <div class="spatial-ann-list" id="sa-list"></div>
         <div class="annotator-img-meta">
           <div class="annotator-img-code" id="ann-meta-code">—</div>
           <div class="annotator-img-name" id="ann-meta-name" style="font-size:0.85rem;font-family:var(--font-mono);color:var(--c-text-secondary);margin-top:0.3rem;word-break:break-all;"></div>
@@ -2244,6 +2699,8 @@ function buildAnnotatorSection() {
   `;
   main.appendChild(section);
   annLoad(0);
+  annDrawSetupListeners();
+  annUpdateResumeBtn();
 }
 
 function annNav(dir) {
@@ -2268,7 +2725,12 @@ function annLoad(idx) {
   document.getElementById('ann-pfill').style.width = `${(done / annItems.length * 100).toFixed(1)}%`;
 
   annBuildPanel(item, ann);
-  annUpdateJsonPreview(item.sha, item, ann);
+  // Drawing overlay
+  annDrawLoadForItem(sha);
+  // Resize canvas after image may have changed size
+  const annImg = document.getElementById('ann-img');
+  annImg.onload = () => { annDrawResizeCanvas(); };
+  if (annImg && annImg.complete) annDrawResizeCanvas();
 }
 
 function annBuildPanel(item, ann) {
@@ -2305,8 +2767,8 @@ function annBuildPanel(item, ann) {
     return `<div class="ann-tags" id="ann-sg-${l}" style="display:${i===0?'flex':'none'};flex-wrap:wrap;gap:0.28rem;">${tags}</div>`;
   }).join('');
 
-  // MAURER T-C — multi-select
-  const maurerTags = MAURER_TC.map(m => {
+  // MAURER T-C — multi-select (T-CBA = Placement Pattern is captured by the placement brush, not a manual tag)
+  const maurerTags = MAURER_TC.filter(m => m.code !== 'T-CBA').map(m => {
     const sel = (ann.maurer_tc || []).includes(m.code) ? ' sel-maurer' : '';
     return `<span class="ann-tag${sel}" data-code="${m.code}" data-name="${m.name}" data-desc="${m.desc}">${m.code}</span>`;
   }).join('');
@@ -2319,6 +2781,7 @@ function annBuildPanel(item, ann) {
        </div>` : '';
 
   panel.innerHTML = `
+    <div class="ann-labeling-banner" id="ann-labeling-banner"></div>
     ${prefillRow}
     <div class="ann-section">
       <div class="ann-section-label">WHERE · Placement Pattern<span class="ann-hint">single choice — K-B</span></div>
@@ -2338,10 +2801,6 @@ function annBuildPanel(item, ann) {
       <button class="ann-btn" onclick="annClear()">Clear</button>
       <span class="ann-save-feedback" id="ann-save-fb"></span>
     </div>
-    <details class="ann-json-preview" id="ann-json-preview">
-      <summary>JSON preview</summary>
-      <pre id="ann-json-pre">{}</pre>
-    </details>
   `;
 
   annAttach('ann-where-tags', 'sel-where', false);
@@ -2360,8 +2819,42 @@ function annAttach(id, selClass, multi) {
   container.querySelectorAll('.ann-tag').forEach(tag => {
     tag.addEventListener('click', () => {
       if (tag.classList.contains('prefill-lock')) return;
+      const code = tag.dataset.code;
+      // Placement mode: only Maurer T-C tags are interactive
+      if (saSoftBrush && code && !code.startsWith('K-B')) return;
+      // If a spatial annotation is selected, assign or toggle label
+      if (saSelectedId && code) {
+        const isMaurer = code.startsWith('T-C');
+        const isWhere  = code.startsWith('K-B');
+        const tagSelClass = isMaurer ? 'sel-maurer' : isWhere ? 'sel-where' : 'sel-secondary';
+        const a = saAnnotations.find(x => x.id === saSelectedId);
+        if (a && a.label === code) {
+          // Already labeled with this code — deselect
+          saUnlinkTagForAnnotation(a);
+          a.label = null; a.label_type = null;
+          tag.classList.remove(tagSelClass);
+          saRepaint(); saRenderList(); saSyncStore(); saUpdateBanner();
+        } else {
+          saAssignLabel(code, isMaurer ? 'maurer' : isWhere ? 'where' : 'kellogg');
+          tag.style.outline = '2px solid #C0392B';
+          setTimeout(() => tag.style.outline = '', 800);
+        }
+        return; // don't toggle image-level annotation
+      }
+      // Normal image-level annotation
       if (multi) {
         tag.classList.toggle(selClass);
+        // Sync metadata for secondary Kellogg tags
+        const item = annItems[annIdx];
+        if (item) {
+          const store = annStore();
+          const rec = store[item.sha] || {};
+          const allSel = Array.from(document.querySelectorAll(`#${id} .ann-tag.${selClass}`)).map(t => t.dataset.code).filter(Boolean);
+          rec.human_secondary = allSel;
+          store[item.sha] = rec;
+          localStorage.setItem(ANN_KEY, JSON.stringify(store));
+          annUpdateMetaName(item, rec.human_secondary || []);
+        }
       } else {
         document.getElementById('ann-panel').querySelectorAll(`.ann-tag.${selClass}`).forEach(t => t.classList.remove(selClass));
         tag.classList.add(selClass);
@@ -2405,16 +2898,23 @@ function annUpdateMetaName(item, userSecondary) {
 function annUpdateJsonPreview(sha, item, ann) {
   const el = document.getElementById('ann-json-pre');
   if (!el) return;
+  // Summarise spatial annotations (omit raw pts for readability)
+  const sa_summary = (ann.spatial_annotations || []).map(a => ({
+    id: a.id, label: a.label, label_type: a.label_type,
+    strokes: (a.strokes || []).length,
+    pts_count: (a.strokes || []).reduce((s, st) => s + (st.pts?.length || 0), 0),
+  }));
   const obj = {
     sha,
-    img_url:         item.img_url,
-    prefill_labels:  item.prefill_labels,
-    human_primary:   item.prefill_labels,
-    human_where:     ann.human_where     || [],
-    human_secondary: ann.human_secondary || [],
-    maurer_tc:       ann.maurer_tc       || [],
-    status:          ann.status          || 'unconfirmed',
-    updated_at:      ann.updated_at      || null,
+    img_url:              item.img_url,
+    prefill_labels:       item.prefill_labels,
+    human_primary:        item.prefill_labels,
+    human_where:          ann.human_where          || [],
+    human_secondary:      ann.human_secondary      || [],
+    maurer_tc:            ann.maurer_tc             || [],
+    spatial_annotations:  sa_summary,
+    status:               ann.status               || 'unconfirmed',
+    updated_at:           ann.updated_at           || null,
   };
   el.textContent = JSON.stringify(obj, null, 2);
 }
@@ -2428,10 +2928,12 @@ function annSave() {
   const human_secondary = annSelCodes('#ann-panel .ann-tag.sel-secondary')
     .filter(c => !new Set(item.prefill_labels).has(c));
   const maurer_tc = annSelCodes('#ann-maurer-tags .ann-tag.sel-maurer');
-  const hasData = human_where.length || human_secondary.length || maurer_tc.length;
+  const spatial_annotations = saAnnotations;
+  const hasData = human_where.length || human_secondary.length || maurer_tc.length || spatial_annotations.length;
   const status = hasData ? 'confirmed' : 'unconfirmed';
-  annSet(sha, { human_where, human_primary, human_secondary, maurer_tc, status });
-  annUpdateJsonPreview(sha, item, { human_where, human_primary, human_secondary, maurer_tc, status, updated_at: new Date().toISOString() });
+  annSet(sha, { human_where, human_primary, human_secondary, maurer_tc, spatial_annotations, status });
+  annUpdateJsonPreview(sha, item, { human_where, human_primary, human_secondary, maurer_tc, spatial_annotations, status, updated_at: new Date().toISOString() });
+  annSetResume(annIdx);
   annBadge(status);
   annUpdateMetaName(item, human_secondary);
   const done = annCountDone();
@@ -2458,13 +2960,1070 @@ function annBadge(status) {
 }
 
 /* ═══════════════════════════════════════════════════════════
+   SPATIAL ANNOTATION SYSTEM
+   Each stroke is an independent object: { id, pts, size, label, label_type }
+   Saving produces "spatial_annotations": [...] in the store,
+   ready for training as (image, stroke-mask, label) triplets.
+   ═══════════════════════════════════════════════════════════ */
+
+// ── Palette: one color per Kellogg group + maurer
+const SA_COLORS = {
+  'K-A':'210,60,40', 'K-B':'130,60,180', 'K-C':'40,100,180',
+  'K-D':'30,150,80', 'K-E':'190,90,20',  'K-F':'20,155,130',
+  'K-G':'40,60,90',  'K-H':'200,140,20', 'K-I':'100,110,120',
+  'T':  '92,61,46',  '_':  '150,40,30',
+};
+function saColor(label) {
+  if (!label) return SA_COLORS['_'];
+  if (label.startsWith('T')) return SA_COLORS['T'];
+  const g = label.substring(0, 3);
+  return SA_COLORS[g] || SA_COLORS['_'];
+}
+
+// ── State ──
+let saAnnotations  = [];   // [{id, strokes:[{pts,size},...], label, label_type}]
+let saSelectedId   = null; // id of selected annotation
+let saActiveId     = null; // id of annotation currently being drawn into
+let saEditingId     = null; // id whose label is being edited
+let saDropdownItems = [];   // current dropdown results
+let saDropdownFocus = -1;   // focused dropdown row index
+let saStaged        = null; // {code, name, type} — selected but not yet confirmed
+let saZoom         = 1.0;  // current zoom level
+let saDrawActive   = true; // pen mode on
+let saSoftBrush    = false; // soft/fuzzy brush for placement patterns
+let saHoverId      = null; // id of annotation under mouse cursor
+let saDrawing      = false;
+let saDrawLast     = null;
+let saDrawCurrent  = null; // annotation being drawn
+
+// ── Flat category list for search ──
+let SA_ALL_CATEGORIES = null;
+function saGetAllCats() {
+  if (SA_ALL_CATEGORIES) return SA_ALL_CATEGORIES;
+  SA_ALL_CATEGORIES = [];
+  Object.entries(ANN_TAXONOMY).forEach(([, codes]) => {
+    Object.entries(codes).forEach(([code, name]) => {
+      if (name && !name.startsWith('K-')) SA_ALL_CATEGORIES.push({ code, name, type: 'kellogg' });
+    });
+  });
+  MAURER_TC.forEach(m => SA_ALL_CATEGORIES.push({ code: m.code, name: m.name, type: 'maurer' }));
+  return SA_ALL_CATEGORIES;
+}
+
+// Convert old flat {pts,size} format to new {strokes:[]} format
+function saMigrate(a) {
+  if (Array.isArray(a.strokes)) return a;
+  return { id: a.id, strokes: [{pts: a.pts || [], size: a.size || 8}], label: a.label || null, label_type: a.label_type || null };
+}
+
+function saNextId() {
+  return 'sa_' + Date.now() + '_' + Math.floor(Math.random()*1000);
+}
+
+// ── Start a new annotation (finalize current, create fresh active) ──
+function saNewAnnotation() {
+  // Remove trailing empty annotation if it has no strokes
+  const cur = saAnnotations.find(a => a.id === saActiveId);
+  if (cur && cur.strokes.length === 0) {
+    saAnnotations = saAnnotations.filter(a => a.id !== saActiveId);
+  }
+  const ann = { id: saNextId(), strokes: [], label: null, label_type: null };
+  saAnnotations.push(ann);
+  saActiveId   = ann.id;
+  saSelectedId = ann.id;
+  saRepaint();
+  saRenderList();
+  saUpdateBanner();
+}
+
+// ── Toggle draw mode ──
+function saToggleDraw() {
+  saDrawActive = !saDrawActive;
+  const btn  = document.getElementById('ann-draw-toggle');
+  const wrap = document.getElementById('ann-img-wrap');
+  if (btn)  btn.classList.toggle('active', saDrawActive);
+  if (wrap) wrap.style.cursor = saDrawActive ? 'crosshair' : 'pointer';
+}
+
+function saSetZoom(z) {
+  saZoom = Math.max(0.25, Math.min(4, z));
+  const pct    = document.getElementById('ann-zoom-pct');
+  const slider = document.getElementById('ann-zoom-slider');
+  if (pct)    pct.value    = Math.round(saZoom * 100) + '%';
+  if (slider) slider.value = Math.round(saZoom * 100);
+  annDrawResizeCanvas();
+}
+function saZoomStep(dir) {
+  const steps = [0.25, 0.33, 0.5, 0.67, 0.75, 1, 1.25, 1.5, 2, 2.5, 3, 4];
+  const cur = steps.findIndex(s => s >= saZoom - 0.01);
+  const next = dir > 0 ? Math.min(steps.length-1, cur+1) : Math.max(0, (cur < 0 ? steps.length-1 : cur)-1);
+  saSetZoom(steps[next]);
+}
+function saZoomFromInput(val) {
+  const n = parseFloat(val.replace('%','').trim());
+  if (!isNaN(n)) saSetZoom(n / 100);
+}
+function saResetZoom() {
+  saZoom = 1.0;
+  const pct    = document.getElementById('ann-zoom-pct');
+  const slider = document.getElementById('ann-zoom-slider');
+  if (pct)    pct.value    = '100%';
+  if (slider) slider.value = 100;
+  annDrawResizeCanvas();
+}
+
+function saToggleSoft() {
+  saSoftBrush = !saSoftBrush;
+  const btn = document.getElementById('ann-soft-btn');
+  if (btn) btn.classList.toggle('active', saSoftBrush);
+  const panel = document.getElementById('ann-panel');
+  if (panel) panel.classList.toggle('ann-placement-mode', saSoftBrush);
+  if (saSoftBrush) {
+    const slider = document.getElementById('ann-brush-size');
+    if (slider && parseInt(slider.value) < 16) slider.value = 20;
+  }
+}
+
+// ── Remove tag button selection when annotation is deleted ──
+function saUnlinkTagForAnnotation(a) {
+  if (!a || !a.label) return;
+  // Only deselect button if no other annotation still uses this label
+  const otherHasLabel = saAnnotations.some(x => x.id !== a.id && x.label === a.label);
+  if (otherHasLabel) return;
+  const selClass = a.label_type === 'maurer' ? 'sel-maurer' : a.label_type === 'where' ? 'sel-where' : 'sel-secondary';
+  const tagEl = document.querySelector(`#ann-panel .ann-tag[data-code="${a.label}"]`);
+  if (tagEl && !tagEl.classList.contains('prefill-lock')) {
+    tagEl.classList.remove(selClass);
+  }
+  // Also remove from persistent store
+  const item = annItems[annIdx];
+  if (!item) return;
+  const store = annStore();
+  const rec = store[item.sha] || {};
+  if (a.label_type === 'maurer') {
+    rec.maurer_tc = (rec.maurer_tc || []).filter(c => c !== a.label);
+  } else if (a.label_type === 'where') {
+    rec.human_where = (rec.human_where || []).filter(c => c !== a.label);
+  } else {
+    rec.human_secondary = (rec.human_secondary || []).filter(c => c !== a.label);
+  }
+  store[item.sha] = rec;
+  localStorage.setItem(ANN_KEY, JSON.stringify(store));
+  annUpdateMetaName(item, rec.human_secondary || []);
+}
+
+// ── Delete selected ──
+function saDeleteSelected() {
+  if (!saSelectedId) return;
+  const wasActive = saSelectedId === saActiveId;
+  const toDelete = saAnnotations.find(a => a.id === saSelectedId);
+  saUnlinkTagForAnnotation(toDelete);
+  saAnnotations = saAnnotations.filter(a => a.id !== saSelectedId);
+  saSelectedId = null;
+  if (wasActive) saActiveId = saAnnotations.length ? saAnnotations[saAnnotations.length - 1].id : null;
+  saRepaint();
+  saRenderList();
+  saSyncStore();
+  saUpdateBanner();
+}
+
+// ── Select an annotation ──
+function saSelect(id) {
+  saSelectedId = (saSelectedId === id) ? null : id;
+  saRepaint();
+  saRenderList();
+  saUpdateBanner();
+}
+
+// ── Assign a label to the selected annotation ──
+function saAssignLabel(label, label_type) {
+  const targetId = saEditingId || saSelectedId;
+  if (!targetId) return false;
+  const a = saAnnotations.find(x => x.id === targetId);
+  if (!a) return false;
+  a.label      = label;
+  a.label_type = label_type;
+  saRepaint();
+  saRenderList();
+
+  // Also reflect in right-panel tag buttons
+  const selClass = label_type === 'maurer' ? 'sel-maurer' : label_type === 'where' ? 'sel-where' : 'sel-secondary';
+  const tagEl = document.querySelector(`#ann-panel .ann-tag[data-code="${label}"]`);
+  if (tagEl && !tagEl.classList.contains('prefill-lock')) {
+    tagEl.classList.add(selClass);
+    // Update persistent store for this item so annSave sees it
+    const item = annItems[annIdx];
+    if (item) {
+      const store = annStore();
+      const rec = store[item.sha] || {};
+      if (label_type === 'maurer') {
+        rec.maurer_tc = [...new Set([...(rec.maurer_tc || []), label])];
+      } else if (label_type === 'where') {
+        rec.human_where = [...new Set([...(rec.human_where || []), label])];
+      } else {
+        rec.human_secondary = [...new Set([...(rec.human_secondary || []), label])];
+      }
+      store[item.sha] = rec;
+      localStorage.setItem(ANN_KEY, JSON.stringify(store));
+      annUpdateMetaName(item, rec.human_secondary || []);
+    }
+  }
+
+  saSyncStore();
+  saUpdateBanner();
+  return true;
+}
+
+// ── Banner: shows "Labeling stroke N — click a tag" ──
+function saUpdateBanner() {
+  const banner = document.getElementById('ann-labeling-banner');
+  if (!banner) return;
+  if (saSelectedId) {
+    const a   = saAnnotations.find(x => x.id === saSelectedId);
+    const idx = saAnnotations.indexOf(a) + 1;
+    if (a?.label) {
+      banner.textContent = `↳ Annotation ${idx} labeled as "${a.label}"`;
+    } else if (!READONLY) {
+      banner.textContent = `↳ Labeling annotation ${idx} — click a tag to assign`;
+    } else {
+      banner.textContent = `↳ Annotation ${idx} — no label`;
+    }
+    banner.classList.add('visible');
+  } else {
+    banner.classList.remove('visible');
+    banner.textContent = '';
+  }
+}
+
+// ── Canvas repaint ──
+function saRepaint() {
+  const canvas = document.getElementById('ann-draw-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+
+  const hasSelection = !!saSelectedId;
+
+  saAnnotations.forEach(a => {
+    const isSelected = a.id === saSelectedId;
+    const isActive   = a.id === saActiveId;
+    const isHovered  = a.id === saHoverId;
+    const rgb  = saColor(a.label);
+    const alpha = (isSelected || isActive) ? 0.60 : isHovered ? 0.50 : (hasSelection ? 0.15 : 0.28);
+    const col   = `rgba(${rgb},${alpha})`;
+
+    if (isHovered && !isSelected && !isActive) {
+      ctx.shadowColor = `rgba(${rgb},0.6)`;
+      ctx.shadowBlur  = 8;
+    } else {
+      ctx.shadowColor = 'transparent';
+      ctx.shadowBlur  = 0;
+    }
+
+    (a.strokes || []).forEach(stroke => {
+      // Placement area stroke — render as gradient ellipse (no raw pts)
+      if (stroke.soft && stroke.placement_area) {
+        const pa = stroke.placement_area;
+        const cx = pa.cx * canvas.width;
+        const cy = pa.cy * canvas.height;
+        const rx = Math.max(stroke.size * 2, (pa.w / 2) * canvas.width  + stroke.size);
+        const ry = Math.max(stroke.size * 2, (pa.h / 2) * canvas.height + stroke.size);
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.scale(rx, ry);
+        const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, 1);
+        grad.addColorStop(0,   `rgba(${rgb},${Math.min(1, alpha * 1.5)})`);
+        grad.addColorStop(0.5, `rgba(${rgb},${alpha * 0.8})`);
+        grad.addColorStop(1,   `rgba(${rgb},0)`);
+        ctx.beginPath();
+        ctx.arc(0, 0, 1, 0, Math.PI * 2);
+        ctx.fillStyle = grad;
+        ctx.fill();
+        ctx.restore();
+        return;
+      }
+      if (stroke.soft) {
+        ctx.filter = `blur(${Math.round(stroke.size * 0.4)}px)`;
+      } else {
+        ctx.filter = 'none';
+      }
+      ctx.strokeStyle = col;
+      ctx.fillStyle   = col;
+      ctx.lineWidth   = stroke.size;
+      if (!stroke.pts || stroke.pts.length === 0) return;
+      if (stroke.pts.length === 1) {
+        ctx.beginPath();
+        ctx.arc(stroke.pts[0].x * canvas.width, stroke.pts[0].y * canvas.height, stroke.size / 2, 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        ctx.beginPath();
+        ctx.moveTo(stroke.pts[0].x * canvas.width, stroke.pts[0].y * canvas.height);
+        stroke.pts.slice(1).forEach(p => ctx.lineTo(p.x * canvas.width, p.y * canvas.height));
+        ctx.stroke();
+      }
+    });
+    ctx.filter = 'none';
+
+    // Label badge near first point of first stroke
+    if (a.label && a.strokes?.length > 0 && a.strokes[0].pts?.length > 0) {
+      const px = a.strokes[0].pts[0].x * canvas.width;
+      const py = a.strokes[0].pts[0].y * canvas.height;
+      ctx.font = 'bold 10px monospace';
+      ctx.fillStyle = `rgba(${rgb},${isSelected || isActive ? 0.95 : 0.55})`;
+      ctx.fillText(a.label, px + 4, py - 4);
+    }
+    ctx.shadowColor = 'transparent';
+    ctx.shadowBlur  = 0;
+  });
+
+  // Live stroke being drawn
+  if (saDrawCurrent && saDrawCurrent.pts.length > 0) {
+    const liveColor = saActiveId ? `rgba(${saColor(saAnnotations.find(a=>a.id===saActiveId)?.label)},0.50)` : 'rgba(192,57,43,0.50)';
+    ctx.strokeStyle = liveColor;
+    ctx.fillStyle   = liveColor;
+    if (saDrawCurrent.soft) ctx.filter = `blur(${Math.round(saDrawCurrent.size * 0.4)}px)`;
+    else ctx.filter = 'none';
+    ctx.lineWidth   = saDrawCurrent.size;
+    if (saDrawCurrent.pts.length === 1) {
+      ctx.beginPath();
+      ctx.arc(saDrawCurrent.pts[0].x * canvas.width, saDrawCurrent.pts[0].y * canvas.height, saDrawCurrent.size / 2, 0, Math.PI * 2);
+      ctx.fill();
+    } else {
+      ctx.beginPath();
+      ctx.moveTo(saDrawCurrent.pts[0].x * canvas.width, saDrawCurrent.pts[0].y * canvas.height);
+      saDrawCurrent.pts.slice(1).forEach(p => ctx.lineTo(p.x * canvas.width, p.y * canvas.height));
+      ctx.stroke();
+    }
+    ctx.filter = 'none';
+  }
+}
+
+// ── Annotation list (sidebar of image panel) ──
+function saRenderList() {
+  const list = document.getElementById('sa-list');
+  if (!list) return;
+  if (!saAnnotations.length) { list.innerHTML = ''; return; }
+  list.innerHTML = '';
+  saAnnotations.forEach((a, i) => {
+    const rgb = saColor(a.label);
+    const sel    = a.id === saSelectedId ? ' selected' : '';
+    const actCls = a.id === saActiveId   ? ' sa-active' : '';
+    const item = document.createElement('div');
+    item.className = 'spatial-ann-item' + sel + actCls;
+    item.addEventListener('click', () => saSelect(a.id));
+
+    // dot
+    const dot = document.createElement('span');
+    dot.className = 'sa-dot';
+    dot.style.background = `rgba(${rgb},0.7)`;
+    item.appendChild(dot);
+
+    if (a.id === saEditingId) {
+      // inline search input + confirm button
+      const wrap = document.createElement('span');
+      wrap.className = 'sa-label-editor';
+      wrap.style.cssText = 'flex:1;display:flex;align-items:center;gap:0.3rem;';
+
+      const inp = document.createElement('input');
+      inp.type = 'text';
+      inp.id   = 'sa-edit-input';
+      inp.className = 'sa-label-input';
+      inp.value = a.label || '';
+      inp.placeholder = 'search category…';
+      inp.autocomplete = 'off';
+      inp.style.flex = '1';
+      inp.addEventListener('click', e => e.stopPropagation());
+      inp.addEventListener('input', e => { saStaged = null; const b = document.getElementById('sa-assign-btn'); if(b) b.style.display='none'; saSearchLabel(e.target.value); });
+      inp.addEventListener('keydown', saEditorKeyDown);
+      inp.addEventListener('blur', () => setTimeout(() => { if (!saStaged) saCloseEditor(); }, 180));
+
+      const btn = document.createElement('button');
+      btn.id = 'sa-assign-btn';
+      btn.className = 'sa-assign-btn';
+      btn.style.display = saStaged ? '' : 'none';
+      btn.textContent = saStaged ? `Assign label: ${saStaged.code}` : 'Assign label';
+      btn.addEventListener('mousedown', e => e.preventDefault()); // prevent input blur
+      btn.addEventListener('click', e => { e.stopPropagation(); saConfirmLabel(); });
+
+      wrap.appendChild(inp);
+      wrap.appendChild(btn);
+      item.appendChild(wrap);
+    } else {
+      const lbl = document.createElement('span');
+      lbl.className = 'sa-label' + (a.label ? '' : ' unlabeled');
+      const strokeCount = (a.strokes || []).length;
+      const activeMarker = a.id === saActiveId ? ' ▶' : '';
+      lbl.textContent = `${i+1}. ${a.label || 'unlabeled'}  (${strokeCount}${activeMarker})`;
+      lbl.title = 'double-click to assign/change label';
+      lbl.addEventListener('dblclick', e => saOpenEditor(a.id, e));
+      item.appendChild(lbl);
+    }
+
+    if (!READONLY) {
+      const del = document.createElement('span');
+      del.className = 'sa-del';
+      del.textContent = '✕';
+      del.addEventListener('click', e => { e.stopPropagation(); saDeleteById(a.id); });
+      item.appendChild(del);
+    }
+
+    list.appendChild(item);
+  });
+  // Scroll active or selected item into view
+  const activeEl = list.querySelector('.spatial-ann-item.sa-active, .spatial-ann-item.selected');
+  if (activeEl) activeEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+}
+
+// ── Label editor ──
+function saOpenEditor(id, e) {
+  if (READONLY) return;
+  if (e) e.stopPropagation();
+  saEditingId    = id;
+  saSelectedId   = id;   // always select, never toggle off
+  saDropdownFocus = -1;
+  saRepaint();
+  saRenderList();
+  setTimeout(() => {
+    const inp = document.getElementById('sa-edit-input');
+    if (inp) { inp.focus(); inp.select(); saSearchLabel(''); }
+  }, 0);
+}
+
+function saCloseEditor() {
+  saEditingId = null;
+  saDropdownFocus = -1;
+  saStaged = null;
+  saHideDropdown();
+  saRenderList();
+}
+
+function saSearchLabel(q) {
+  const allCats = saGetAllCats();
+  // In placement mode, restrict to Maurer T-C only
+  const cats = saSoftBrush ? allCats.filter(c => c.code.startsWith('K-B')) : allCats;
+  const ql = q.toLowerCase().trim();
+  saDropdownItems = ql
+    ? cats.filter(c => c.code.toLowerCase().includes(ql) || c.name.toLowerCase().includes(ql)).slice(0, 40)
+    : cats.slice(0, 40);
+  saDropdownFocus = -1;
+  saShowDropdown();
+}
+
+function saShowDropdown() {
+  saHideDropdown();
+  const inp = document.getElementById('sa-edit-input');
+  if (!inp || !saDropdownItems.length) return;
+  const dd = document.createElement('div');
+  dd.id = 'sa-dropdown';
+  dd.className = 'sa-label-dropdown';
+  saDropdownItems.forEach((c, i) => {
+    const opt = document.createElement('div');
+    opt.className = 'sa-label-option' + (i === saDropdownFocus ? ' sa-focused' : '');
+    opt.innerHTML = `<span class="so-code">${c.code}</span><span class="so-name">${c.name}</span>`;
+    opt.addEventListener('mousedown', ev => { ev.preventDefault(); saStageLabel(c); });
+    dd.appendChild(opt);
+  });
+  const r = inp.getBoundingClientRect();
+  dd.style.top   = (r.bottom + 2) + 'px';
+  dd.style.left  = r.left + 'px';
+  dd.style.width = Math.max(220, r.width) + 'px';
+  document.body.appendChild(dd);
+}
+
+function saHideDropdown() {
+  const d = document.getElementById('sa-dropdown');
+  if (d) d.remove();
+}
+
+// Stage a label choice (visible in input + confirm button, not yet committed)
+function saStageLabel(cat) {
+  saStaged = cat;
+  saHideDropdown();
+  const inp = document.getElementById('sa-edit-input');
+  if (inp) { inp.value = cat.code; inp.focus(); }
+  const btn = document.getElementById('sa-assign-btn');
+  if (btn) {
+    btn.textContent = `Assign label: ${cat.code}`;
+    btn.style.display = '';
+  }
+}
+
+// Commit the staged label to the annotation
+function saConfirmLabel() {
+  if (!saStaged || !saEditingId) return;
+  saAssignLabel(saStaged.code, saStaged.type);
+  saStaged = null;
+  saCloseEditor();
+}
+
+// Pick label directly (keyboard Enter without explicit staging)
+function saPickLabel(code, type) {
+  if (!saEditingId) return;
+  saAssignLabel(code, type);
+  saStaged = null;
+  saCloseEditor();
+}
+
+function saEditorKeyDown(e) {
+  const opts = document.querySelectorAll('#sa-dropdown .sa-label-option');
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    saDropdownFocus = Math.min(saDropdownFocus + 1, saDropdownItems.length - 1);
+    opts.forEach((o, i) => o.classList.toggle('sa-focused', i === saDropdownFocus));
+    opts[saDropdownFocus]?.scrollIntoView({ block: 'nearest' });
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    saDropdownFocus = Math.max(saDropdownFocus - 1, -1);
+    opts.forEach((o, i) => o.classList.toggle('sa-focused', i === saDropdownFocus));
+    if (saDropdownFocus >= 0) opts[saDropdownFocus]?.scrollIntoView({ block: 'nearest' });
+  } else if (e.key === 'Enter') {
+    e.preventDefault();
+    if (saStaged) {
+      saConfirmLabel(); // confirm already-staged choice
+    } else if (saDropdownFocus >= 0 && saDropdownItems[saDropdownFocus]) {
+      const c = saDropdownItems[saDropdownFocus];
+      saPickLabel(c.code, c.type); // assign directly via keyboard
+    } else if (saDropdownItems[0]) {
+      saPickLabel(saDropdownItems[0].code, saDropdownItems[0].type);
+    }
+  } else if (e.key === 'Escape') {
+    if (saStaged) { saStaged = null; const b = document.getElementById('sa-assign-btn'); if (b) b.style.display = 'none'; }
+    else { saCloseEditor(); e.stopPropagation(); }
+  }
+}
+
+function saDeleteById(id) {
+  const toDelete = saAnnotations.find(a => a.id === id);
+  saUnlinkTagForAnnotation(toDelete);
+  saAnnotations = saAnnotations.filter(a => a.id !== id);
+  if (saSelectedId === id) saSelectedId = null;
+  if (saActiveId === id) saActiveId = saAnnotations.length ? saAnnotations[saAnnotations.length - 1].id : null;
+  saRepaint(); saRenderList(); saSyncStore(); saUpdateBanner();
+}
+
+function saUndo() {
+  if (saDrawing) return;
+  const active = saAnnotations.find(a => a.id === saActiveId);
+  if (active && active.strokes.length > 0) {
+    active.strokes.pop();
+    if (active.strokes.length === 0 && saAnnotations.length > 1) {
+      // remove empty annotation, go back to previous
+      saAnnotations = saAnnotations.filter(a => a.id !== saActiveId);
+      const prev = saAnnotations[saAnnotations.length - 1];
+      saActiveId   = prev ? prev.id : null;
+      saSelectedId = saActiveId;
+    }
+  } else if (saAnnotations.length > 0) {
+    // No active or active is empty: remove the last annotation entirely
+    const last = saAnnotations[saAnnotations.length - 1];
+    saAnnotations.pop();
+    if (saSelectedId === last.id) saSelectedId = null;
+    if (saActiveId   === last.id) {
+      const prev = saAnnotations[saAnnotations.length - 1];
+      saActiveId   = prev ? prev.id : null;
+      saSelectedId = saActiveId;
+    }
+  }
+  saRepaint(); saRenderList(); saSyncStore(); saUpdateBanner();
+}
+
+// ── Hit-test: find annotation closest to click ──
+function saHitTest(nx, ny, canvas) {
+  const HIT = 20 / Math.max(canvas.width, canvas.height);
+  let best = null, bestDist = HIT;
+  saAnnotations.forEach(a => {
+    (a.strokes || []).forEach(stroke => {
+      // Placement area strokes: hit-test against a central nucleus (45% of the ellipse radius)
+      if (stroke.soft && stroke.placement_area) {
+        const pa = stroke.placement_area;
+        const dx = (nx - pa.cx) / (pa.w / 2 * 0.45 + 0.01);
+        const dy = (ny - pa.cy) / (pa.h / 2 * 0.45 + 0.01);
+        if (dx * dx + dy * dy <= 1) { best = a; bestDist = 0; }
+        return;
+      }
+      // Regular strokes: nearest-point hit test
+      for (const p of (stroke.pts || [])) {
+        const d = Math.hypot(p.x - nx, p.y - ny);
+        if (d < bestDist) { bestDist = d; best = a; }
+      }
+    });
+  });
+  return best;
+}
+
+// ── Resize canvas ──
+function annDrawResizeCanvas() {
+  const img      = document.getElementById('ann-img');
+  const canvas   = document.getElementById('ann-draw-canvas');
+  const wrap     = document.getElementById('ann-img-wrap');
+  const viewport = document.getElementById('ann-img-viewport');
+  if (!canvas || !img || !wrap) return;
+  if (!img.naturalWidth) return; // image not loaded yet
+
+  // Canvas buffer = natural resolution for pixel-perfect overlay on all images
+  canvas.width  = img.naturalWidth;
+  canvas.height = img.naturalHeight;
+
+  // Base display size at zoom=1: constrain natural size to 380px max height.
+  // Compute from aspect ratio to guarantee no distortion at any zoom level.
+  const panelW    = viewport ? (viewport.parentElement?.offsetWidth || 600) : 600;
+  const maxH      = 380;
+  const scaleBase = Math.min(1, panelW / img.naturalWidth, maxH / img.naturalHeight);
+  // Derive baseH from baseW using the exact natural aspect ratio (avoids rounding distortion)
+  const baseW = Math.round(img.naturalWidth  * scaleBase);
+  const baseH = Math.round(baseW * img.naturalHeight / img.naturalWidth);
+
+  // Display = base * zoom — height derived from width to preserve aspect ratio exactly
+  const dispW = Math.round(baseW * saZoom);
+  const dispH = Math.round(dispW * img.naturalHeight / img.naturalWidth);
+  img.style.width   = dispW + 'px';
+  img.style.height  = dispH + 'px';
+  wrap.style.width  = dispW + 'px';
+  wrap.style.height = dispH + 'px';
+  canvas.style.width  = dispW + 'px';
+  canvas.style.height = dispH + 'px';
+
+  // Viewport is fixed at zoom=1 size; hide scrollbars when not zoomed in
+  if (viewport) {
+    viewport.style.width    = baseW + 'px';
+    viewport.style.height   = baseH + 'px';
+    viewport.style.overflow = (saZoom > 1) ? 'auto' : 'hidden';
+  }
+
+  saRepaint();
+}
+
+// ── Merge legacy single-stroke unlabeled annotations into one group ──
+function saMergeUnlabeled(anns) {
+  // Collect contiguous runs of unlabeled annotations that each have exactly 1 stroke
+  // (these are pre-refactor artifacts). Merge each run into one annotation.
+  const out = [];
+  let run = null;
+  for (const a of anns) {
+    const isLegacy = !a.label && a.strokes.length === 1;
+    if (isLegacy) {
+      if (!run) {
+        run = { id: a.id, strokes: [...a.strokes], label: null, label_type: null };
+      } else {
+        run.strokes.push(...a.strokes);
+      }
+    } else {
+      if (run) { out.push(run); run = null; }
+      out.push(a);
+    }
+  }
+  if (run) out.push(run);
+  return out;
+}
+
+// ── Load/Save ──
+function annDrawLoadForItem(sha) {
+  saAnnotations = [];
+  saSelectedId  = null;
+  saActiveId    = null;
+  saResetZoom();
+  const store = annStore();
+  const rec   = store[sha] || annItems.find(i => i.sha === sha) || {};
+  if (Array.isArray(rec.spatial_annotations)) {
+    saAnnotations = rec.spatial_annotations.map(saMigrate);
+    // Merge consecutive unlabeled single-stroke annotations (legacy data from before multi-stroke refactor)
+    saAnnotations = saMergeUnlabeled(saAnnotations);
+  }
+  // Resume into last annotation only if it is still unlabeled
+  const last = saAnnotations[saAnnotations.length - 1];
+  if (last && !last.label) {
+    saActiveId   = last.id;
+    saSelectedId = last.id;
+  }
+  saRepaint();
+  saRenderList();
+  saUpdateBanner();
+}
+
+function saSyncStore() {
+  const item = annItems[annIdx];
+  if (!item) return;
+  const store = annStore();
+  const rec   = store[item.sha] || {};
+  rec.spatial_annotations = saAnnotations;
+  store[item.sha] = rec;
+  annStoreSet(store);
+  annSetResume(annIdx);
+}
+
+// ── Setup pointer listeners ──
+function annDrawSetupListeners() {
+  const wrap = document.getElementById('ann-img-wrap');
+  if (!wrap) return;
+
+  function getPos(e) {
+    const r   = wrap.getBoundingClientRect();
+    const src = e.touches ? e.touches[0] : e;
+    return { x: (src.clientX - r.left) / r.width, y: (src.clientY - r.top) / r.height };
+  }
+
+  function onStart(e) {
+    if (READONLY) return;
+    const p = getPos(e);
+    if (!saDrawActive) {
+      // Click-to-select mode
+      const canvas = document.getElementById('ann-draw-canvas');
+      const hit    = canvas ? saHitTest(p.x, p.y, canvas) : null;
+      saSelect(hit ? hit.id : null);
+      return;
+    }
+    e.preventDefault();
+    saDrawing  = true;
+    saDrawLast = p;
+    saDrawCurrent = { id: saNextId(), pts: [p], size: parseInt(document.getElementById('ann-brush-size')?.value || 8), soft: saSoftBrush, label: null, label_type: null };
+  }
+  function onMove(e) {
+    if (!saDrawing || !saDrawCurrent) return;
+    e.preventDefault();
+    const p = getPos(e);
+    saDrawCurrent.pts.push(p);
+    saDrawLast = p;
+    saRepaint();
+  }
+  function onEnd() {
+    if (!saDrawing || !saDrawCurrent) return;
+    saDrawing = false;
+    let stroke;
+    if (saDrawCurrent.soft && saDrawCurrent.pts.length > 0) {
+      // Placement stroke: save only bounding box as area metadata, not raw pts
+      const xs = saDrawCurrent.pts.map(p => p.x);
+      const ys = saDrawCurrent.pts.map(p => p.y);
+      const minX = Math.min(...xs), maxX = Math.max(...xs);
+      const minY = Math.min(...ys), maxY = Math.max(...ys);
+      stroke = {
+        pts: [],
+        size: saDrawCurrent.size,
+        soft: true,
+        placement_area: {
+          x: minX, y: minY,
+          w: Math.max(0.01, maxX - minX),
+          h: Math.max(0.01, maxY - minY),
+          cx: (minX + maxX) / 2,
+          cy: (minY + maxY) / 2
+        }
+      };
+    } else {
+      stroke = { pts: saDrawCurrent.pts, size: saDrawCurrent.size, soft: false };
+    }
+    saDrawCurrent = null;
+
+    // Find or create the active annotation
+    let active = saAnnotations.find(a => a.id === saActiveId);
+    if (!active) {
+      active = { id: saNextId(), strokes: [], label: null, label_type: null };
+      saAnnotations.push(active);
+      saActiveId   = active.id;
+      saSelectedId = active.id;
+    }
+    active.strokes.push(stroke);
+
+    saRepaint();
+    saRenderList();
+    saSyncStore();
+    saUpdateBanner();
+  }
+
+  wrap.addEventListener('mousedown',  onStart, { passive: false });
+  wrap.addEventListener('mousemove',  onMove,  { passive: false });
+  wrap.addEventListener('mouseup',    onEnd);
+  wrap.addEventListener('mouseleave', onEnd);
+  wrap.addEventListener('touchstart', onStart, { passive: false });
+  wrap.addEventListener('touchmove',  onMove,  { passive: false });
+  wrap.addEventListener('touchend',   onEnd);
+
+  wrap.addEventListener('mousemove', e => {
+    if (saDrawing) return;
+    const canvas = document.getElementById('ann-draw-canvas');
+    if (!canvas) return;
+    const p = getPos(e);
+    const hit = saHitTest(p.x, p.y, canvas);
+    const newId = hit ? hit.id : null;
+    if (newId !== saHoverId) {
+      saHoverId = newId;
+      saRepaint();
+      if (newId) {
+        const a = saAnnotations.find(x => x.id === newId);
+        if (a?.label) {
+          saShowCanvasTooltip(a.label, a.label_type, e.clientX, e.clientY);
+        } else {
+          annTagHoverOff();
+        }
+      } else {
+        annTagHoverOff();
+      }
+    } else if (newId) {
+      // Update tooltip position while hovering same annotation
+      const tt = document.getElementById('ann-tag-tooltip');
+      if (tt && tt.style.display !== 'none') {
+        let left = e.clientX + 16;
+        let top = e.clientY - 20;
+        if (left + 330 > window.innerWidth) left = e.clientX - 330 - 8;
+        if (top + 200 > window.innerHeight) top = window.innerHeight - 200;
+        tt.style.left = Math.max(4, left) + 'px';
+        tt.style.top = Math.max(4, top) + 'px';
+      }
+    }
+  }, { passive: true });
+  wrap.addEventListener('mouseleave', () => {
+    if (saHoverId !== null) { saHoverId = null; saRepaint(); }
+    annTagHoverOff();
+  }, { passive: true });
+
+  const viewport = document.getElementById('ann-img-viewport');
+  if (viewport) {
+    viewport.addEventListener('wheel', e => {
+      if (e.ctrlKey || e.metaKey) {
+        e.preventDefault();
+        saZoomStep(e.deltaY < 0 ? 1 : -1);
+      }
+    }, { passive: false });
+  }
+}
+
+// Resize canvas when image loads or window resizes
+document.addEventListener('DOMContentLoaded', () => {
+  const img = document.getElementById('ann-img');
+  if (img) img.addEventListener('load', annDrawResizeCanvas);
+  new ResizeObserver(annDrawResizeCanvas).observe(document.body);
+});
+
+/* ═══════════════════════════════════════════════════════════
+   RESUME · JUMP · CATEGORY SEARCH
+   ═══════════════════════════════════════════════════════════ */
+
+// ── Resume: remember last modified item ──
+const ANN_RESUME_KEY = 'ann_resume';
+
+function annSetResume(idx) {
+  const item = annItems[idx];
+  if (!item) return;
+  localStorage.setItem(ANN_RESUME_KEY, JSON.stringify({
+    idx,
+    sha: item.sha,
+    prefill: item.prefill_labels || [],
+    updated_at: new Date().toISOString(),
+  }));
+  annUpdateResumeBtn();
+}
+
+function annGoToLast() {
+  try {
+    const r = JSON.parse(localStorage.getItem(ANN_RESUME_KEY) || 'null');
+    if (r && typeof r.idx === 'number') annLoad(r.idx);
+  } catch {}
+}
+
+function annUpdateResumeBtn() {
+  const btn = document.getElementById('ann-resume-btn');
+  if (!btn) return;
+  try {
+    const r = JSON.parse(localStorage.getItem(ANN_RESUME_KEY) || 'null');
+    if (r && typeof r.idx === 'number') {
+      const num  = r.idx + 1;
+      const lbl  = r.prefill?.filter(c => c.length > 3).join(' · ') || r.prefill?.join(' · ') || '—';
+      const date = r.updated_at ? new Date(r.updated_at).toLocaleDateString('en-GB', { day:'numeric', month:'short' }) : '';
+      btn.textContent = `↩ Resume at #${num}  ${lbl}${date ? '  ·  ' + date : ''}`;
+      btn.style.display = '';
+    } else {
+      btn.style.display = 'none';
+    }
+  } catch { btn.style.display = 'none'; }
+}
+
+// ── Jump to number ──
+function annJumpTo(val) {
+  const n = parseInt(val, 10);
+  if (!isNaN(n) && n >= 1 && n <= annItems.length) {
+    annLoad(n - 1);
+    const inp = document.getElementById('ann-jump-input');
+    if (inp) inp.value = '';
+  }
+}
+
+// ── Category search ──
+let annCatIndex   = null;   // { code: [idx, ...], ... }
+let annCatFocus   = -1;
+let annCatResults = [];
+
+function annBuildCatIndex() {
+  if (annCatIndex) return;
+  annCatIndex = {};
+  annItems.forEach((item, i) => {
+    (item.prefill_labels || []).forEach(code => {
+      (annCatIndex[code] = annCatIndex[code] || []).push(i);
+    });
+  });
+}
+
+// Map code → human name (from ANN_TAXONOMY + MAURER_TC)
+function annCatName(code) {
+  const g = code.substring(0, 3);
+  if (ANN_TAXONOMY[g]?.[code]) return ANN_TAXONOMY[g][code];
+  const m = MAURER_TC.find(x => x.code === code);
+  if (m) return m.name;
+  // Group-level code like "K-H"
+  const groups = { 'K-A':'Basic Scribbles','K-B':'Placement Patterns','K-C':'Emergent Diagrams',
+    'K-D':'Diagrams','K-E':'Combines','K-F':'Aggregates','K-G':'Mandalas','K-H':'Suns','K-I':'Radials' };
+  return groups[code] || code;
+}
+
+function annCatSearch(q) {
+  annBuildCatIndex();
+  const ql = q.toLowerCase().trim();
+  const codes = Object.keys(annCatIndex);
+  const matches = codes
+    .map(code => ({ code, name: annCatName(code), count: annCatIndex[code].length }))
+    .filter(c => !ql || c.code.toLowerCase().includes(ql) || c.name.toLowerCase().includes(ql))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 35);
+  annCatResults = matches;
+  annCatFocus   = -1;
+  annCatShowDrop();
+}
+
+function annCatShowDrop() {
+  annCatHide();
+  const inp = document.getElementById('ann-cat-input');
+  if (!inp || !annCatResults.length) return;
+  const dd = document.createElement('div');
+  dd.id = 'ann-cat-dropdown';
+  dd.className = 'ann-cat-dropdown';
+  annCatResults.forEach((c, i) => {
+    const opt = document.createElement('div');
+    opt.className = 'ann-cat-option' + (i === annCatFocus ? ' ann-cat-focused' : '');
+    opt.innerHTML = `<span class="aco-code">${c.code}</span><span class="aco-name">${c.name}</span><span class="aco-count">${c.count}</span>`;
+    opt.addEventListener('mousedown', ev => { ev.preventDefault(); annCatJump(c.code); });
+    dd.appendChild(opt);
+  });
+  const r = inp.getBoundingClientRect();
+  dd.style.top   = (r.bottom + 2) + 'px';
+  dd.style.left  = r.left + 'px';
+  dd.style.width = r.width + 'px';
+  document.body.appendChild(dd);
+}
+
+function annCatHide() {
+  const d = document.getElementById('ann-cat-dropdown');
+  if (d) d.remove();
+}
+
+function annCatKeyDown(e) {
+  const opts = document.querySelectorAll('#ann-cat-dropdown .ann-cat-option');
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    annCatFocus = Math.min(annCatFocus + 1, annCatResults.length - 1);
+    opts.forEach((o, i) => o.classList.toggle('ann-cat-focused', i === annCatFocus));
+    opts[annCatFocus]?.scrollIntoView({ block: 'nearest' });
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    annCatFocus = Math.max(annCatFocus - 1, -1);
+    opts.forEach((o, i) => o.classList.toggle('ann-cat-focused', i === annCatFocus));
+    if (annCatFocus >= 0) opts[annCatFocus]?.scrollIntoView({ block: 'nearest' });
+  } else if (e.key === 'Enter') {
+    e.preventDefault();
+    if (annCatFocus >= 0 && annCatResults[annCatFocus]) annCatJump(annCatResults[annCatFocus].code);
+    else if (annCatResults[0]) annCatJump(annCatResults[0].code);
+  } else if (e.key === 'Escape') {
+    annCatHide();
+    document.getElementById('ann-cat-input').blur();
+  }
+}
+
+function annCatJump(code) {
+  annBuildCatIndex();
+  const indices = annCatIndex[code];
+  if (!indices || !indices.length) return;
+  annLoad(indices[0]);
+  annCatHide();
+  const inp = document.getElementById('ann-cat-input');
+  if (inp) inp.value = '';
+}
+
+/* ═══════════════════════════════════════════════════════════
    EVENTS
    ═══════════════════════════════════════════════════════════ */
 document.getElementById('overlay').addEventListener('click', e => {
   if (e.target === document.getElementById('overlay')) closeDetail();
 });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDetail(); });
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeDetail();
+
+  // Shortcuts active only when annotator is visible and focus is NOT in a text input
+  const inInput = ['INPUT','TEXTAREA'].includes(document.activeElement?.tagName);
+  const annSection = document.getElementById('annotator-section');
+  const annVisible = annSection &&
+    annSection.getBoundingClientRect().bottom > 0 &&
+    annSection.getBoundingClientRect().top < window.innerHeight;
+
+  if (annVisible) {
+    // Ctrl+Z — undo last stroke
+    if (e.key === 'z' && (e.ctrlKey || e.metaKey) && !e.shiftKey) {
+      saUndo();
+      e.preventDefault();
+    }
+    // Arrow keys — navigate images (only when not typing)
+    if (!inInput && !e.ctrlKey && !e.metaKey) {
+      if (e.key === 'ArrowRight') { annNav(1);  e.preventDefault(); }
+      if (e.key === 'ArrowLeft')  { annNav(-1); e.preventDefault(); }
+    }
+    // Alt+Enter — new annotation group (Ctrl+N opens browser tab, avoid that)
+    if (e.key === 'Enter' && e.altKey) {
+      saNewAnnotation();
+      e.preventDefault();
+    }
+    // Zoom with Ctrl+= / Ctrl+-
+    if (e.key === '=' && (e.ctrlKey || e.metaKey)) { saZoomStep(1); e.preventDefault(); }
+    if (e.key === '-' && (e.ctrlKey || e.metaKey)) { saZoomStep(-1); e.preventDefault(); }
+    if (e.key === '0' && (e.ctrlKey || e.metaKey)) { saResetZoom(); e.preventDefault(); }
+  }
+});
 window.addEventListener('DOMContentLoaded', init);
+
+function annDataOpen() {
+  const modal = document.getElementById('ann-data-modal');
+  const pre   = document.getElementById('ann-data-modal-pre');
+  if (!modal || !pre) return;
+  modal.classList.add('open');
+  // Load data: try localStorage first, then fetch from server
+  const local = annStore(); // from localStorage
+  if (Object.keys(local).length > 0) {
+    pre.textContent = JSON.stringify(local, null, 2);
+  } else {
+    // Public page: fetch from data file
+    fetch('data/annotations_local.json')
+      .then(r => r.json())
+      .then(d => { pre.textContent = JSON.stringify(d, null, 2); })
+      .catch(() => { pre.textContent = '(No data available)'; });
+  }
+}
+function annDataClose() {
+  document.getElementById('ann-data-modal')?.classList.remove('open');
+}
+function annDataCopy() {
+  const pre = document.getElementById('ann-data-modal-pre');
+  if (pre) navigator.clipboard.writeText(pre.textContent).catch(() => {});
+}
+// Close on backdrop click
+document.getElementById('ann-data-modal')?.addEventListener('click', e => {
+  if (e.target === document.getElementById('ann-data-modal')) annDataClose();
+});
 </script>
+<div id="ann-data-modal">
+  <div id="ann-data-modal-box">
+    <div id="ann-data-modal-toolbar">
+      <h3>All annotation data</h3>
+      <span class="spacer"></span>
+      <button onclick="annDataCopy()" style="padding:0.2rem 0.6rem;cursor:pointer;">Copy JSON</button>
+      <button onclick="annDataClose()" style="padding:0.2rem 0.6rem;cursor:pointer;">✕ Close</button>
+    </div>
+    <pre id="ann-data-modal-pre"></pre>
+  </div>
+</div>
 </body>
 </html>
