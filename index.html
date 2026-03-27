@@ -2192,7 +2192,7 @@ function buildAnnotatorSection() {
         <strong>python build_annotator_data.py</strong><br><br>
         then run server:<br>
         <strong>python server.py</strong><br><br>
-        e ricarica la pagina.
+        then reload the page.
       </div>
     `;
     main.appendChild(section);
@@ -2205,7 +2205,7 @@ function buildAnnotatorSection() {
 
   section.innerHTML = `
     <h2>Annotator${READONLY ? ' <span style="font-size:0.55em;font-family:var(--font-mono);font-weight:400;letter-spacing:0.05em;vertical-align:middle;background:var(--c-tag-bg);color:var(--c-text-secondary);padding:0.15em 0.5em;border-radius:3px;">view only</span>' : ''}</h2>
-    <p class="section-subtitle">${READONLY ? 'Read-only view of annotations — Kellogg K-categories and Maurer T–C spatial arrangements' : 'Children\'s drawings from dataset Kellogg / Maurer · annote K-categories and Maurer T–C · export JSON'}</p>
+    <p class="section-subtitle">${READONLY ? 'Read-only view of annotations — Kellogg K-categories and Maurer T–C spatial arrangements' : 'Children\'s drawings from dataset Kellogg / Maurer · annotate K-categories and Maurer T–C · export JSON'}</p>
     <div class="annotator-toolbar">
       <div class="ann-counter-wrap">
         <span class="annotator-counter" id="ann-counter">—</span>
@@ -2374,11 +2374,11 @@ function annSelCodes(selector) {
 
 function annMetaHTML(prefill, userAdded) {
   const pHtml = prefill.length
-    ? `<span class="ann-meta-group ann-meta-archive"><span class="ann-meta-label">archivio</span>${prefill.join(' · ')}</span>`
+    ? `<span class="ann-meta-group ann-meta-archive"><span class="ann-meta-label">catalog</span>${prefill.join(' · ')}</span>`
     : '';
   const userOnly = userAdded.filter(c => !prefill.includes(c));
   const uHtml = userOnly.length
-    ? `<span class="ann-meta-group ann-meta-mine"><span class="ann-meta-label">miei</span>${userOnly.join(' · ')}</span>`
+    ? `<span class="ann-meta-group ann-meta-mine"><span class="ann-meta-label">annotated</span>${userOnly.join(' · ')}</span>`
     : '';
   return pHtml + uHtml || '—';
 }
