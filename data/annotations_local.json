@@ -33,8 +33,7 @@
       ],
       "human_secondary": [
         "K-DC",
-        "K-EF",
-        "K-BB"
+        "K-EF"
       ],
       "maurer_tc": [],
       "spatial_annotations": [
@@ -2522,7 +2521,7 @@
         }
       ],
       "status": "confirmed",
-      "updated_at": "2026-03-27T22:31:43.581Z"
+      "updated_at": "2026-03-28T00:03:01.374Z"
     },
     "c1fafa0581e64a506d35a30974a4d7093b9cddc52128c52e59c190e160765b25": {
       "human_where": [],
