@@ -1720,9 +1720,9 @@ async function init() {
   // - public: fetch annotations_local.json directly as static file
   try {
     const annotUrl = READONLY
-      ? BASE_URL + 'data/annotations_local.json'
+      ? BASE_URL + 'data/annotations_local.json?v=' + Date.now()
       : '/api/annotations';
-    const r3 = await fetch(annotUrl);
+    const r3 = await fetch(annotUrl, { cache: 'no-store' });
     if (r3.ok) {
       const srv = await r3.json();
       if (srv.maurer) {
