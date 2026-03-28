@@ -1295,51 +1295,63 @@ body {
   font-size: 1.1rem;
   margin-bottom: 1.5rem;
 }
-/* ── Chip area: full-width grouped strip ── */
-.is-chip-area {
-  display: flex; flex-direction: column; gap: 0.3rem;
-  padding: 0.65rem 0.9rem; margin-bottom: 0.7rem;
-  background: var(--c-bg-warm); border: 1px solid var(--c-border-light); border-radius: 4px;
+/* ── Two-column body ── */
+.is-studio-body {
+  display: grid;
+  grid-template-columns: 290px 1fr;
+  gap: 1.1rem;
+  align-items: start;
 }
-.is-chip-group { display:flex; align-items:flex-start; gap:0.5rem; }
-.is-chip-group-label {
-  font-family:var(--font-mono); font-size:0.52rem; font-weight:700;
+.is-left-panel {
+  position: sticky; top: 4rem;
+  display: flex; flex-direction: column; gap: 0.55rem;
+  background: var(--c-bg-warm); border: 1px solid var(--c-border-light);
+  border-radius: 4px; padding: 0.75rem;
+  max-height: calc(100vh - 5rem); overflow-y: auto;
+}
+/* ── Compact chip grid ── */
+.is-chip-grid { display:flex; flex-wrap:wrap; gap:0.2rem; }
+.is-chip-group-sep {
+  width:100%; font-family:var(--font-mono); font-size:0.52rem; font-weight:700;
   letter-spacing:0.08em; text-transform:uppercase; color:var(--c-text-tertiary);
-  padding-top:0.32rem; min-width:82px; flex-shrink:0;
+  padding:0.3rem 0 0.1rem; margin-top:0.15rem;
 }
-.is-chip-set { display:flex; flex-wrap:wrap; gap:0.18rem; }
-/* ── Visual guide bar (immediately visible) ── */
+/* ── Visual guide section in left panel ── */
 .is-guide-bar {
-  display:flex; align-items:flex-start; gap:1.2rem; flex-wrap:wrap;
-  padding:0.6rem 0.9rem; margin-bottom:0.4rem;
-  background:var(--c-bg-card); border:1px solid var(--c-border-light); border-radius:4px;
+  border-top: 1px solid var(--c-border-light);
+  padding-top: 0.6rem; display: flex; flex-direction: column; gap: 0.3rem;
 }
 .is-guide-placeholder {
-  padding:0.55rem 0.9rem; margin-bottom:0.4rem;
-  font-family:var(--font-mono); font-size:0.68rem; color:var(--c-text-tertiary);
-  background:var(--c-bg-warm); border:1px dashed var(--c-border-light); border-radius:4px;
-  text-align:center;
+  font-family:var(--font-mono); font-size:0.65rem; color:var(--c-text-tertiary);
+  text-align:center; padding:0.5rem 0; border-top:1px solid var(--c-border-light);
+  margin-top:0.1rem;
 }
-.is-guide-left { display:flex; flex-direction:column; gap:0.25rem; min-width:160px; }
-.is-guide-name { font-family:var(--font-display); font-size:1.15rem; font-weight:600; }
+.is-guide-name { font-family:var(--font-display); font-size:1.05rem; font-weight:600; line-height:1.2; }
 .is-guide-prompt {
-  font-family:var(--font-body); font-size:0.72rem; font-style:italic;
-  color:var(--c-text-secondary); line-height:1.4;
+  font-family:var(--font-body); font-size:0.7rem; font-style:italic;
+  color:var(--c-text-secondary); line-height:1.4; margin-bottom:0.2rem;
 }
-.is-guide-chips { display:flex; flex-wrap:wrap; gap:0.35rem; align-items:flex-start; flex:1; }
+.is-guide-chips { display:flex; flex-wrap:wrap; gap:0.2rem; }
 .is-guide-k-chip {
-  display:flex; flex-direction:column; align-items:center; gap:0.12rem;
-  font-family:var(--font-mono); font-size:0.55rem; padding:0.18em 0.2em 0.12em;
-  border-radius:3px; border:1px solid var(--c-border-light);
+  display:flex; flex-direction:column; align-items:center; gap:0.1rem;
+  font-family:var(--font-mono); font-size:0.52rem; padding:0.15em 0.18em 0.1em;
+  border-radius:2px; border:1px solid var(--c-border-light);
   background:var(--c-tag-bg); color:var(--c-tag-text); cursor:default;
 }
 .is-guide-k-chip.primary   { border-color:var(--c-text); background:var(--c-text); color:#fff; }
-.is-guide-k-chip.secondary { opacity:0.55; }
-.is-guide-k-chip .is-k-thumb { width:54px; height:36px; }
-/* ── Canvas zone ── */
-.is-canvas-zone { display:flex; flex-direction:column; gap:0.5rem; }
-#is-canvas { display:block; width:100%; height:auto; touch-action:none; cursor:crosshair; }
-/* ── Collapsible info details ── */
+.is-guide-k-chip.secondary { opacity:0.5; }
+.is-guide-k-chip .is-k-thumb { width:50px; height:33px; }
+/* ── Right panel ── */
+.is-canvas-zone { display:flex; flex-direction:column; gap:0.5rem; } /* legacy alias */
+/* ── Canvas: viewport-aware max size ── */
+.is-canvas-wrap {
+  position: relative;
+  width: min(100%, calc((100vh - 11rem) * 1.5));
+  aspect-ratio: 3 / 2;
+  border: 1px solid var(--c-border); border-radius: 3px; overflow: hidden;
+}
+#is-canvas { display:block; width:100%; height:100%; touch-action:none; cursor:crosshair; }
+/* ── Collapsible details below body ── */
 .is-details {
   margin-top:0.6rem; border:1px solid var(--c-border-light);
   border-radius:4px; background:var(--c-bg-warm); overflow:hidden;
@@ -1351,15 +1363,14 @@ body {
   color:var(--c-text-secondary); user-select:none; list-style:none;
 }
 .is-details-summary::-webkit-details-marker { display:none; }
-.is-details-summary::before { content:'▸'; font-size:0.7rem; transition:transform 0.15s; }
-.is-details[open] .is-details-summary::before { content:'▾'; }
+.is-details-summary::before { content:'▸ '; font-size:0.7rem; }
+.is-details[open] .is-details-summary::before { content:'▾ '; }
 /* ── Info panel: 3-column inside <details> ── */
 .is-info-panel {
   display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem;
-  padding:0.8rem 0.9rem 0.9rem;
-  border-top:1px solid var(--c-border-light);
+  padding:0.8rem 0.9rem 0.9rem; border-top:1px solid var(--c-border-light);
 }
-.is-info-col { display:flex; flex-direction:column; gap:0; min-width:0; }
+.is-info-col { display:flex; flex-direction:column; min-width:0; }
 /* ── Thumb zoom overlay ── */
 .is-thumb-zoom {
   position:fixed; display:none; pointer-events:none; z-index:9999;
@@ -5082,40 +5093,40 @@ function buildISStudioSection() {
     <h2>Image Schemata Studio</h2>
     <p class="section-subtitle">Draw diagrams enacting cognitive image schemata — guided by the Kellogg taxonomy</p>
 
-    <!-- 1. Schema chip selector: full-width, grouped -->
-    <div class="is-chip-area" id="is-chip-area"></div>
-
-    <!-- 2. Visual guide bar: immediately visible, shows selected schema + Kellogg thumbnails -->
-    <div class="is-guide-bar" id="is-guide-bar" style="display:none">
-      <div class="is-guide-left">
-        <div class="is-guide-name" id="is-guide-name"></div>
-        <div class="is-guide-prompt">Draw a diagram enacting this schema — use the Kellogg forms shown as a visual guide.</div>
+    <div class="is-studio-body">
+      <!-- LEFT PANEL: schema chips + visual guide -->
+      <div class="is-left-panel" id="is-left-panel">
+        <div class="is-chip-grid" id="is-chip-grid"></div>
+        <div class="is-guide-bar" id="is-guide-bar">
+          <div class="is-guide-placeholder" id="is-guide-placeholder">← select a schema above</div>
+          <div class="is-guide-name" id="is-guide-name" style="display:none"></div>
+          <div class="is-guide-prompt" id="is-guide-prompt" style="display:none">Draw a diagram enacting this schema — use the Kellogg forms shown as a visual guide.</div>
+          <div class="is-guide-chips" id="is-guide-chips"></div>
+        </div>
       </div>
-      <div class="is-guide-chips" id="is-guide-chips"></div>
+
+      <!-- RIGHT PANEL: toolbar + canvas -->
+      <div>
+        <div class="is-toolbar">
+          <span class="is-toolbar-label">BRUSH</span>
+          <input type="range" id="is-brush-size" min="2" max="16" value="6" style="width:75px;cursor:pointer;"
+            oninput="isBrushSize=parseInt(this.value)">
+          <span class="is-toolbar-label">COLOR</span>
+          <div class="is-color-swatches" id="is-swatches"></div>
+          <button class="ann-btn" onclick="isUndo()" title="Ctrl+Z">↩ Undo</button>
+          <button class="ann-btn" onclick="isClear()">Clear</button>
+          <div style="flex:1"></div>
+          <button class="ann-btn ann-primary" id="is-save-btn" onclick="isSaveSession()" disabled>Save session</button>
+          <span class="is-save-feedback" id="is-save-fb"></span>
+        </div>
+        <div class="is-canvas-wrap">
+          <canvas id="is-canvas" width="1200" height="800"></canvas>
+          <div class="is-canvas-placeholder" id="is-placeholder">Select a schema and draw here</div>
+        </div>
+      </div>
     </div>
-    <div class="is-guide-placeholder" id="is-guide-placeholder">← Select a schema above to begin drawing</div>
 
-    <!-- 3. Toolbar + canvas -->
-    <div class="is-canvas-zone">
-      <div class="is-toolbar">
-        <span class="is-toolbar-label">BRUSH</span>
-        <input type="range" id="is-brush-size" min="2" max="16" value="6" style="width:75px;cursor:pointer;"
-          oninput="isBrushSize=parseInt(this.value)">
-        <span class="is-toolbar-label">COLOR</span>
-        <div class="is-color-swatches" id="is-swatches"></div>
-        <button class="ann-btn" onclick="isUndo()" title="Ctrl+Z">↩ Undo</button>
-        <button class="ann-btn" onclick="isClear()">Clear</button>
-        <div style="flex:1"></div>
-        <button class="ann-btn ann-primary" id="is-save-btn" onclick="isSaveSession()" disabled>Save session</button>
-        <span class="is-save-feedback" id="is-save-fb"></span>
-      </div>
-      <div class="is-canvas-wrap">
-        <canvas id="is-canvas" width="1200" height="800"></canvas>
-        <div class="is-canvas-placeholder" id="is-placeholder">Select a schema above and draw here</div>
-      </div>
-    </div>
-
-    <!-- 4. Collapsible detailed info -->
+    <!-- Collapsible detailed info -->
     <details class="is-details" id="is-details">
       <summary class="is-details-summary">Mapping, DISL &amp; sources</summary>
       <div class="is-info-panel" id="is-info-panel">
@@ -5123,7 +5134,7 @@ function buildISStudioSection() {
       </div>
     </details>
 
-    <!-- 5. Archive -->
+    <!-- Archive -->
     <div class="is-archive-header" style="margin-top:1.2rem;">
       <span class="is-archive-title">Saved Sessions</span>
       <button class="ann-btn" onclick="isExportAll()" style="margin-left:auto;">⬇ Export all</button>
@@ -5168,20 +5179,16 @@ function isThumbOut() {
 }
 
 function isRenderChips() {
-  const area = document.getElementById('is-chip-area');
+  const area = document.getElementById('is-chip-grid');
   if (!area) return;
   const groups = {};
   IMAGE_SCHEMATA.forEach(s => { (groups[s.group] = groups[s.group] || []).push(s); });
   ['Core','Force','Orientational','Other','New (DISL)'].forEach(g => {
     if (!groups[g]) return;
-    const row = document.createElement('div');
-    row.className = 'is-chip-group';
-    const lbl = document.createElement('span');
-    lbl.className = 'is-chip-group-label';
-    lbl.textContent = g;
-    row.appendChild(lbl);
-    const set = document.createElement('div');
-    set.className = 'is-chip-set';
+    const sep = document.createElement('div');
+    sep.className = 'is-chip-group-sep';
+    sep.textContent = g;
+    area.appendChild(sep);
     groups[g].forEach(schema => {
       const chip = document.createElement('div');
       chip.className = 'is-chip';
@@ -5189,28 +5196,29 @@ function isRenderChips() {
       chip.dataset.group = schema.group;
       chip.innerHTML = `<span class="is-chip-code">${schema.code}</span><span class="is-chip-name">${schema.name}</span>`;
       chip.addEventListener('click', () => isSelectSchema(schema.code));
-      set.appendChild(chip);
+      area.appendChild(chip);
     });
-    row.appendChild(set);
-    area.appendChild(row);
   });
 }
 
 function isRenderGuide() {
-  const bar  = document.getElementById('is-guide-bar');
-  const ph   = document.getElementById('is-guide-placeholder');
-  const name = document.getElementById('is-guide-name');
-  const chips= document.getElementById('is-guide-chips');
-  if (!bar || !ph || !name || !chips) return;
+  const ph    = document.getElementById('is-guide-placeholder');
+  const name  = document.getElementById('is-guide-name');
+  const prompt= document.getElementById('is-guide-prompt');
+  const chips = document.getElementById('is-guide-chips');
+  if (!ph || !name || !prompt || !chips) return;
   if (!isSelectedSchema) {
-    bar.style.display = 'none';
-    ph.style.display  = '';
+    ph.style.display     = '';
+    name.style.display   = 'none';
+    prompt.style.display = 'none';
+    chips.innerHTML      = '';
     return;
   }
-  bar.style.display = 'flex';
-  ph.style.display  = 'none';
-  name.textContent  = isSelectedSchema.name;
-  chips.innerHTML   = '';
+  ph.style.display     = 'none';
+  name.style.display   = '';
+  prompt.style.display = '';
+  name.textContent     = isSelectedSchema.name;
+  chips.innerHTML      = '';
   const kMap = {};
   if (INDEX_DATA && INDEX_DATA.sessions)
     INDEX_DATA.sessions.forEach(s => { kMap[s.code] = s.session_id; });
@@ -5256,7 +5264,7 @@ function isRenderSwatches() {
 
 function isSelectSchema(code) {
   isSelectedSchema = IMAGE_SCHEMATA.find(s => s.code === code) || null;
-  document.querySelectorAll('#is-chip-area .is-chip').forEach(ch => {
+  document.querySelectorAll('#is-chip-grid .is-chip').forEach(ch => {
     ch.classList.toggle('active', ch.dataset.code === code);
   });
   isRenderGuide();
