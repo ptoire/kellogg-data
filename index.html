@@ -1693,6 +1693,7 @@ const BAND3_GROUPS = [
 const BASE_URL = 'https://ptoire.github.io/kellogg-data/';
 let INDEX_DATA = null;
 let ANN_INDEX_DATA = null;
+let ANN_SERVER_KELLOGG = null; // kellogg data fetched from server/JSON, bypasses localStorage on READONLY
 let ANIM_CACHE = {};
 let cardAnimFrames = {};
 
@@ -1729,6 +1730,7 @@ async function init() {
         localStorage.setItem('maurer_annotations', JSON.stringify({...srv.maurer, ...loc}));
       }
       if (srv.kellogg) {
+        ANN_SERVER_KELLOGG = srv.kellogg; // keep a direct reference (for READONLY, bypasses localStorage)
         const loc = JSON.parse(localStorage.getItem(ANN_KEY) || '{}');
         localStorage.setItem(ANN_KEY, JSON.stringify({...srv.kellogg, ...loc}));
       }
@@ -2379,6 +2381,9 @@ function taxEntries(prefix) {
 }
 
 function annStore() {
+  // On READONLY (public page), bypass localStorage and use the directly-fetched JSON data.
+  // This avoids issues when browsers block localStorage on third-party origins.
+  if (READONLY && ANN_SERVER_KELLOGG) return ANN_SERVER_KELLOGG;
   try { return JSON.parse(localStorage.getItem(ANN_KEY) || '{}'); } catch { return {}; }
 }
 function annStoreSet(s) {
