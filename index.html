@@ -2377,7 +2377,9 @@ const ANN_GROUP_NAMES = { A:'Basic', B:'Placement', C:'Emergent', D:'Diagrams', 
 const ANN_NON_B = ['A','C','D','E','F','G','H','I'];
 
 function taxEntries(prefix) {
-  return Object.entries(ANN_TAXONOMY[prefix] || {}).sort((a, b) => a[0].localeCompare(b[0]));
+  return Object.entries(ANN_TAXONOMY[prefix] || {})
+    .filter(([code, name]) => name !== code) // exclude placeholders (no real name yet)
+    .sort((a, b) => a[0].localeCompare(b[0]));
 }
 
 function annStore() {
@@ -2547,7 +2549,11 @@ function annTagHoverOn(e, tag) {
   const r = tag.getBoundingClientRect();
   let left = r.right + 8;
   let top = r.top;
-  if (left + 330 > window.innerWidth) left = r.left - 330;
+  if (left + 330 > window.innerWidth) {
+    // Doesn't fit on the right — try below the tag
+    left = Math.max(4, r.left);
+    top  = r.bottom + 4;
+  }
   if (top + 200 > window.innerHeight) top = window.innerHeight - 200;
   tt.style.left = Math.max(4, left) + 'px';
   tt.style.top = Math.max(4, top) + 'px';
