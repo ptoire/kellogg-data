@@ -3094,8 +3094,9 @@ function saStopAnimation() {
   if (saAnimFrame !== null) { cancelAnimationFrame(saAnimFrame); saAnimFrame = null; }
 }
 
-// Draw one stroke statically onto ctx (animation-compatible alpha)
-function saDrawStrokeStatic(ctx, canvas, a, stroke) {
+// Draw one stroke statically onto ctx; alpha defaults to 0.45
+function saDrawStrokeStatic(ctx, canvas, a, stroke, alpha) {
+  alpha = alpha ?? 0.45;
   const rgb = saColor(a.label);
   if (stroke.soft && stroke.placement_area) {
     const pa = stroke.placement_area;
@@ -3107,8 +3108,8 @@ function saDrawStrokeStatic(ctx, canvas, a, stroke) {
     ctx.translate(cx, cy);
     ctx.scale(rx, ry);
     const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, 1);
-    grad.addColorStop(0,   `rgba(${rgb},0.42)`);
-    grad.addColorStop(0.5, `rgba(${rgb},0.25)`);
+    grad.addColorStop(0,   `rgba(${rgb},${(alpha * 0.93).toFixed(2)})`);
+    grad.addColorStop(0.5, `rgba(${rgb},${(alpha * 0.56).toFixed(2)})`);
     grad.addColorStop(1,   `rgba(${rgb},0)`);
     ctx.beginPath(); ctx.arc(0, 0, 1, 0, Math.PI * 2);
     ctx.fillStyle = grad; ctx.fill();
@@ -3117,8 +3118,8 @@ function saDrawStrokeStatic(ctx, canvas, a, stroke) {
   }
   if (!stroke.pts || !stroke.pts.length) return;
   ctx.filter = stroke.soft ? `blur(${Math.round(stroke.size * 0.4)}px)` : 'none';
-  ctx.strokeStyle = `rgba(${rgb},0.45)`;
-  ctx.fillStyle   = `rgba(${rgb},0.45)`;
+  ctx.strokeStyle = `rgba(${rgb},${alpha})`;
+  ctx.fillStyle   = `rgba(${rgb},${alpha})`;
   ctx.lineWidth   = stroke.size;
   if (stroke.pts.length === 1) {
     ctx.beginPath();
@@ -3133,9 +3134,10 @@ function saDrawStrokeStatic(ctx, canvas, a, stroke) {
   ctx.filter = 'none';
 }
 
-// Animate the strokes of the given annotation IDs (null = all annotations).
-// Non-animated annotations appear statically behind. Ends with saRepaint().
-function saAnimateStrokes(ids) {
+// Animate the strokes of the given annotation IDs.
+// dimBackground: if true, other annotations are nearly invisible (single-label focus mode).
+// Ends with saRepaint().
+function saAnimateStrokes(ids, dimBackground) {
   saStopAnimation();
   const canvas = document.getElementById('ann-draw-canvas');
   if (!canvas || !canvas.width) { saRepaint(); return; }
@@ -3152,12 +3154,13 @@ function saAnimateStrokes(ids) {
   const animIds = new Set(toAnimate.map(a => a.id));
   let taskIdx = 0, ptIdx = 0;
   const SPEED = 4; // points per rAF frame (~240 pts/sec at 60 fps)
+  const bgAlpha = dimBackground ? 0.07 : 0.45; // nearly invisible when focusing on one label
 
   function drawBackground() {
-    // Static background: non-animated annotations + already-finished tasks
+    // Static background: non-animated annotations (dimmed if focusing) + already-finished tasks
     saAnnotations.forEach(a => {
       if (animIds.has(a.id)) return;
-      (a.strokes || []).forEach(s => saDrawStrokeStatic(ctx, canvas, a, s));
+      (a.strokes || []).forEach(s => saDrawStrokeStatic(ctx, canvas, a, s, bgAlpha));
     });
     for (let i = 0; i < taskIdx; i++) saDrawStrokeStatic(ctx, canvas, tasks[i].ann, tasks[i].stroke);
   }
@@ -3211,8 +3214,7 @@ function saToggleOverlay() {
     btn.classList.toggle('active', saShowOverlay);
   }
   if (saShowOverlay) {
-    annDrawResizeCanvas(); // ensure canvas buffer is sized
-    saAnimateStrokes(null); // animate all strokes from scratch
+    annDrawResizeCanvas(); // ensure canvas buffer is sized, then calls saRepaint() → static
   } else {
     saStopAnimation();
     saRepaint(); // clears canvas (saShowOverlay = false → early return in saRepaint)
@@ -3278,7 +3280,7 @@ function saDeleteSelected() {
 function saSelect(id) {
   saSelectedId = (saSelectedId === id) ? null : id;
   if (READONLY && saShowOverlay && saSelectedId) {
-    saAnimateStrokes([saSelectedId]); // animate only the clicked annotation
+    saAnimateStrokes([saSelectedId], true); // animate selected, dim others
   } else {
     saRepaint();
   }
