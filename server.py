@@ -19,6 +19,7 @@ from pathlib import Path
 SITE_DIR      = Path(__file__).resolve().parent
 SEGMENTED_DIR = SITE_DIR / ".." / ".." / "kellogg_downloader" / "data" / "images_segmented"
 ANNOT_FILE    = SITE_DIR / "data" / "annotations_local.json"
+IS_FILE       = SITE_DIR / "data" / "is_sessions_local.json"
 PORT          = 8080
 
 SHA_RE = re.compile(r"^/img/segmented/([a-f0-9]{64})\.(png|jpg|jpeg|webp)$", re.IGNORECASE)
@@ -97,7 +98,24 @@ class Handler(SimpleHTTPRequestHandler):
             super().do_GET()
 
     def do_POST(self):
-        if self.path == "/api/annotations":
+        if self.path == "/api/is_sessions":
+            try:
+                length = int(self.headers.get("Content-Length", 0))
+                body = self.rfile.read(length)
+                data = json.loads(body)
+                IS_FILE.parent.mkdir(exist_ok=True)
+                with open(IS_FILE, "w", encoding="utf-8") as f:
+                    json.dump(data, f, ensure_ascii=False, indent=2)
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.end_headers()
+                self.wfile.write(b'{"ok":true}')
+                print("✓  IS sessions saved locally")
+            except Exception as e:
+                self.send_response(500)
+                self.end_headers()
+                self.wfile.write(json.dumps({"error": str(e)}).encode())
+        elif self.path == "/api/annotations":
             try:
                 length = int(self.headers.get("Content-Length", 0))
                 body = self.rfile.read(length)
