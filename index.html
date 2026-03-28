@@ -1507,14 +1507,26 @@ body {
   border-radius:2px; background:var(--c-bg-elevated);
 }
 .is-kellogg-note { font-size:0.7rem; color:var(--c-text-secondary); font-style:italic; line-height:1.5; margin-top:0.3rem; }
+/* ── Canvas prompt (below canvas) ── */
+.is-canvas-prompt {
+  margin-top:0.9rem; padding:1rem 1.1rem 1rem;
+  border-top:1px solid var(--c-border-light);
+  display:none; /* hidden until schema selected */
+}
+.is-canvas-prompt.visible { display:block; }
+.is-canvas-prompt-label {
+  font-family:var(--font-mono); font-size:0.55rem; font-weight:700;
+  letter-spacing:0.1em; text-transform:uppercase;
+  color:var(--c-text-tertiary); margin-bottom:0.45rem;
+}
 .is-drawing-scene {
-  font-family:var(--font-display); font-size:0.9rem; font-style:italic;
-  color:var(--c-text); line-height:1.7; margin-bottom:0.6rem;
+  font-family:var(--font-display); font-size:1.1rem; font-style:italic;
+  color:var(--c-text); line-height:1.75; margin-bottom:0.85rem;
 }
 .is-drawing-instructions {
-  font-family:var(--font-body); font-size:0.75rem; color:var(--c-text-secondary);
-  line-height:1.65; padding:0.4rem 0.55rem;
-  background:var(--c-bg-card); border-left:2px solid var(--c-border); border-radius:0 2px 2px 0;
+  font-family:var(--font-body); font-size:0.82rem; color:var(--c-text-secondary);
+  line-height:1.7; padding:0.55rem 0.75rem;
+  background:var(--c-bg-card); border-left:3px solid var(--c-border); border-radius:0 3px 3px 0;
 }
 .is-rel-chips { display:flex; flex-wrap:wrap; gap:0.2rem; margin-bottom:0.4rem; }
 .is-rel-chip {
@@ -5610,6 +5622,12 @@ function buildISStudioSection() {
           <canvas id="is-canvas" width="1200" height="800"></canvas>
           <div class="is-canvas-placeholder" id="is-placeholder">Select a schema and draw here</div>
         </div>
+        <div class="is-canvas-prompt" id="is-canvas-prompt">
+          <div class="is-canvas-prompt-label">Drawing scene</div>
+          <div class="is-drawing-scene" id="is-prompt-scene"></div>
+          <div class="is-canvas-prompt-label">How to draw it</div>
+          <div class="is-drawing-instructions" id="is-prompt-instructions"></div>
+        </div>
       </div>
     </div>
 
@@ -5759,10 +5777,22 @@ function isSelectSchema(code) {
     ch.classList.toggle('ancestor',  c !== code && activated.has(c));
   });
   isRenderGuide();
+  isRenderPrompt();
   isRenderInfo();
   isUpdateSaveBtn();
   const ph = document.getElementById('is-placeholder');
   if (ph) ph.style.display = (isStrokes.length === 0) ? 'flex' : 'none';
+}
+
+function isRenderPrompt() {
+  const box   = document.getElementById('is-canvas-prompt');
+  const scene = document.getElementById('is-prompt-scene');
+  const instr = document.getElementById('is-prompt-instructions');
+  if (!box) return;
+  if (!isSelectedSchema) { box.classList.remove('visible'); return; }
+  scene.textContent = isSelectedSchema.drawing_scene || '';
+  instr.textContent = isSelectedSchema.drawing_instructions || '';
+  box.classList.add('visible');
 }
 
 function isRenderInfo() {
@@ -5823,12 +5853,6 @@ function isRenderInfo() {
       <div class="is-definition">${s.definition}</div>
       ${parentLinks ? `<div class="is-section-label">Parents</div><div class="is-rel-chips">${parentLinks}</div>` : ''}
       ${relatedLinks ? `<div class="is-section-label">Related</div><div class="is-rel-chips">${relatedLinks}</div>` : ''}
-    </div>
-    <div class="is-info-col">
-      <div class="is-section-label">Drawing scene</div>
-      <div class="is-drawing-scene">${s.drawing_scene || ''}</div>
-      <div class="is-section-label">How to draw it</div>
-      <div class="is-drawing-instructions">${s.drawing_instructions || ''}</div>
     </div>
     <div class="is-info-col">
       <div class="is-section-label">
