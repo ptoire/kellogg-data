@@ -2512,6 +2512,7 @@ function ensureAnnTooltip() {
 }
 
 function annTagHoverOn(e, tag) {
+  if (saDrawing) return; // don't show tooltip while drawing
   const code = tag.dataset.code;
   if (!code) return;
   const group = code.substring(0, 3);
@@ -3827,6 +3828,7 @@ function annDrawSetupListeners() {
     }
     e.preventDefault();
     saDrawing  = true;
+    annTagHoverOff(); // hide any tooltip visible before drawing started
     saDrawLast = p;
     saDrawCurrent = { id: saNextId(), pts: [p], size: parseInt(document.getElementById('ann-brush-size')?.value || 8), soft: saSoftBrush, label: null, label_type: null };
   }
