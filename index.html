@@ -1295,23 +1295,77 @@ body {
   font-size: 1.1rem;
   margin-bottom: 1.5rem;
 }
-.is-studio-body {
-  display: grid;
-  grid-template-columns: 300px 1fr;
-  gap: 1.5rem;
-  align-items: start;
+/* ── Chip area: full-width grouped strip ── */
+.is-chip-area {
+  display: flex; flex-direction: column; gap: 0.3rem;
+  padding: 0.65rem 0.9rem; margin-bottom: 0.7rem;
+  background: var(--c-bg-warm); border: 1px solid var(--c-border-light); border-radius: 4px;
 }
-.is-left-panel {
-  position: sticky;
-  top: 4rem;
-  background: var(--c-bg-warm);
-  border: 1px solid var(--c-border-light);
-  border-radius: 4px;
-  padding: 0.9rem;
-  max-height: calc(100vh - 5rem);
-  overflow-y: auto;
+.is-chip-group { display:flex; align-items:flex-start; gap:0.5rem; }
+.is-chip-group-label {
+  font-family:var(--font-mono); font-size:0.52rem; font-weight:700;
+  letter-spacing:0.08em; text-transform:uppercase; color:var(--c-text-tertiary);
+  padding-top:0.32rem; min-width:82px; flex-shrink:0;
 }
-.is-chip-grid { display:flex; flex-wrap:wrap; gap:0.25rem; margin-bottom:0.9rem; }
+.is-chip-set { display:flex; flex-wrap:wrap; gap:0.18rem; }
+/* ── Visual guide bar (immediately visible) ── */
+.is-guide-bar {
+  display:flex; align-items:flex-start; gap:1.2rem; flex-wrap:wrap;
+  padding:0.6rem 0.9rem; margin-bottom:0.4rem;
+  background:var(--c-bg-card); border:1px solid var(--c-border-light); border-radius:4px;
+}
+.is-guide-placeholder {
+  padding:0.55rem 0.9rem; margin-bottom:0.4rem;
+  font-family:var(--font-mono); font-size:0.68rem; color:var(--c-text-tertiary);
+  background:var(--c-bg-warm); border:1px dashed var(--c-border-light); border-radius:4px;
+  text-align:center;
+}
+.is-guide-left { display:flex; flex-direction:column; gap:0.25rem; min-width:160px; }
+.is-guide-name { font-family:var(--font-display); font-size:1.15rem; font-weight:600; }
+.is-guide-prompt {
+  font-family:var(--font-body); font-size:0.72rem; font-style:italic;
+  color:var(--c-text-secondary); line-height:1.4;
+}
+.is-guide-chips { display:flex; flex-wrap:wrap; gap:0.35rem; align-items:flex-start; flex:1; }
+.is-guide-k-chip {
+  display:flex; flex-direction:column; align-items:center; gap:0.12rem;
+  font-family:var(--font-mono); font-size:0.55rem; padding:0.18em 0.2em 0.12em;
+  border-radius:3px; border:1px solid var(--c-border-light);
+  background:var(--c-tag-bg); color:var(--c-tag-text); cursor:default;
+}
+.is-guide-k-chip.primary   { border-color:var(--c-text); background:var(--c-text); color:#fff; }
+.is-guide-k-chip.secondary { opacity:0.55; }
+.is-guide-k-chip .is-k-thumb { width:54px; height:36px; }
+/* ── Canvas zone ── */
+.is-canvas-zone { display:flex; flex-direction:column; gap:0.5rem; }
+#is-canvas { display:block; width:100%; height:auto; touch-action:none; cursor:crosshair; }
+/* ── Collapsible info details ── */
+.is-details {
+  margin-top:0.6rem; border:1px solid var(--c-border-light);
+  border-radius:4px; background:var(--c-bg-warm); overflow:hidden;
+}
+.is-details-summary {
+  display:flex; align-items:center; gap:0.5rem; padding:0.5rem 0.9rem;
+  cursor:pointer; font-family:var(--font-mono); font-size:0.65rem;
+  font-weight:700; letter-spacing:0.05em; text-transform:uppercase;
+  color:var(--c-text-secondary); user-select:none; list-style:none;
+}
+.is-details-summary::-webkit-details-marker { display:none; }
+.is-details-summary::before { content:'▸'; font-size:0.7rem; transition:transform 0.15s; }
+.is-details[open] .is-details-summary::before { content:'▾'; }
+/* ── Info panel: 3-column inside <details> ── */
+.is-info-panel {
+  display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem;
+  padding:0.8rem 0.9rem 0.9rem;
+  border-top:1px solid var(--c-border-light);
+}
+.is-info-col { display:flex; flex-direction:column; gap:0; min-width:0; }
+/* ── Thumb zoom overlay ── */
+.is-thumb-zoom {
+  position:fixed; display:none; pointer-events:none; z-index:9999;
+  width:220px; height:auto; border:2px solid var(--c-text);
+  border-radius:4px; box-shadow:0 8px 24px rgba(0,0,0,0.22); background:#fff;
+}
 .is-chip {
   display: flex; flex-direction: column;
   padding: 0.22rem 0.45rem;
@@ -1335,7 +1389,7 @@ body {
 .is-chip.active[data-group="Other"]       { border-color:var(--c-is-other);   background:rgba(93,109,126,0.07); }
 .is-chip.active[data-group="New (DISL)"] { border-color:#00804a; background:rgba(0,128,74,0.07); }
 .is-chip[data-group="New (DISL)"] .is-chip-code { color:#00804a; }
-.is-info-panel { border-top:1px solid var(--c-border-light); padding-top:0.8rem; }
+/* .is-info-panel now defined in new layout CSS above */
 .is-info-placeholder { font-family:var(--font-mono); font-size:0.7rem; color:var(--c-text-tertiary); text-align:center; padding:1.2rem 0; }
 .is-info-name { font-family:var(--font-display); font-size:1.3rem; font-weight:600; line-height:1.2; margin-bottom:0.3rem; }
 .is-info-meta { display:flex; align-items:center; gap:0.5rem; margin-bottom:0.5rem; flex-wrap:wrap; }
@@ -1407,7 +1461,7 @@ body {
   padding:0.45rem 0.55rem; background:var(--c-bg-warm);
   border-left:2px solid var(--c-border); line-height:1.4; font-style:italic;
 }
-.is-right-panel { display:flex; flex-direction:column; gap:0.9rem; }
+.is-right-panel { display:none; } /* kept for legacy refs, not used */
 .is-toolbar {
   display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;
   padding:0.55rem 0.75rem;
@@ -5027,60 +5081,161 @@ function buildISStudioSection() {
   section.innerHTML = `
     <h2>Image Schemata Studio</h2>
     <p class="section-subtitle">Draw diagrams enacting cognitive image schemata — guided by the Kellogg taxonomy</p>
-    <div class="is-studio-body">
-      <div class="is-left-panel" id="is-left-panel">
-        <div class="is-chip-grid" id="is-chip-grid"></div>
-        <div class="is-info-panel" id="is-info-panel">
-          <div class="is-info-placeholder">Select a schema above to begin</div>
-        </div>
+
+    <!-- 1. Schema chip selector: full-width, grouped -->
+    <div class="is-chip-area" id="is-chip-area"></div>
+
+    <!-- 2. Visual guide bar: immediately visible, shows selected schema + Kellogg thumbnails -->
+    <div class="is-guide-bar" id="is-guide-bar" style="display:none">
+      <div class="is-guide-left">
+        <div class="is-guide-name" id="is-guide-name"></div>
+        <div class="is-guide-prompt">Draw a diagram enacting this schema — use the Kellogg forms shown as a visual guide.</div>
       </div>
-      <div class="is-right-panel">
-        <div class="is-toolbar">
-          <span class="is-toolbar-label">BRUSH</span>
-          <input type="range" id="is-brush-size" min="2" max="16" value="6" style="width:75px;cursor:pointer;"
-            oninput="isBrushSize=parseInt(this.value)">
-          <span class="is-toolbar-label">COLOR</span>
-          <div class="is-color-swatches" id="is-swatches"></div>
-          <button class="ann-btn" onclick="isUndo()" title="Undo last stroke">↩ Undo</button>
-          <button class="ann-btn" onclick="isClear()">Clear</button>
-          <div style="flex:1"></div>
-          <button class="ann-btn ann-primary" id="is-save-btn" onclick="isSaveSession()" disabled>Save session</button>
-          <span class="is-save-feedback" id="is-save-fb"></span>
-        </div>
-        <div class="is-canvas-wrap">
-          <canvas id="is-canvas" width="1200" height="800"></canvas>
-          <div class="is-canvas-placeholder" id="is-placeholder">Select a schema and draw here</div>
-        </div>
-        <div class="is-save-bar">
-          <button class="ann-btn" onclick="isExportAll()">⬇ Export all sessions</button>
-        </div>
-        <div class="is-archive-header">
-          <span class="is-archive-title">Saved Sessions</span>
-        </div>
-        <div class="is-archive-grid" id="is-archive-grid"></div>
+      <div class="is-guide-chips" id="is-guide-chips"></div>
+    </div>
+    <div class="is-guide-placeholder" id="is-guide-placeholder">← Select a schema above to begin drawing</div>
+
+    <!-- 3. Toolbar + canvas -->
+    <div class="is-canvas-zone">
+      <div class="is-toolbar">
+        <span class="is-toolbar-label">BRUSH</span>
+        <input type="range" id="is-brush-size" min="2" max="16" value="6" style="width:75px;cursor:pointer;"
+          oninput="isBrushSize=parseInt(this.value)">
+        <span class="is-toolbar-label">COLOR</span>
+        <div class="is-color-swatches" id="is-swatches"></div>
+        <button class="ann-btn" onclick="isUndo()" title="Ctrl+Z">↩ Undo</button>
+        <button class="ann-btn" onclick="isClear()">Clear</button>
+        <div style="flex:1"></div>
+        <button class="ann-btn ann-primary" id="is-save-btn" onclick="isSaveSession()" disabled>Save session</button>
+        <span class="is-save-feedback" id="is-save-fb"></span>
+      </div>
+      <div class="is-canvas-wrap">
+        <canvas id="is-canvas" width="1200" height="800"></canvas>
+        <div class="is-canvas-placeholder" id="is-placeholder">Select a schema above and draw here</div>
       </div>
     </div>
+
+    <!-- 4. Collapsible detailed info -->
+    <details class="is-details" id="is-details">
+      <summary class="is-details-summary">Mapping, DISL &amp; sources</summary>
+      <div class="is-info-panel" id="is-info-panel">
+        <div class="is-info-col" style="grid-column:1/-1;font-family:var(--font-mono);font-size:0.68rem;color:var(--c-text-tertiary);">Select a schema above to see details.</div>
+      </div>
+    </details>
+
+    <!-- 5. Archive -->
+    <div class="is-archive-header" style="margin-top:1.2rem;">
+      <span class="is-archive-title">Saved Sessions</span>
+      <button class="ann-btn" onclick="isExportAll()" style="margin-left:auto;">⬇ Export all</button>
+    </div>
+    <div class="is-archive-grid" id="is-archive-grid"></div>
   `;
 
   main.appendChild(section);
   isRenderChips();
+  isRenderGuide();
   isRenderSwatches();
   isSetupCanvas();
   isRenderArchive();
 }
 
+// ── Thumb zoom globals ────────────────────────────────────────────────────────
+let _thumbTimer = null;
+let _thumbZoomEl = null;
+function isThumbIn(e, src) {
+  clearTimeout(_thumbTimer);
+  _thumbTimer = setTimeout(() => {
+    if (!_thumbZoomEl) {
+      _thumbZoomEl = document.createElement('img');
+      _thumbZoomEl.className = 'is-thumb-zoom';
+      document.body.appendChild(_thumbZoomEl);
+    }
+    _thumbZoomEl.src = src;
+    _thumbZoomEl.style.left = Math.min(e.clientX + 14, window.innerWidth - 240) + 'px';
+    _thumbZoomEl.style.top  = Math.max(e.clientY - 110, 10) + 'px';
+    _thumbZoomEl.style.display = 'block';
+  }, 500);
+}
+function isThumbMove(e) {
+  if (_thumbZoomEl && _thumbZoomEl.style.display !== 'none') {
+    _thumbZoomEl.style.left = Math.min(e.clientX + 14, window.innerWidth - 240) + 'px';
+    _thumbZoomEl.style.top  = Math.max(e.clientY - 110, 10) + 'px';
+  }
+}
+function isThumbOut() {
+  clearTimeout(_thumbTimer);
+  if (_thumbZoomEl) _thumbZoomEl.style.display = 'none';
+}
+
 function isRenderChips() {
-  const grid = document.getElementById('is-chip-grid');
-  if (!grid) return;
-  IMAGE_SCHEMATA.forEach(schema => {
-    const chip = document.createElement('div');
-    chip.className = 'is-chip';
-    chip.dataset.code  = schema.code;
-    chip.dataset.group = schema.group;
-    chip.innerHTML = `<span class="is-chip-code">${schema.code}</span><span class="is-chip-name">${schema.name}</span>`;
-    chip.addEventListener('click', () => isSelectSchema(schema.code));
-    grid.appendChild(chip);
+  const area = document.getElementById('is-chip-area');
+  if (!area) return;
+  const groups = {};
+  IMAGE_SCHEMATA.forEach(s => { (groups[s.group] = groups[s.group] || []).push(s); });
+  ['Core','Force','Orientational','Other','New (DISL)'].forEach(g => {
+    if (!groups[g]) return;
+    const row = document.createElement('div');
+    row.className = 'is-chip-group';
+    const lbl = document.createElement('span');
+    lbl.className = 'is-chip-group-label';
+    lbl.textContent = g;
+    row.appendChild(lbl);
+    const set = document.createElement('div');
+    set.className = 'is-chip-set';
+    groups[g].forEach(schema => {
+      const chip = document.createElement('div');
+      chip.className = 'is-chip';
+      chip.dataset.code  = schema.code;
+      chip.dataset.group = schema.group;
+      chip.innerHTML = `<span class="is-chip-code">${schema.code}</span><span class="is-chip-name">${schema.name}</span>`;
+      chip.addEventListener('click', () => isSelectSchema(schema.code));
+      set.appendChild(chip);
+    });
+    row.appendChild(set);
+    area.appendChild(row);
   });
+}
+
+function isRenderGuide() {
+  const bar  = document.getElementById('is-guide-bar');
+  const ph   = document.getElementById('is-guide-placeholder');
+  const name = document.getElementById('is-guide-name');
+  const chips= document.getElementById('is-guide-chips');
+  if (!bar || !ph || !name || !chips) return;
+  if (!isSelectedSchema) {
+    bar.style.display = 'none';
+    ph.style.display  = '';
+    return;
+  }
+  bar.style.display = 'flex';
+  ph.style.display  = 'none';
+  name.textContent  = isSelectedSchema.name;
+  chips.innerHTML   = '';
+  const kMap = {};
+  if (INDEX_DATA && INDEX_DATA.sessions)
+    INDEX_DATA.sessions.forEach(s => { kMap[s.code] = s.session_id; });
+  const makeGuideChip = (code, cls) => {
+    const sid = kMap[code];
+    const src = sid ? `${BASE_URL}img/${sid}_thumb.png` : '';
+    const c = document.createElement('span');
+    c.className = `is-guide-k-chip ${cls}`;
+    c.title = isKName(code);
+    if (src) {
+      const img = document.createElement('img');
+      img.src = src; img.alt = code; img.loading = 'lazy';
+      img.className = 'is-k-thumb';
+      img.addEventListener('mouseenter', e => isThumbIn(e, src));
+      img.addEventListener('mousemove',  isThumbMove);
+      img.addEventListener('mouseleave', isThumbOut);
+      c.appendChild(img);
+    }
+    c.appendChild(document.createTextNode(code));
+    return c;
+  };
+  isSelectedSchema.kellogg_primary.forEach(code =>
+    chips.appendChild(makeGuideChip(code, 'primary')));
+  isSelectedSchema.kellogg_secondary.forEach(code =>
+    chips.appendChild(makeGuideChip(code, 'secondary')));
 }
 
 function isRenderSwatches() {
@@ -5101,9 +5256,10 @@ function isRenderSwatches() {
 
 function isSelectSchema(code) {
   isSelectedSchema = IMAGE_SCHEMATA.find(s => s.code === code) || null;
-  document.querySelectorAll('#is-chip-grid .is-chip').forEach(ch => {
+  document.querySelectorAll('#is-chip-area .is-chip').forEach(ch => {
     ch.classList.toggle('active', ch.dataset.code === code);
   });
+  isRenderGuide();
   isRenderInfo();
   isUpdateSaveBtn();
   const ph = document.getElementById('is-placeholder');
@@ -5119,56 +5275,44 @@ function isRenderInfo() {
   }
   const s = isSelectedSchema;
   const gc = s.group.replace(/[^a-zA-Z0-9]/g,'');
-  // Build code → session_id map for thumbnails
-  const kMap = {};
-  if (INDEX_DATA && INDEX_DATA.sessions) {
-    INDEX_DATA.sessions.forEach(sess => { kMap[sess.code] = sess.session_id; });
-  }
-  function chipWithThumb(code, cls) {
-    const name = isKName(code);
-    const sid  = kMap[code];
-    const img  = sid
-      ? `<img src="${BASE_URL}img/${sid}_thumb.png" class="is-k-thumb" alt="${code}" loading="lazy">`
-      : '';
-    return `<span class="is-k-chip ${cls}" title="${name}">${img}${code}</span>`;
-  }
   function renderSrc(arr) {
     return (arr || []).map(s => s.replace(/\*([^*]+)\*/g, '<em>$1</em>')).join('<br>');
   }
-  const primChips  = s.kellogg_primary.map(c => chipWithThumb(c, 'primary')).join('');
-  const secChips   = s.kellogg_secondary.map(c => chipWithThumb(c, 'secondary')).join('');
   const dislChips  = (s.disl_primitives || []).map(p =>
     `<span class="is-disl-chip">${p}</span>`).join('');
-  const secBlock   = s.kellogg_secondary.length
-    ? `<div class="is-kellogg-label" style="margin-top:0.4rem;">Secondary Kellogg forms</div>
-       <div class="is-kellogg-chips">${secChips}</div>`
-    : '';
   const thesisBlock = s.thesis_note
     ? `<div class="is-section-label">Thesis note</div>
        <div class="is-thesis-note">${s.thesis_note}</div>`
     : '';
+  // 3-column layout: definition | mapping + Kellogg box | DISL + sources
   panel.innerHTML = `
-    <div class="is-info-name">${s.name}</div>
-    <div class="is-info-meta">
-      <span class="is-group-badge ${gc}">${s.group}</span>
-      <span class="is-disl-class">${s.disl_classification || ''}</span>
+    <div class="is-info-col">
+      <div class="is-info-name" style="margin-bottom:0.25rem;">${s.name}</div>
+      <div class="is-info-meta">
+        <span class="is-group-badge ${gc}">${s.group}</span>
+        <span class="is-disl-class">${s.disl_classification || ''}</span>
+      </div>
+      <div class="is-definition">${s.definition}</div>
     </div>
-    <div class="is-definition">${s.definition}</div>
-    <div class="is-section-label">Kellogg mapping</div>
-    <div class="is-mapping-text">${s.mapping_rationale || ''}</div>
-    <div class="is-kellogg-box">
-      <div class="is-kellogg-label">Primary Kellogg forms</div>
-      <div class="is-kellogg-chips">${primChips}</div>
-      ${secBlock}
+    <div class="is-info-col">
+      <div class="is-section-label">Kellogg mapping</div>
+      <div class="is-mapping-text">${s.mapping_rationale || ''}</div>
     </div>
-    <div class="is-section-label">DISL primitives</div>
-    <div class="is-disl-chips">${dislChips}</div>
-    <div class="is-disl-note">${s.disl_note || ''}</div>
-    ${thesisBlock}
-    <div class="is-section-label">Sources</div>
-    <div class="is-sources">${renderSrc(s.sources)}</div>
-    <div class="is-draw-prompt">Draw a diagram that enacts this schema using the Kellogg forms listed above as a guide.</div>
+    <div class="is-info-col">
+      <div class="is-section-label">DISL primitives</div>
+      <div class="is-disl-chips">${dislChips}</div>
+      <div class="is-disl-note" style="margin-top:0.3rem;">${s.disl_note || ''}</div>
+      ${thesisBlock}
+      <div class="is-section-label" style="margin-top:0.5rem;">Sources</div>
+      <div class="is-sources">${renderSrc(s.sources)}</div>
+    </div>
   `;
+  // Wire hover-zoom to thumbnails in the guide bar (re-run in case guide changed)
+  panel.querySelectorAll('.is-k-thumb').forEach(img => {
+    img.addEventListener('mouseenter', e => isThumbIn(e, img.src));
+    img.addEventListener('mousemove',  isThumbMove);
+    img.addEventListener('mouseleave', isThumbOut);
+  });
 }
 
 // ── Canvas drawing ──────────────────────────────────────────────────────────
