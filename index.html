@@ -3144,7 +3144,7 @@ function saAnimateStrokes(ids) {
 
   const animIds = new Set(toAnimate.map(a => a.id));
   let taskIdx = 0, ptIdx = 0;
-  const SPEED = 8; // points per rAF frame (~480 pts/sec at 60 fps)
+  const SPEED = 4; // points per rAF frame (~240 pts/sec at 60 fps)
 
   function drawBackground() {
     // Static background: non-animated annotations + already-finished tasks
