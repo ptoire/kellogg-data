@@ -1333,6 +1333,8 @@ body {
 .is-chip.active[data-group="Force"]       { border-color:var(--c-is-force);   background:rgba(146,43,33,0.07); }
 .is-chip.active[data-group="Orientational"]{ border-color:var(--c-is-orient); background:rgba(26,82,118,0.07); }
 .is-chip.active[data-group="Other"]       { border-color:var(--c-is-other);   background:rgba(93,109,126,0.07); }
+.is-chip.active[data-group="New (DISL)"] { border-color:#00804a; background:rgba(0,128,74,0.07); }
+.is-chip[data-group="New (DISL)"] .is-chip-code { color:#00804a; }
 .is-info-panel { border-top:1px solid var(--c-border-light); padding-top:0.8rem; }
 .is-info-placeholder { font-family:var(--font-mono); font-size:0.7rem; color:var(--c-text-tertiary); text-align:center; padding:1.2rem 0; }
 .is-info-name { font-family:var(--font-display); font-size:1.3rem; font-weight:600; line-height:1.2; margin-bottom:0.3rem; }
@@ -1345,8 +1347,42 @@ body {
 .is-group-badge.Force        { background:rgba(146,43,33,0.1);  color:var(--c-is-force); }
 .is-group-badge.Orientational{ background:rgba(26,82,118,0.1);  color:var(--c-is-orient); }
 .is-group-badge.Other        { background:rgba(93,109,126,0.1); color:var(--c-is-other); }
-.is-source-cite { font-family:var(--font-mono); font-size:0.62rem; color:var(--c-text-tertiary); font-style:italic; }
-.is-definition { font-size:0.82rem; color:var(--c-text-secondary); line-height:1.55; margin-bottom:0.7rem; font-style:italic; }
+.is-group-badge.NewDISL      { background:rgba(0,140,100,0.1);  color:#00804a; }
+.is-disl-class { font-family:var(--font-mono); font-size:0.58rem; color:var(--c-text-tertiary); padding:0.1rem 0.3rem; border:1px solid var(--c-border-light); border-radius:2px; }
+.is-definition {
+  font-family:var(--font-display); font-size:0.95rem; font-style:italic;
+  color:var(--c-text); line-height:1.65; margin-bottom:0.8rem;
+}
+.is-section-label {
+  font-family:var(--font-mono); font-size:0.55rem; font-weight:700;
+  letter-spacing:0.1em; text-transform:uppercase; color:var(--c-text-tertiary);
+  margin:0.7rem 0 0.25rem;
+}
+.is-mapping-text {
+  font-family:var(--font-body); font-size:0.75rem; color:var(--c-text-secondary);
+  line-height:1.6; margin-bottom:0.4rem;
+}
+.is-disl-note {
+  font-family:var(--font-body); font-size:0.75rem; color:var(--c-text-secondary);
+  line-height:1.6; padding:0.4rem 0.55rem; margin-bottom:0.4rem;
+  background:var(--c-bg-card); border-left:2px solid #00804a; border-radius:0 2px 2px 0;
+}
+.is-thesis-note {
+  font-family:var(--font-body); font-size:0.74rem; color:var(--c-text-secondary);
+  line-height:1.6; font-style:italic; padding:0.4rem 0.55rem;
+  border-left:2px solid var(--c-border); border-radius:0 2px 2px 0;
+}
+.is-sources {
+  font-family:var(--font-mono); font-size:0.6rem; color:var(--c-text-tertiary);
+  line-height:1.7; margin-top:0.3rem;
+}
+.is-sources em { font-style:italic; }
+.is-disl-chips { display:flex; flex-wrap:wrap; gap:0.2rem; margin-bottom:0.35rem; }
+.is-disl-chip {
+  font-family:var(--font-mono); font-size:0.58rem; padding:0.06em 0.3em;
+  border-radius:2px; border:1px solid rgba(0,128,74,0.35);
+  background:rgba(0,128,74,0.07); color:#00804a; white-space:nowrap;
+}
 .is-kellogg-box {
   background:var(--c-bg-card); border:1px solid var(--c-border-light);
   border-radius:3px; padding:0.55rem 0.65rem; margin-bottom:0.6rem;
@@ -4593,131 +4629,365 @@ document.getElementById('ann-data-modal')?.addEventListener('click', e => {
    ═══════════════════════════════════════════════════════════ */
 
 const IMAGE_SCHEMATA = [
-  { code:"CONTAINER", name:"Container / Containment", group:"Core",
-    source:"Johnson 1987; Lakoff 1987",
-    definition:"Bounded space with interior, boundary, and exterior. The fundamental schema of enclosure.",
+  {
+    code:"CONTAINER", name:"Container / Containment", group:"Core",
+    disl_classification:"image schema",
+    definition:"A bounded region with a distinct interior, boundary, and exterior. The schema structures the fundamental experience of enclosure: anything can be inside, at the boundary, or outside. Johnson (1987) identifies it as one of the primary orientational schemas arising from bodily experience — the body itself as container, the experience of entering and leaving rooms, ingesting food. The schema has an inherent logic: what is inside is protected and contained; what is outside is excluded. The boundary separates two qualitatively different zones.",
+    mapping_rationale:"Any closed or enclosing graphical form activates CONTAINER. In Kellogg's taxonomy, the primary instances are the diagram categories (K-D-02 Square/Rectangle, K-D-03 Circle/Oval) as fully articulated closed forms. The roving enclosing line (K-A-11) and single loop line (K-A-13) represent the schema in its emergent, gestural form — the child closes a trajectory, producing an interior. Concentric mandalas (K-G-10) layer multiple container boundaries concentrically. The crossed circle (K-A-19) superimposes a LINK schema on a CONTAINER, articulating both boundary and internal structure simultaneously. The multiple-line overlaid circle (K-A-16) insistently re-traces the boundary — a compulsive reinforcement of the enclosure act. Secondary instances include spiral (K-A-15), which produces a quasi-container through progressive revolving drift, and the clear-center sun (K-H-04), which enacts a container with explicitly empty interior.",
+    disl_note:"In DISL (Hedblom, Neuhaus & Mossakowski 2025), CONTAINER is both an entity primitive — one of the foundational building blocks of spatial cognition — and a component of the dynamic image schema OBJECT_INTO_CONTAINER. As an entity primitive, CONTAINER is defined by the affordance to stand in the CONTAINED relation with another object; it is characterised by a boundary with an opening (marked by a dotted segment in DISL notation). Attributes include OPEN/CLOSED and EMPTY/OCCUPIED/FULL. Kellogg closures instantiate the primitive amalgamation (static CONTAINER); the roving enclosing line (K-A-11) instantiates the full dynamic image schema Going_INTO — a PATH whose END_PATH coincides with the interior of a CONTAINER.",
+    thesis_note:"The CONTAINER schema is central to the proto-linguistic argument of this thesis. The act of closing a line — producing an interior — is the graphemic analogue of predication: it marks off a bounded region of meaning from undifferentiated ground. Kellogg's observation that closures appear early and are cross-culturally consistent supports the hypothesis that the CONTAINER schema is among the first image-schematic structures externalised in drawing.",
     kellogg_primary:["K-D-02","K-D-03","K-A-11","K-A-13","K-A-19","K-A-20"],
     kellogg_secondary:["K-G-10","K-H-04","K-A-15","K-A-16","K-A-17","K-A-18"],
-    kellogg_note:"Any closed or enclosing form activates containment. Priority: closures (K-D), enclosing lines (K-A-11, K-A-13), concentric structures (K-G-10)."
+    disl_primitives:["CONTAINER","CONTAINED","CLOSED","OPEN","EMPTY","FULL"],
+    sources:["Johnson, M. (1987). *The Body in the Mind*. University of Chicago Press. pp. 21–23.","Lakoff, G. (1987). *Women, Fire, and Dangerous Things*. University of Chicago Press. pp. 271–278.","Hedblom, M. M., Neuhaus, F., & Mossakowski, T. (2025). The Diagrammatic Image Schema Language (DISL). *Spatial Cognition & Computation*, 25(2), 138–175. §3.2, §3.4.","Kellogg, R. (1969). *Analyzing Children's Art*. Mayfield. pp. 15–45."]
   },
-  { code:"PATH", name:"Source-Path-Goal / Path", group:"Core",
-    source:"Johnson 1987; Lakoff 1987",
-    definition:"A trajectory from source to destination through contiguous locations with a direction.",
+  {
+    code:"PATH", name:"Source-Path-Goal", group:"Core",
+    disl_classification:"image schema family",
+    definition:"A trajectory from a source location through a sequence of contiguous positions toward a goal, with a direction of travel. Johnson (1987) identifies PATH as arising from the most basic bodily experience: moving from one place to another. The schema has three essential components — source, path (the route itself), and goal — though not all need be present in every instantiation. Hedblom et al. (2015) formalise PATH as a family of related schemas of increasing complexity: PATH (undirected) < PATH_GOAL (directed toward end) < SOURCE_PATH_GOAL (with explicit origin).",
+    mapping_rationale:"All Kellogg line categories encode PATH in some form, since every drawn line traces a trajectory in time and space. The single directional lines (K-A-02 vertical, K-A-03 horizontal, K-A-04 diagonal) are the clearest PATH instances — a single vector with implicit source and endpoint. The curved line (K-A-05) encodes PATH + DIVERSION. The roving open line (K-A-10) encodes PATH without END_PATH: the trajectory wanders without closure or destination. Multiple line types (K-A-06 through K-A-09) combine PATH with ITERATION. The zigzag (K-A-12) encodes PATH + COUNTERFORCE at each inflection. At the placement level, 'Across the Page' (K-B-16) and 'Base-line Fan' (K-B-17) encode directed traversal of the drawing surface — SOURCE_PATH_GOAL at field scale.",
+    disl_note:"In DISL, PATH is an entity primitive — a line with no internal structure at its most basic level. START_PATH and END_PATH are relational primitives that specify particular locations on the path. MOTION_ON_PATH is an attributive primitive amalgamation. The PATH-family is hierarchically structured: PATH → PATH_GOAL (+ END_PATH) → SOURCE_PATH_GOAL (+ START_PATH). Developmental evidence suggests PATH_GOAL is learned before SOURCE_PATH_GOAL, consistent with Kellogg's observation that directed single lines precede trajectories with explicit starting marks.",
+    thesis_note:"PATH is the temporal backbone of the scribble as captured by the tablet: every recorded session is, at the level of raw data, a PATH — a sequence of {x, y, t} coordinates. The allographic character of the scribble is most visible in the PATH schema: the same PATH can be instantiated by an infinite variety of pressure, speed, and angle variations, yet remain the 'same' schema.",
     kellogg_primary:["K-A-02","K-A-03","K-A-04","K-A-05","K-A-10","K-A-12"],
     kellogg_secondary:["K-A-06","K-A-07","K-A-08","K-A-09","K-B-16","K-B-17"],
-    kellogg_note:"All line types encode path. Single lines (K-A-02 to K-A-05) are clearest. Multiple lines (K-A-06–09) add iteration to path."
+    disl_primitives:["PATH","START_PATH","END_PATH","MOTION","LOCATION"],
+    sources:["Johnson, M. (1987). *The Body in the Mind*. University of Chicago Press. pp. 113–117.","Lakoff, G. (1987). *Women, Fire, and Dangerous Things*. University of Chicago Press.","Hedblom, M. M., Kutz, O., & Neuhaus, F. (2015). Choosing the right path. *Journal of Artificial General Intelligence*, 6(1), 21–54.","Hedblom, M. M., Neuhaus, F., & Mossakowski, T. (2025). DISL. *Spatial Cognition & Computation*, 25(2), 138–175. §3.2."]
   },
-  { code:"LINK", name:"Link", group:"Core",
-    source:"Johnson 1987",
-    definition:"A connection between two or more entities. The schema of binding and relation.",
+  {
+    code:"LINK", name:"Link", group:"Core",
+    disl_classification:"force dynamic primitive",
+    definition:"A connection between two or more entities that affords the transfer of force between them. Johnson (1987) introduces LINK as the schema of binding and relation — the experience of being connected to something so that it constrains or enables movement. The key feature distinguishing LINK from mere CONTACT is the affordance of force transfer: linked objects influence each other's trajectories.",
+    mapping_rationale:"Crosses are the canonical LINK forms in the Kellogg taxonomy. The Greek Cross (K-D-01) joins two perpendicular lines at a central node, creating four arms that radiate outward — a symmetrical force distribution from a shared origin. The Diagonal Cross (K-D-06) instantiates the same structure on oblique axes. The Crossed Circle (K-A-19) superimposes LINK on CONTAINER: the cross not only ties opposite points of the circle but creates internal structure within the bounded region. Combines (K-E) encode LINK at the compositional level: two diagram types are joined into a single configuration, each part maintaining its identity while being linked to the other.",
+    disl_note:"In DISL (Hedblom et al. 2025), LINK is reclassified from spatial to force dynamic primitive. While Mandler & Pagán Cánovas (2014) treat LINK as a spatial primitive, DISL argues that the primary distinguishing feature of LINK over CONTACT is the affordance to transfer force between linked objects. A LINK can exist without CONTACT (e.g. gravitational attraction). In DISL notation, LINK is represented as a connection between two objects with a force-transfer arrow. The amalgamation GLUE_LINK represents the case where LINK and CONTACT coincide.",
+    thesis_note:"The reclassification of LINK as force dynamic primitive (DISL 2025) strengthens the proto-linguistic argument: the cross mark is not a diagram of spatial intersection but a graphemic encoding of relational force — two entities connected in a way that transfers constraint between them. This is the graphemic equivalent of a relational predicate.",
     kellogg_primary:["K-D-01","K-D-06"],
     kellogg_secondary:["K-A-19","K-E-01","K-E-02","K-E-03"],
-    kellogg_note:"Crosses (K-D-01, K-D-06) are the purest link forms. Combines (K-E) enact linking of distinct diagram types."
+    disl_primitives:["LINK","CONTACT"],
+    sources:["Johnson, M. (1987). *The Body in the Mind*. University of Chicago Press. pp. 117–119.","Mandler, J. M., & Pagán Cánovas, C. (2014). On defining image schemas. *Language and Cognition*, 6(4), 510–532.","Hedblom, M. M., Neuhaus, F., & Mossakowski, T. (2025). DISL. *Spatial Cognition & Computation*, 25(2), 138–175. §3.3."]
   },
-  { code:"CENTER-PERIPHERY", name:"Center-Periphery", group:"Core",
-    source:"Lakoff 1987",
-    definition:"A structure with a salient center and progressively less important periphery.",
+  {
+    code:"CENTER-PERIPHERY", name:"Center-Periphery", group:"Core",
+    disl_classification:"primitive amalgamation",
+    definition:"A structure in which a central entity is surrounded by progressively less salient peripheral entities. Lakoff (1987) identifies CENTER-PERIPHERY as arising from the experience of having a body with a center of gravity, a focal point of experience, surrounded by less essential periphery. The schema underlies the conceptualisation of importance, relevance, and prototypicality: what is central is more representative, more essential.",
+    mapping_rationale:"Mandalas (K-G), suns (K-H), and radials (K-I) are the canonical CENTER-PERIPHERY forms. The mandala group (K-G) organises marks around a central point with radial and concentric symmetry. Concentric mandalas (K-G-10) make the structure maximally explicit: nested rings at increasing distances from a shared center. Suns (K-H) add the CENTER-PERIPHERY schema to a circular container: the clear-center sun (K-H-04) makes the centrality of the empty interior salient. Radials (K-I-04, K-I-05) encode the schema dynamically — lines radiating from a point enact centrifugal force from center to periphery. At placement level, Centered (K-B-02) enacts the schema on the whole page.",
+    disl_note:"CENTER-PERIPHERY is best classified as a primitive amalgamation in DISL terms: a static combination of OBJECT (the center), LOCATION (relative positions), and CONTAINED (peripheral objects enclosed within the field of the center). It does not involve change of state and is therefore not an image schema proper in the Mandler/DISL sense.",
+    thesis_note:"",
     kellogg_primary:["K-B-02","K-G-10","K-H-04","K-I-04","K-I-05"],
     kellogg_secondary:["K-C-12","K-G-06","K-A-13","K-A-15"],
-    kellogg_note:"Mandalas (K-G), suns (K-H), and radials (K-I) are the canonical center-periphery forms. K-B-02 (centered placement) enacts it at page level."
+    disl_primitives:["OBJECT","LOCATION","CONTAINED"],
+    sources:["Lakoff, G. (1987). *Women, Fire, and Dangerous Things*. University of Chicago Press. pp. 283–285.","Hedblom, M. M., Neuhaus, F., & Mossakowski, T. (2025). DISL. *Spatial Cognition & Computation*, 25(2), 138–175.","Kellogg, R. (1969). *Analyzing Children's Art*. Mayfield."]
   },
-  { code:"BALANCE", name:"Balance", group:"Core",
-    source:"Johnson 1987",
-    definition:"Equilibrium of opposing forces or symmetrical spatial distribution.",
+  {
+    code:"BALANCE", name:"Balance", group:"Core",
+    disl_classification:"primitive amalgamation",
+    definition:"Equilibrium of opposing forces or symmetrical spatial distribution. Johnson (1987) identifies BALANCE as arising from the bodily experience of maintaining an upright posture against gravity — a constant, mostly unconscious adjustment of forces. The schema structures experiences of aesthetic symmetry, mathematical equality, and moral fairness.",
+    mapping_rationale:"Symmetrical forms are the primary BALANCE instances. Two-sided balance (K-B-06) makes the schema explicit at placement level: two masses of approximately equal weight flank a central axis. The Greek cross (K-D-01) is BALANCE in pure geometric form: four equal arms radiating from a central node. Complete radials (K-I-05) extend this to multiple arms. The circle/oval (K-D-03) achieves radial balance in all directions. Cross mandalas (K-G-06) combine LINK and BALANCE within an enclosing form.",
+    disl_note:"BALANCE is a primitive amalgamation: a static configuration of OBJECT, LOCATION, and DOWN (the gravitational reference axis). It is not an image schema in the strict DISL sense because it does not involve change over time.",
+    thesis_note:"",
     kellogg_primary:["K-B-06","K-G-06","K-I-05","K-D-01","K-D-03"],
     kellogg_secondary:["K-B-02","K-D-02","K-D-04"],
-    kellogg_note:"Symmetrical forms and balanced placement enact this schema. Greek cross (K-D-01) and complete radials (K-I-05) are equilibrium diagrams."
+    disl_primitives:["OBJECT","LOCATION","DOWN"],
+    sources:["Johnson, M. (1987). *The Body in the Mind*. University of Chicago Press. pp. 74–100.","Hedblom, M. M., Neuhaus, F., & Mossakowski, T. (2025). DISL. *Spatial Cognition & Computation*, 25(2), 138–175."]
   },
-  { code:"ITERATION", name:"Iteration", group:"Other",
-    source:"Hampe 2005",
-    definition:"Repetition of a pattern or unit, producing rhythm and accumulation.",
-    kellogg_primary:["K-A-06","K-A-07","K-A-08","K-A-09","K-A-14"],
-    kellogg_secondary:["K-F-01","K-F-02","K-A-12","K-A-17"],
-    kellogg_note:"Multiple line types (K-A-06–09) are the clearest iteration forms. Aggregates (K-F) extend iteration to diagram-level repetition."
-  },
-  { code:"CYCLE", name:"Cycle", group:"Other",
-    source:"Johnson 1987",
-    definition:"A temporal circle: beginning, proceeding, and returning to the start.",
-    kellogg_primary:["K-A-15","K-A-16","K-D-03","K-G-10"],
-    kellogg_secondary:["K-A-11","K-A-13","K-A-14","K-A-17"],
-    kellogg_note:"Spirals (K-A-15) enact open-ended cycle. Circles (K-D-03, K-A-16–17) enact closed cycle. Concentric mandalas (K-G-10) layer cycles."
-  },
-  { code:"COMPULSION", name:"Compulsion", group:"Force",
-    source:"Johnson 1987",
-    definition:"An external force moving an entity along a path; felt necessity of motion.",
-    kellogg_primary:["K-A-14","K-A-15","K-A-16"],
-    kellogg_secondary:["K-A-12","K-A-13"],
-    kellogg_note:"Perseverative loops (K-A-14) and spirals (K-A-15) are the primary compulsion forms — motion that continues beyond apparent intention."
-  },
-  { code:"COUNTERFORCE", name:"Counterforce", group:"Force",
-    source:"Johnson 1987",
-    definition:"Two equally strong forces colliding head-on, producing tension or reversal.",
-    kellogg_primary:["K-A-12"],
-    kellogg_secondary:["K-C-01","K-C-02","K-C-03"],
-    kellogg_note:"Zigzag/waving line (K-A-12): each inflection point is a counterforce event. Line crossings (K-C) enact perpendicular counterforces."
-  },
-  { code:"DIVERSION", name:"Diversion", group:"Force",
-    source:"Johnson 1987",
-    definition:"A force vector deflected from its trajectory by an interaction.",
-    kellogg_primary:["K-A-04","K-A-05","K-A-08","K-A-09"],
-    kellogg_secondary:["K-A-10","K-A-12"],
-    kellogg_note:"Diagonal (K-A-04) and curved lines (K-A-05) enact deflection from canonical axes. Roving lines (K-A-10) enact continuous diversion."
-  },
-  { code:"ENABLEMENT", name:"Enablement", group:"Force",
-    source:"Johnson 1987",
-    definition:"Felt capacity for action; potential force vectors; the precondition of drawing.",
-    kellogg_primary:["K-B-01","K-B-17"],
-    kellogg_secondary:["K-B-16"],
-    kellogg_note:"Overall coverage (K-B-01) enacts preparatory field-making. Base-line fan (K-B-17) enacts directed capacity from a stable ground."
-  },
-  { code:"RESTRAINT", name:"Restraint", group:"Force",
-    source:"Johnson 1987",
-    definition:"A force preventing or limiting movement; the felt constraint of boundaries.",
-    kellogg_primary:["K-B-03"],
-    kellogg_secondary:["K-B-02","K-D-02","K-D-03"],
-    kellogg_note:"Spaced border (K-B-03) enacts restraint as empty margin — the page boundary as felt limit. Closed forms (K-D) internalize restraint."
-  },
-  { code:"SUPERIMPOSITION", name:"Superimposition", group:"Other",
-    source:"Johnson 1987",
-    definition:"Layering one schema or form on top of another; co-presence in the same space.",
-    kellogg_primary:["K-A-16","K-A-19","K-E-01"],
-    kellogg_secondary:["K-G-03","K-C-07"],
-    kellogg_note:"Multiple-line overlaid circle (K-A-16) is pure superimposition. Crossed circle (K-A-19) combines LINK and SUPERIMPOSITION. Combines (K-E-01) superimpose distinct diagrams."
-  },
-  { code:"UP-DOWN", name:"Up-Down", group:"Orientational",
-    source:"Johnson 1987; Lakoff 1987",
-    definition:"Vertical orientation relative to gravity; the primary bodily axis.",
-    kellogg_primary:["K-A-02","K-A-06","K-B-17"],
-    kellogg_secondary:["K-C-10"],
-    kellogg_note:"Vertical lines (K-A-02, K-A-06) are the clearest up-down enactments. Base-line fan (K-B-17) encodes the ground/sky axis."
-  },
-  { code:"SURFACE", name:"Surface", group:"Other",
-    source:"Hampe 2005",
-    definition:"A planar face or field; the ground of inscription.",
-    kellogg_primary:["K-B-01","K-F-07"],
-    kellogg_secondary:["K-A-03","K-A-07","K-B-05"],
-    kellogg_note:"Overall coverage (K-B-01) treats the page as surface to saturate. Multilined areas (K-F-07) build surface through accumulation."
-  },
-  { code:"PART-WHOLE", name:"Part-Whole", group:"Core",
-    source:"Lakoff 1987",
-    definition:"A whole consisting of parts in a configuration; the schema of composition.",
+  {
+    code:"PART-WHOLE", name:"Part-Whole", group:"Core",
+    disl_classification:"image schema",
+    definition:"A configuration in which a whole consists of parts, each with a role in the overall structure. Lakoff (1987) identifies PART-WHOLE as one of the fundamental schemas for understanding composition and structure. The schema underlies experiences of the body as composed of parts, of sentences as composed of words, of collections as composed of members.",
+    mapping_rationale:"All Combines (K-E) are PART-WHOLE enactments: two or more diagram types are joined into a single configuration, each maintaining its identity as a part of the whole. The divided square (K-E-03) makes the part-whole structure maximally explicit. Aggregates (K-F) extend the schema to multiple parts. At placement level, the quarter-page pattern (K-B-11) enacts PART-WHOLE by dividing the drawing field into four quadrants — the page as a whole structured by its parts.",
+    disl_note:"In DISL, PART_OF is a relational primitive. The dynamic image schemas SPLITTING (one object divides into parts) and MERGING (parts unite into one) are the event-level counterparts of the static PART-WHOLE amalgamation. Kellogg Combines (K-E) are best analysed as MERGING events: two previously separate diagram types are drawn into contact, producing a new whole.",
+    thesis_note:"",
     kellogg_primary:["K-E-01","K-E-02","K-E-03","K-F-03"],
     kellogg_secondary:["K-B-06","K-B-11"],
-    kellogg_note:"All Combines (K-E) and Aggregates (K-F) are part-whole enactments. K-B-11 (quarter-page) enacts part-whole at page level."
+    disl_primitives:["OBJECT","PART_OF","CONTAINER"],
+    sources:["Lakoff, G. (1987). *Women, Fire, and Dangerous Things*. University of Chicago Press. pp. 282–283.","Hedblom, M. M., Neuhaus, F., & Mossakowski, T. (2025). DISL. *Spatial Cognition & Computation*, 25(2), 138–175. §3.3, Fig. 8."]
   },
-  { code:"COLLECTION", name:"Collection", group:"Other",
-    source:"Hampe 2005",
-    definition:"A grouping of multiple discrete units treated as a single entity.",
+  {
+    code:"COMPULSION", name:"Compulsion", group:"Force",
+    disl_classification:"schematic integration",
+    definition:"The experience of being moved by a force beyond one's control or intention — an external or internal compulsion that drives motion along a path. Johnson (1987) identifies COMPULSION as a force schema arising from the experience of being pushed, pulled, or driven. In DISL terms (Hedblom et al. 2025), COMPULSION is a schematic integration rather than a pure image schema: it requires UMPH — the embodied experience of force acting on the body — which is a non-spatial, force dynamic primitive.",
+    mapping_rationale:"The perseverative loop (K-A-14, Multiple Loop Line) and the spiral (K-A-15) are the primary COMPULSION forms. In both, the drawing motion continues beyond what a simple closed form would require — the hand is driven to repeat or extend the gesture. This is not mere iteration (which is neutral): COMPULSION implies a felt necessity of continuation. The multiple-line overlaid circle (K-A-16) is a compulsive retracing of the same contour — the closure is reinforced again and again, suggesting an inability to stop. Zigzag/waving (K-A-12) is included as secondary: the rhythmic back-and-forth has a compulsive momentum once established.",
+    disl_note:"COMPULSION is reclassified from 'image schema' (Johnson 1987) to 'schematic integration' following the DISL framework (Hedblom et al. 2025). A schematic integration includes non-spatial elements — in this case, active UMPH (a-UMPH): the embodied experience of exerting force. The child drawing a spiral enacts PATH + MOTION + a-UMPH: they move the hand along a progressively revolving trajectory while experiencing the force of their own gesture. DISL distinguishes this from a pure image schema by the presence of the force dynamic primitive.",
+    thesis_note:"The reclassification of COMPULSION as schematic integration is significant for this thesis. The perseverative loop is not merely a spatial form but an embodied force event — the hand's a-UMPH is inscribed into the mark. This supports the argument that scribbles are not just traces of movement but records of force experience: proto-linguistic in the sense that they encode a felt necessity, an internal compulsion analogous to the compulsive character of grammatical rules.",
+    kellogg_primary:["K-A-14","K-A-15","K-A-16"],
+    kellogg_secondary:["K-A-12","K-A-13"],
+    disl_primitives:["active-UMPH","PATH","MOTION"],
+    sources:["Johnson, M. (1987). *The Body in the Mind*. University of Chicago Press. pp. 45–48.","Hedblom, M. M., Neuhaus, F., & Mossakowski, T. (2025). DISL. *Spatial Cognition & Computation*, 25(2), 138–175. §2.1, §3.4.","Mandler, J. M. (1992). How to build a baby: II. Conceptual primitives. *Psychological Review*, 99(4), 587–604."]
+  },
+  {
+    code:"COUNTERFORCE", name:"Counterforce", group:"Force",
+    disl_classification:"schematic integration",
+    definition:"Two equally strong forces colliding head-on, producing tension, arrest, or reversal of direction. Johnson (1987) identifies COUNTERFORCE as the experience of pushing against something that pushes back with equal force. In DISL terms, this is a schematic integration: it requires both active and passive UMPH (a-UMPH and p-UMPH) — the felt experience of exerting force and receiving it simultaneously.",
+    mapping_rationale:"The zigzag/waving line (K-A-12) is the canonical COUNTERFORCE form. Each inflection point is a COUNTERFORCE event: the hand reverses direction, enacting a moment where the motion vector meets an opposing force — whether a physical stop or an internal motor decision. The angular version (zigzag) makes the reversal sharp and instantaneous; the waving version makes it gradual and sinusoidal. Line crossings (K-C-01, K-C-02, K-C-03) are secondary instances: two paths intersect perpendicularly, enacting two forces meeting at a point.",
+    disl_note:"COUNTERFORCE is reclassified from 'image schema' (Johnson 1987) to 'schematic integration' (DISL 2025). DISL represents force events using UMPH primitives: a-UMPH (active, outward-facing triangles) for exerted force and p-UMPH (passive, inward-facing triangles) for received force. COUNTERFORCE involves both simultaneously — a bidirectional force event. In the DISL strip: Scene 1 = two objects in MOTION_TOWARDS each other; Scene 2 = CONTACT + bilateral a-UMPH/p-UMPH + AT_REST or MOTION reversal.",
+    thesis_note:"The zigzag is arguably the most direct embodiment of COUNTERFORCE in the Kellogg taxonomy. Every inflection is a felt reversal — the hand's trajectory encounters an opposing force and changes direction. The temporal data from the tablet (pressure values, velocity at inflection points) could provide empirical evidence for this force-schematic interpretation.",
+    kellogg_primary:["K-A-12"],
+    kellogg_secondary:["K-C-01","K-C-02","K-C-03"],
+    disl_primitives:["active-UMPH","passive-UMPH","OBJECT","CONTACT"],
+    sources:["Johnson, M. (1987). *The Body in the Mind*. University of Chicago Press. pp. 45–48.","Hedblom, M. M., Neuhaus, F., & Mossakowski, T. (2025). DISL. *Spatial Cognition & Computation*, 25(2), 138–175. §3.4, Fig. 13.","Talmy, L. (1988). Force dynamics in language and cognition. *Cognitive Science*, 12(1), 49–100."]
+  },
+  {
+    code:"ENABLEMENT", name:"Enablement", group:"Force",
+    disl_classification:"schematic integration",
+    definition:"The felt capacity for action — the experience of being in a position from which motion or action is possible. Johnson (1987) describes ENABLEMENT as the positive, preparatory force schema: the conditions that make an action possible. It is the schema of affordance — what the environment or the body makes available.",
+    mapping_rationale:"Overall Coverage (K-B-01) enacts ENABLEMENT at the level of the drawing field: the child marks the entire page, establishing it as a field of potential action. The page as fully activated surface affords further inscription. Base-line Fan (K-B-17) enacts a directed form of ENABLEMENT: rays extending upward from a stable ground line express the affordance of upward expansion from a supported base.",
+    disl_note:"ENABLEMENT involves a-UMPH (active force experience) combined with PATH (directed trajectory). It is a schematic integration in DISL terms because it includes the non-spatial force dynamic primitive a-UMPH.",
+    thesis_note:"",
+    kellogg_primary:["K-B-01","K-B-17"],
+    kellogg_secondary:["K-B-16"],
+    disl_primitives:["active-UMPH","PATH"],
+    sources:["Johnson, M. (1987). *The Body in the Mind*. University of Chicago Press. pp. 48–49.","Hedblom, M. M., Neuhaus, F., & Mossakowski, T. (2025). DISL. *Spatial Cognition & Computation*, 25(2), 138–175."]
+  },
+  {
+    code:"RESTRAINT", name:"Restraint", group:"Force",
+    disl_classification:"schematic integration",
+    definition:"The experience of a force that prevents or limits movement. Johnson (1987) identifies RESTRAINT as the schema of constraint — being held back, enclosed within limits, unable to move freely. It is the negative counterpart of ENABLEMENT.",
+    mapping_rationale:"Spaced Border (K-B-03) is the primary RESTRAINT form: the drawing is contained within a margin, with the page boundary functioning as a felt limit — the drawing stops before the edge. Closed forms (K-D-02, K-D-03) internalise RESTRAINT as their own contour: the boundary of the form restrains what is inside.",
+    disl_note:"RESTRAINT involves p-UMPH (passive force reception) combined with CONTAINER (the restraining boundary). Schematic integration per DISL 2025.",
+    thesis_note:"",
+    kellogg_primary:["K-B-03"],
+    kellogg_secondary:["K-B-02","K-D-02","K-D-03"],
+    disl_primitives:["passive-UMPH","CONTAINER","CONTACT"],
+    sources:["Johnson, M. (1987). *The Body in the Mind*. University of Chicago Press. pp. 45–48.","Hedblom, M. M., Neuhaus, F., & Mossakowski, T. (2025). DISL. *Spatial Cognition & Computation*, 25(2), 138–175."]
+  },
+  {
+    code:"DIVERSION", name:"Diversion", group:"Force",
+    disl_classification:"schematic integration",
+    definition:"A force vector deflected from its original trajectory by an interaction. Johnson (1987) identifies DIVERSION as the experience of being redirected — a movement that encounters an obstacle or influence and changes course without stopping entirely.",
+    mapping_rationale:"Diagonal and curved lines are the primary DIVERSION forms. The single diagonal line (K-A-04) enacts deviation from the canonical vertical and horizontal axes — it is a path diverted from gravitational or horizontal norms. The curved line (K-A-05) enacts continuous diversion: the trajectory bends without ever establishing a stable direction. The roving open line (K-A-10) is continuous diversion without goal: a PATH that diverts at every moment.",
+    disl_note:"DIVERSION involves PATH + MOTION_ON_PATH + CONTACT (with a deflecting entity) producing a change of direction. Schematic integration per DISL because the experience of deflection involves felt force (p-UMPH from the deflecting object).",
+    thesis_note:"",
+    kellogg_primary:["K-A-04","K-A-05","K-A-08","K-A-09"],
+    kellogg_secondary:["K-A-10","K-A-12"],
+    disl_primitives:["PATH","MOTION","passive-UMPH","CONTACT"],
+    sources:["Johnson, M. (1987). *The Body in the Mind*. University of Chicago Press. pp. 45–48.","Hedblom, M. M., Neuhaus, F., & Mossakowski, T. (2025). DISL. *Spatial Cognition & Computation*, 25(2), 138–175."]
+  },
+  {
+    code:"BLOCKAGE", name:"Blockage", group:"Force",
+    disl_classification:"schematic integration",
+    definition:"An obstacle that resists and arrests force; movement stopped by passive reception of an opposing force. Johnson (1987) identifies BLOCKAGE as the experience of being stopped — moving and hitting a barrier. In DISL terms, BLOCKAGE is MOTION_INTO + CONTACT + p-UMPH + AT_REST: an object in motion contacts a blocking object, receives passive force, and stops.",
+    mapping_rationale:"The T-cross (K-C-06: Multicrossed Line and T-cross) is the canonical BLOCKAGE form: one line stops at the boundary of another, enacting the exact DISL scenario — MOTION_ON_PATH → CONTACT with blocking OBJECT → AT_REST. The T-shape graphically encodes the arrested trajectory. Dense multicrossed areas (K-C-01, K-C-02, K-C-03) accumulate blockage events into a field of arrested motion.",
+    disl_note:"DISL Figure 19 compares Johnson's original BLOCKAGE diagram with the DISL strip representation. The DISL version formalises the event as: Scene 1: OBJECT in MOTION_ALONG_PATH; Scene 2: CONTACT with blocking OBJECT + p-UMPH on both + AT_REST. The T-cross (K-C-06) encodes exactly this two-panel narrative as a static graphemic form.",
+    thesis_note:"BLOCKAGE may be the most explicitly narrative image schema in the Kellogg taxonomy: the T-cross is a static record of a two-scene event — motion and arrest. This supports the thesis argument that scribble forms encode spatiotemporal narratives, not merely spatial configurations.",
+    kellogg_primary:["K-C-06"],
+    kellogg_secondary:["K-C-01","K-C-02","K-C-03","K-C-04"],
+    disl_primitives:["passive-UMPH","OBJECT","CONTACT","PATH","AT_REST"],
+    sources:["Johnson, M. (1987). *The Body in the Mind*. University of Chicago Press. pp. 45–48.","Hedblom, M. M., Neuhaus, F., & Mossakowski, T. (2025). DISL. *Spatial Cognition & Computation*, 25(2), 138–175. §4.1, Fig. 19."]
+  },
+  {
+    code:"UP-DOWN", name:"Up-Down / Verticality", group:"Orientational",
+    disl_classification:"spatial primitive (DOWN/UP) + image schema family",
+    definition:"Vertical orientation relative to gravity. Johnson (1987) identifies UP-DOWN as arising from the most fundamental bodily experience: standing upright against gravity, with head up and feet down. The schema structures metaphorical projections (MORE IS UP, GOOD IS UP, RATIONAL IS UP) and directly organises spatial experience. Wachowiak, Gromann & Xu (2023) identify four dimensions of VERTICALITY: (1) static vertical orientation; (2) dynamic vertical movement; (3) fictive/construed verticality (static entities implying upward extension); (4) vertical associations between entities.",
+    mapping_rationale:"Single vertical line (K-A-02) and multiple vertical lines (K-A-06) are the clearest static UP-DOWN forms: they align with the gravitational axis. Base-line Fan (K-B-17) encodes the ground/sky axis at placement level: rays extend upward from a stable base, enacting the directed verticality of growth or aspiration. Border/Base/Sky Lines (K-C-10) partition the page into vertical zones, explicitly marking the ground-horizon-sky axis. Radials (K-I-04, K-I-05) encode fictive verticality — construed upward movement from a central source.",
+    disl_note:"In DISL (Hedblom et al. 2025), DOWN is an entity primitive — one of the five foundational spatial entity primitives alongside OBJECT, CONTAINER, PATH, and REGION. DOWN provides spatial orientation to a panel by marking the direction of gravity. When DOWN is added to a CONTACT relation between two objects, it produces ABOVE — the orientation-specific relation that underlies SUPPORT. The VERTICALITY schema is thus not a single image schema but a family anchored by the DOWN primitive.",
+    thesis_note:"The expansion of UP-DOWN to include fictive verticality (Wachowiak et al. 2023) is relevant for the temporal dimension of this thesis: the radial scribbles (K-I) encode upward extension kinetically — the hand moves outward from a central point. The tablet data captures the actual direction of these strokes, enabling empirical verification of the fictive verticality claim.",
+    kellogg_primary:["K-A-02","K-A-06","K-B-17"],
+    kellogg_secondary:["K-C-10","K-I-04","K-I-05","K-B-05"],
+    disl_primitives:["DOWN","LOCATION","PATH"],
+    sources:["Johnson, M. (1987). *The Body in the Mind*. University of Chicago Press. pp. 121–124.","Wachowiak, L., Gromann, D., & Xu, C. (2023). The image schema VERTICALITY. *Proceedings of ISD7*, Rhodes. pp. 1–11.","Hedblom, M. M., Neuhaus, F., & Mossakowski, T. (2025). DISL. *Spatial Cognition & Computation*, 25(2), 138–175. §3.2."]
+  },
+  {
+    code:"FRONT-BACK", name:"Front-Back", group:"Orientational",
+    disl_classification:"primitive amalgamation",
+    definition:"Depth and layering orientation along the sagittal axis. Johnson (1987) identifies FRONT-BACK as arising from the experience of having a front and a back — a facing direction — which organises perception into what is ahead and what is behind.",
+    mapping_rationale:"Horizontal lines (K-A-03, K-A-07) extend along the left-right axis, which in Western reading convention encodes the front-back or past-future axis. 'Across the Page' (K-B-16) is a directed horizontal traversal. The horizontal half (K-B-05) divides the field on the horizontal axis.",
+    disl_note:"FRONT-BACK does not have a dedicated DISL primitive but is encoded through LOCATION relative to a PATH with a specific orientation — perpendicular to DOWN.",
+    thesis_note:"",
+    kellogg_primary:["K-A-03","K-A-07","K-B-05","K-B-16"],
+    kellogg_secondary:["K-D-02"],
+    disl_primitives:["LOCATION","PATH"],
+    sources:["Johnson, M. (1987). *The Body in the Mind*. University of Chicago Press."]
+  },
+  {
+    code:"NEAR-FAR", name:"Near-Far", group:"Orientational",
+    disl_classification:"primitive amalgamation",
+    definition:"Graded distance from a reference point. Johnson (1987) identifies NEAR-FAR as arising from the experience of proximity and distance — what is reachable versus what is remote.",
+    mapping_rationale:"At placement level, Centered (K-B-02) enacts NEAR-FAR: the drawing occupies the near zone (center) while the margins remain the far zone. Spaced Border (K-B-03) inverts the emphasis: the border is marked, and the center is the distance from it.",
+    disl_note:"NEAR-FAR involves LOCATION and SMALLER/LARGER (size as proxy for distance in many visual conventions).",
+    thesis_note:"",
+    kellogg_primary:["K-B-02","K-B-03"],
+    kellogg_secondary:[],
+    disl_primitives:["LOCATION","SMALLER/LARGER"],
+    sources:["Johnson, M. (1987). *The Body in the Mind*. University of Chicago Press."]
+  },
+  {
+    code:"CONTACT", name:"Contact", group:"Other",
+    disl_classification:"spatial primitive (relational)",
+    definition:"The touching of two entities. In DISL (Hedblom et al. 2025), following Mandler & Pagán Cánovas (2014), CONTACT is a relational spatial primitive — static, not involving change of state. It is distinguished from LINK (which adds force transfer) and from dynamic force events (which add UMPH). CONTACT is simply the condition of two entities occupying adjacent locations.",
+    mapping_rationale:"All line crossings (K-C-01 through K-C-05) enact CONTACT: two paths occupy the same or adjacent points. This is static CONTACT in the DISL sense — the lines are touching. Dynamic force events (BLOCKAGE, COUNTERFORCE) add UMPH to the basic CONTACT configuration. Combines (K-E) also involve CONTACT: two diagram types are drawn into proximity or intersection.",
+    disl_note:"DISL clarifies an important distinction: CONTACT alone is not an image schema but a spatial primitive. Many Kellogg crossing categories that appear dynamic (K-C-06 T-cross, suggesting arrested motion) are better analysed as BLOCKAGE (schematic integration) or COUNTERFORCE, not as pure CONTACT. This distinction matters for the proto-linguistic argument: not all marks that touch encode the same image-schematic structure.",
+    thesis_note:"",
+    kellogg_primary:["K-C-01","K-C-02","K-C-03","K-C-04","K-C-05"],
+    kellogg_secondary:["K-E-01","K-E-02","K-E-03"],
+    disl_primitives:["CONTACT"],
+    sources:["Mandler, J. M., & Pagán Cánovas, C. (2014). On defining image schemas. *Language and Cognition*, 6(4), 510–532.","Hedblom, M. M., Neuhaus, F., & Mossakowski, T. (2025). DISL. *Spatial Cognition & Computation*, 25(2), 138–175. §3.3."]
+  },
+  {
+    code:"CYCLE", name:"Cycle", group:"Other",
+    disl_classification:"image schema",
+    definition:"A temporal circle: beginning, proceeding, and returning to the starting point. Johnson (1987) identifies CYCLE as the schema of periodic recurrence — the experience of seasons, days, repeated routines. In DISL terms, CYCLE is a PATH in which END_PATH coincides with START_PATH.",
+    mapping_rationale:"The spiral (K-A-15) enacts open CYCLE: a path that revolves continuously without returning to the exact starting point — an asymptotic cycle. The circle/oval (K-D-03) is closed CYCLE: START_PATH = END_PATH exactly. The multiple-line overlaid circle (K-A-16) insistently re-enacts the cycle. Concentric mandalas (K-G-10) layer nested cycles.",
+    disl_note:"CYCLE: PATH + START_PATH + END_PATH where END_PATH = START_PATH location. In DISL terms this is an image schema (involves change over time, specifically MOTION_ON_PATH returning to origin).",
+    thesis_note:"",
+    kellogg_primary:["K-A-15","K-A-16","K-D-03","K-G-10"],
+    kellogg_secondary:["K-A-11","K-A-13","K-A-14","K-A-17"],
+    disl_primitives:["PATH","START_PATH","END_PATH","MOTION"],
+    sources:["Johnson, M. (1987). *The Body in the Mind*. University of Chicago Press.","Hedblom, M. M., Neuhaus, F., & Mossakowski, T. (2025). DISL. *Spatial Cognition & Computation*, 25(2), 138–175."]
+  },
+  {
+    code:"ITERATION", name:"Iteration", group:"Other",
+    disl_classification:"image schema",
+    definition:"Repetition of a pattern or unit, producing rhythm and accumulation. Hampe (2005) identifies ITERATION as the schema of rhythmic recurrence — distinct from CYCLE in that the repeated unit does not return to the starting point but advances along a trajectory.",
+    mapping_rationale:"Multiple line types (K-A-06 through K-A-09) are the clearest iteration forms: the same directional gesture repeated across the surface. Multiple loop lines (K-A-14) iterate the loop gesture. Aggregates (K-F-01, K-F-02) iterate diagram units.",
+    disl_note:"ITERATION involves MOTION + PERMANENCE (the repeated unit persists) + OBJECT (the iterated unit). In DISL, the ellipsis symbol in a strip indicates indefinite repetition — the schematic equivalent of iteration.",
+    thesis_note:"",
+    kellogg_primary:["K-A-06","K-A-07","K-A-08","K-A-09","K-A-14"],
+    kellogg_secondary:["K-F-01","K-F-02","K-A-12","K-A-17"],
+    disl_primitives:["MOTION","PERMANENCE","OBJECT"],
+    sources:["Hampe, B. (Ed.). (2005). *From Perception to Meaning: Image Schemas in Cognitive Linguistics*. De Gruyter Mouton.","Hedblom, M. M., Neuhaus, F., & Mossakowski, T. (2025). DISL. *Spatial Cognition & Computation*, 25(2), 138–175. Fig. 6c."]
+  },
+  {
+    code:"SUPERIMPOSITION", name:"Superimposition", group:"Other",
+    disl_classification:"primitive amalgamation",
+    definition:"Layering one form or schema on top of another; co-presence of two entities in the same spatial region. Johnson (1987) identifies superimposition as the experience of overlapping — two things occupying the same space.",
+    mapping_rationale:"The multiple-line overlaid circle (K-A-16) is pure superimposition: successive lines are laid on top of existing ones. The crossed circle (K-A-19) superimposes LINK on CONTAINER. Combines (K-E-01) superimpose two distinct diagram types into one figure.",
+    disl_note:"SUPERIMPOSITION involves CONTACT + OBJECT + LOCATION (two objects at the same or overlapping locations). Static, therefore primitive amalgamation.",
+    thesis_note:"",
+    kellogg_primary:["K-A-16","K-A-19","K-E-01"],
+    kellogg_secondary:["K-G-03","K-C-07"],
+    disl_primitives:["CONTACT","OBJECT","LOCATION"],
+    sources:["Johnson, M. (1987). *The Body in the Mind*. University of Chicago Press.","Hedblom, M. M., Neuhaus, F., & Mossakowski, T. (2025). DISL. *Spatial Cognition & Computation*, 25(2), 138–175."]
+  },
+  {
+    code:"COLLECTION", name:"Collection", group:"Other",
+    disl_classification:"primitive amalgamation",
+    definition:"A grouping of multiple discrete units treated as a single entity. Hampe (2005) identifies COLLECTION as the schema of plurality treated as a unified field — a group, a pile, a set.",
+    mapping_rationale:"Aggregates (K-F-01 through K-F-04) are the canonical collection forms: multiple diagram units gathered on the page. Multiple line types (K-A-06–09) are collections of strokes.",
+    disl_note:"COLLECTION: OBJECT + LOCATION (multiple objects at proximate locations).",
+    thesis_note:"",
     kellogg_primary:["K-F-01","K-F-02","K-F-03","K-F-04"],
     kellogg_secondary:["K-A-06","K-A-07","K-A-08","K-A-09"],
-    kellogg_note:"Aggregates (K-F-01 to K-F-04) are the canonical collection forms. Multiple line types (K-A-06–09) are collections of strokes."
+    disl_primitives:["OBJECT","LOCATION"],
+    sources:["Hampe, B. (Ed.). (2005). *From Perception to Meaning*. De Gruyter Mouton."]
   },
-  { code:"FULL-EMPTY", name:"Full-Empty", group:"Other",
-    source:"Hampe 2005",
-    definition:"The opposition between presence and absence of content within a container.",
+  {
+    code:"FULL-EMPTY", name:"Full-Empty", group:"Other",
+    disl_classification:"attributive primitives",
+    definition:"The opposition between presence and absence of content within a container. Hampe (2005) identifies FULL-EMPTY as a fundamental schema structuring the experience of containers as having degrees of saturation. In DISL, FULL, EMPTY, and OCCUPIED are attributive primitives of CONTAINER.",
+    mapping_rationale:"Clear-center suns (K-H-04) make the FULL-EMPTY contrast maximally salient: the circular boundary encloses a deliberately empty interior, while rays radiate outward from the boundary. Concentric mandalas (K-G-10) alternate filled and empty rings.",
+    disl_note:"In DISL, FULL/EMPTY/OCCUPIED are crown-shaped attributive primitives attached to CONTAINER entities. A FULL CONTAINER has a crossed-mark crown; an EMPTY CONTAINER has an unmarked crown. See DISL Figure 11.",
+    thesis_note:"",
     kellogg_primary:["K-H-04","K-G-10"],
     kellogg_secondary:["K-B-01","K-B-03"],
-    kellogg_note:"Clear-center suns (K-H-04) enact the full-empty contrast within the same drawing. Concentric mandalas (K-G-10) alternate filled and empty rings."
+    disl_primitives:["FULL","EMPTY","OCCUPIED","CONTAINER"],
+    sources:["Hampe, B. (Ed.). (2005). *From Perception to Meaning*. De Gruyter Mouton.","Hedblom, M. M., Neuhaus, F., & Mossakowski, T. (2025). DISL. *Spatial Cognition & Computation*, 25(2), 138–175. §3.4, Fig. 11."]
+  },
+  {
+    code:"SCALE", name:"Scale", group:"Other",
+    disl_classification:"image schema family",
+    definition:"More, less, same; degree or magnitude along a dimension. Grady (2005) and Johnson (1987) identify SCALE as the schema of graded quantity. In DISL, SMALLER/LARGER is a relational primitive; GROWING and SHRINKING are the corresponding dynamic image schemas.",
+    mapping_rationale:"Size variations in aggregates (K-F) encode SCALE. When repeated marks increase in extent (K-A-14 expanding loops), the GROWING image schema is activated.",
+    disl_note:"DISL: SMALLER/LARGER is a relational primitive between two OBJECTS. A qualitatively significant change in size over time produces GROWING (t1: small OBJECT → t2: larger OBJECT) or SHRINKING (inverse). See DISL Figure 10c.",
+    thesis_note:"",
+    kellogg_primary:["K-F-01","K-F-02","K-F-04"],
+    kellogg_secondary:["K-A-06","K-A-07","K-A-14"],
+    disl_primitives:["SMALLER/LARGER"],
+    sources:["Grady, J. (2005). Image schemas and perception. In Hampe (Ed.), *From Perception to Meaning*. De Gruyter Mouton. pp. 35–55.","Hedblom, M. M., Neuhaus, F., & Mossakowski, T. (2025). DISL. *Spatial Cognition & Computation*, 25(2), 138–175. §3.3."]
+  },
+  {
+    code:"MERGING", name:"Merging", group:"Other",
+    disl_classification:"image schema",
+    definition:"Joining of separate entities into one. Hampe (2005) identifies MERGING as the inverse of SPLITTING. In DISL, MERGING is a dynamic image schema: two objects in PART_OF relations combine into a single OBJECT.",
+    mapping_rationale:"Added line crossings (K-C-07) enact merging of existing lines. Combines (K-E-01, K-E-02) merge distinct diagram types into one figure, producing a new whole from two previously separate parts.",
+    disl_note:"DISL Figure 8c: MERGING as the temporal inverse of SPLITTING.",
+    thesis_note:"",
+    kellogg_primary:["K-C-07","K-E-01","K-E-02"],
+    kellogg_secondary:["K-F-03","K-F-09"],
+    disl_primitives:["CONTACT","OBJECT","LINK"],
+    sources:["Hampe, B. (Ed.). (2005). *From Perception to Meaning*. De Gruyter Mouton.","Hedblom, M. M., Neuhaus, F., & Mossakowski, T. (2025). DISL. *Spatial Cognition & Computation*, 25(2), 138–175. §3.3, Fig. 8c."]
+  },
+  {
+    code:"SPLITTING", name:"Splitting", group:"Other",
+    disl_classification:"image schema",
+    definition:"Division of one entity into separate parts. Hampe (2005) and DISL (Hedblom et al. 2025) identify SPLITTING as a dynamic image schema: one object divides into two or more sub-objects through PART_OF relations.",
+    mapping_rationale:"Placement patterns that divide the page (K-B-04 Vertical Half, K-B-05 Horizontal Half, K-B-07 Diagonal Half, K-B-11 Quarter Page) enact SPLITTING at the level of the drawing field — the page is divided into sub-regions. The divided square (K-E-03) makes SPLITTING explicit within a diagram form.",
+    disl_note:"DISL Figure 8b: SPLITTING as a two-panel strip showing one object dividing.",
+    thesis_note:"",
+    kellogg_primary:["K-B-04","K-B-05","K-B-07","K-B-10","K-B-11","K-E-03"],
+    kellogg_secondary:[],
+    disl_primitives:["OBJECT","PART_OF","REGION"],
+    sources:["Hampe, B. (Ed.). (2005). *From Perception to Meaning*. De Gruyter Mouton.","Hedblom, M. M., Neuhaus, F., & Mossakowski, T. (2025). DISL. *Spatial Cognition & Computation*, 25(2), 138–175. §3.3, Fig. 8b."]
+  },
+  {
+    code:"OBJECT", name:"Object", group:"Other",
+    disl_classification:"spatial primitive (entity)",
+    definition:"A discrete, bounded entity in the perceptual field. In DISL (Hedblom et al. 2025), following Mandler & Pagán Cánovas (2014), OBJECT is a foundational entity primitive — one of the first building blocks of spatial cognition in infancy. An OBJECT is distinguished from REGION (which is not bounded and discrete) and from CONTAINER (which has the affordance to contain other objects).",
+    mapping_rationale:"Any individuated closed or bounded form in the Kellogg taxonomy activates the OBJECT primitive. All Diagram categories (K-D) are maximally articulated OBJECT instances: bounded, discrete, internally coherent forms.",
+    disl_note:"In DISL, OBJECTs are represented as shapes with solid fill. The saturation of colour indicates which object is the subject (darker = subject). OBJECT PERMANENCE is a spatiotemporal relational primitive ensuring that the same object across panels is understood as continuous.",
+    thesis_note:"",
+    kellogg_primary:["K-D-01","K-D-02","K-D-03","K-D-04","K-D-05","K-D-06"],
+    kellogg_secondary:["K-A-13","K-A-16","K-A-17"],
+    disl_primitives:["OBJECT"],
+    sources:["Mandler, J. M., & Pagán Cánovas, C. (2014). On defining image schemas. *Language and Cognition*, 6(4), 510–532.","Hedblom, M. M., Neuhaus, F., & Mossakowski, T. (2025). DISL. *Spatial Cognition & Computation*, 25(2), 138–175. §3.2, Table 1."]
+  },
+  {
+    code:"SURFACE", name:"Surface", group:"Other",
+    disl_classification:"primitive amalgamation",
+    definition:"A planar face or field — the ground of inscription. Hampe (2005) identifies SURFACE as the schema of the plane: a region extended in two dimensions, available for contact and inscription. In the context of drawing, SURFACE is the drawing field itself — the page as the primary affordance of the graphical act.",
+    mapping_rationale:"Overall Coverage (K-B-01) treats the page as SURFACE to saturate: the entire two-dimensional field is activated as a ground of inscription. Multilined Areas (K-F-07) build surface through dense accumulation. Horizontal lines (K-A-03, K-A-07) run along the surface plane.",
+    disl_note:"SURFACE: REGION + LOCATION (extended two-dimensional field).",
+    thesis_note:"",
+    kellogg_primary:["K-B-01","K-F-07"],
+    kellogg_secondary:["K-A-03","K-A-07","K-B-05"],
+    disl_primitives:["REGION","CONTAINER"],
+    sources:["Hampe, B. (Ed.). (2005). *From Perception to Meaning*. De Gruyter Mouton."]
+  },
+  {
+    code:"PROCESS", name:"Process", group:"Other",
+    disl_classification:"image schema",
+    definition:"An unfolding sequence of connected events over time — a directional, irreversible temporal progression. Hampe (2005) identifies PROCESS as the schema of becoming: things change, develop, and transform through a sequence of states.",
+    mapping_rationale:"Transitional and emergent categories encode PROCESS most clearly. The roving open line (K-A-10) is an open-ended process — a trajectory without goal or closure, pure becoming. The imperfect circle (K-A-20) encodes the process of closure-seeking: the hand searches for the endpoint without quite reaching it — visible process in the mark itself.",
+    disl_note:"PROCESS involves MOTION + PATH + PERMANENCE (successive states persist). It is an image schema (dynamic, involves change over time).",
+    thesis_note:"",
+    kellogg_primary:["K-A-10","K-A-15","K-A-20"],
+    kellogg_secondary:["K-C-17"],
+    disl_primitives:["MOTION","PATH","PERMANENCE"],
+    sources:["Hampe, B. (Ed.). (2005). *From Perception to Meaning*. De Gruyter Mouton."]
+  },
+  {
+    code:"MATCHING", name:"Matching", group:"Other",
+    disl_classification:"primitive amalgamation",
+    definition:"Equivalence or correspondence between entities. Hampe (2005) identifies MATCHING as the schema of comparison and correspondence — the experience of two things being alike.",
+    mapping_rationale:"Two-sided Balance (K-B-06) makes MATCHING explicit: two masses of approximately equal size flank a central axis, enacting the schema of bilateral correspondence.",
+    disl_note:"MATCHING: OBJECT + LOCATION (two objects at corresponding positions).",
+    thesis_note:"",
+    kellogg_primary:["K-B-06"],
+    kellogg_secondary:[],
+    disl_primitives:["OBJECT","LOCATION"],
+    sources:["Hampe, B. (Ed.). (2005). *From Perception to Meaning*. De Gruyter Mouton."]
+  },
+  {
+    code:"SUPPORT", name:"Support", group:"New (DISL)",
+    disl_classification:"primitive amalgamation",
+    definition:"Contact between two objects in the vertical dimension, where the lower object prevents the upper one from falling. Mandler (1992) defines SUPPORT as one of the first spatial relationships understood by infants — the experience of objects resting on surfaces and on each other. In DISL (Hedblom et al. 2025), SUPPORT is a primitive amalgamation: CONTACT + ABOVE (= DOWN applied to two objects in contact). It is static (no change of state) and therefore not an image schema proper.",
+    mapping_rationale:"Base-line Fan (K-B-17) enacts SUPPORT: rays extend upward from a stable base line, which functions as the supporting ground. The base line is the SUPPORT primitive — it holds what is drawn above it. Border/Base/Sky Lines (K-C-10) explicitly mark the ground line that supports the drawing above it. SUPPORT is distinct from BALANCE: SUPPORT is asymmetric (one object holds another from below) while BALANCE is symmetric equilibrium.",
+    disl_note:"In DISL (Hedblom et al. 2025), SUPPORT = CONTACT + ABOVE, where ABOVE is derived from the entity primitive DOWN: if object b is closer to DOWN than object a, then ABOVE(a, b). Figure 10b shows the DISL representation of SUPPORT: a square object SUPPORTs a round object placed above it. This schema is newly added to the IS-Kellogg mapping (v2) based on the DISL formalisation.",
+    thesis_note:"SUPPORT appears in scribbles as the baseline orientation of K-B placement patterns. The base line is one of the earliest recurring features in children's drawings across cultures — a finding consistent with Mandler's (1992) claim that SUPPORT is among the first spatial primitives to be conceptualised in infancy. Adding SUPPORT to the taxonomy strengthens the developmental-cognitive argument of this thesis.",
+    kellogg_primary:["K-B-17","K-C-10"],
+    kellogg_secondary:["K-B-03","K-B-05"],
+    disl_primitives:["CONTACT","DOWN","OBJECT"],
+    sources:["Mandler, J. M. (1992). How to build a baby: II. Conceptual primitives. *Psychological Review*, 99(4), 587–604.","Hedblom, M. M., Neuhaus, F., & Mossakowski, T. (2025). DISL. *Spatial Cognition & Computation*, 25(2), 138–175. §3.3, Fig. 10b.","Kellogg, R. (1969). *Analyzing Children's Art*. Mayfield."]
+  },
+  {
+    code:"APPEAR", name:"Appear", group:"New (DISL)",
+    disl_classification:"image schema",
+    definition:"The transition from absence to presence of an entity. Mandler & Pagán Cánovas (2014) identify APPEAR as a spatial event: an object comes into existence in a region where there was none. In DISL (Hedblom et al. 2025), APPEAR is an image schema (classified as such because it involves change over time): a two-panel strip in which the first panel is empty and the second contains an OBJECT. Its inverse is DISAPPEAR.",
+    mapping_rationale:"The dot (K-A-01) is the minimal instance of APPEAR: a mark comes into existence on the blank surface. It is the zero-duration APPEAR event — a point contact producing an OBJECT with no path. Every diagram category (K-D) instantiates APPEAR as the moment of first closure: the form comes into existence the instant the contour closes. The temporal data captured by the tablet makes APPEAR empirically traceable: the first {x, y, t} coordinate of each stroke is the moment of APPEAR.",
+    disl_note:"DISL Figure 6b: APPEAR = two-panel strip, Scene 1 empty → Scene 2 with OBJECT. Mandler & Pagán Cánovas (2014) classify APPEAR as a spatial primitive, but DISL reclassifies it as an image schema because it involves change over time. The game of peekaboo (noted in Hedblom et al. 2025) is the canonical developmental context for APPEAR/DISAPPEAR — directly relevant to the drawing session as an oscillation between marking and not-marking.",
+    thesis_note:"APPEAR is particularly significant for this thesis. The scribble session begins with a sequence of APPEAR events: each new stroke brings a mark into existence on the blank surface. The temporal data (t-values in the anim JSON) allows tracing the exact moment each mark appears — making APPEAR the most precisely dateable event in the dataset. This is also, at the semantic level, the event of denomination in the proto-linguistic argument: the moment a mark is made, it constitutes something — the minimal act of graphemic predication.",
+    kellogg_primary:["K-A-01"],
+    kellogg_secondary:["K-D-01","K-D-02","K-D-03","K-D-04","K-D-05","K-D-06"],
+    disl_primitives:["OBJECT","PERMANENCE","MOTION"],
+    sources:["Mandler, J. M., & Pagán Cánovas, C. (2014). On defining image schemas. *Language and Cognition*, 6(4), 510–532.","Hedblom, M. M., Neuhaus, F., & Mossakowski, T. (2025). DISL. *Spatial Cognition & Computation*, 25(2), 138–175. §3.2, Fig. 6b.","Kellogg, R. (1969). *Analyzing Children's Art*. Mayfield."]
   },
 ];
 
@@ -4848,7 +5118,7 @@ function isRenderInfo() {
     return;
   }
   const s = isSelectedSchema;
-  const gc = s.group.replace(/\s+/g,'');
+  const gc = s.group.replace(/[^a-zA-Z0-9]/g,'');
   // Build code → session_id map for thumbnails
   const kMap = {};
   if (INDEX_DATA && INDEX_DATA.sessions) {
@@ -4862,23 +5132,41 @@ function isRenderInfo() {
       : '';
     return `<span class="is-k-chip ${cls}" title="${name}">${img}${code}</span>`;
   }
-  const primChips = s.kellogg_primary.map(c => chipWithThumb(c, 'primary')).join('');
-  const secChips  = s.kellogg_secondary.map(c => chipWithThumb(c, 'secondary')).join('');
+  function renderSrc(arr) {
+    return (arr || []).map(s => s.replace(/\*([^*]+)\*/g, '<em>$1</em>')).join('<br>');
+  }
+  const primChips  = s.kellogg_primary.map(c => chipWithThumb(c, 'primary')).join('');
+  const secChips   = s.kellogg_secondary.map(c => chipWithThumb(c, 'secondary')).join('');
+  const dislChips  = (s.disl_primitives || []).map(p =>
+    `<span class="is-disl-chip">${p}</span>`).join('');
+  const secBlock   = s.kellogg_secondary.length
+    ? `<div class="is-kellogg-label" style="margin-top:0.4rem;">Secondary Kellogg forms</div>
+       <div class="is-kellogg-chips">${secChips}</div>`
+    : '';
+  const thesisBlock = s.thesis_note
+    ? `<div class="is-section-label">Thesis note</div>
+       <div class="is-thesis-note">${s.thesis_note}</div>`
+    : '';
   panel.innerHTML = `
     <div class="is-info-name">${s.name}</div>
     <div class="is-info-meta">
       <span class="is-group-badge ${gc}">${s.group}</span>
-      <span class="is-source-cite">${s.source}</span>
+      <span class="is-disl-class">${s.disl_classification || ''}</span>
     </div>
     <div class="is-definition">${s.definition}</div>
-    <hr style="border:none;border-top:1px solid var(--c-border-light);margin:0.55rem 0;">
+    <div class="is-section-label">Kellogg mapping</div>
+    <div class="is-mapping-text">${s.mapping_rationale || ''}</div>
     <div class="is-kellogg-box">
       <div class="is-kellogg-label">Primary Kellogg forms</div>
       <div class="is-kellogg-chips">${primChips}</div>
-      <div class="is-kellogg-label" style="margin-top:0.35rem;">Secondary Kellogg forms</div>
-      <div class="is-kellogg-chips">${secChips}</div>
-      <div class="is-kellogg-note">${s.kellogg_note}</div>
+      ${secBlock}
     </div>
+    <div class="is-section-label">DISL primitives</div>
+    <div class="is-disl-chips">${dislChips}</div>
+    <div class="is-disl-note">${s.disl_note || ''}</div>
+    ${thesisBlock}
+    <div class="is-section-label">Sources</div>
+    <div class="is-sources">${renderSrc(s.sources)}</div>
     <div class="is-draw-prompt">Draw a diagram that enacts this schema using the Kellogg forms listed above as a guide.</div>
   `;
 }
