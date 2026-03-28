@@ -3549,6 +3549,25 @@ function saColor(label) {
   return SA_COLORS[g] || SA_COLORS['_'];
 }
 
+// ── Shared brush palette (IS Studio + Annotator) ────────────────────────────
+const BRUSH_PALETTE = [
+  '#0D0D0D', // nero
+  '#FF1020', // rosso fuoco neon
+  '#B80010', // rosso intenso / sangue
+  '#7A0018', // bordeaux
+  '#C83050', // carminio
+  '#E86080', // rosa-rosso
+  '#FFB0C0', // rosa
+  '#F8D8C8', // carne chiaro
+  '#C88870', // carne scuro
+  '#C07880', // carnato/vagina
+  '#8090B8', // blu grigio violaceo
+  '#B0E040', // verde acido laguna
+];
+function hexToRgbStr(hex) {
+  return `${parseInt(hex.slice(1,3),16)},${parseInt(hex.slice(3,5),16)},${parseInt(hex.slice(5,7),16)}`;
+}
+
 // ── State ──
 let saAnnotations  = [];   // [{id, strokes:[{pts,size,color_rgb},...], label, label_type}]
 let saSelectedId   = null; // id of selected annotation
@@ -5533,25 +5552,6 @@ function isKName(code) {
     if (FULL_TAXONOMY[prefix]?.[num]) return FULL_TAXONOMY[prefix][num];
   }
   return code;
-}
-
-// ── Shared brush palette (IS Studio + Annotator) ────────────────────────────
-const BRUSH_PALETTE = [
-  '#0D0D0D', // nero
-  '#FF1020', // rosso fuoco neon
-  '#B80010', // rosso intenso / sangue
-  '#7A0018', // bordeaux
-  '#C83050', // carminio
-  '#E86080', // rosa-rosso
-  '#FFB0C0', // rosa
-  '#F8D8C8', // carne chiaro
-  '#C88870', // carne scuro
-  '#C07880', // carnato/vagina
-  '#8090B8', // blu grigio violaceo
-  '#B0E040', // verde acido laguna
-];
-function hexToRgbStr(hex) {
-  return `${parseInt(hex.slice(1,3),16)},${parseInt(hex.slice(3,5),16)},${parseInt(hex.slice(5,7),16)}`;
 }
 
 // ── IS Studio state ──
