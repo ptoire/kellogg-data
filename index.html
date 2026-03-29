@@ -1656,7 +1656,7 @@ body {
 .is-archive-card:hover { box-shadow:var(--shadow-md); transform:translateY(-2px); }
 .is-archive-card-img-wrap { position:relative; }
 .is-archive-card img { display:block; width:100%; aspect-ratio:3/2; object-fit:contain; background:#fff; border-bottom:1px solid var(--c-border-light); }
-.is-archive-card-placeholder { display:block; width:100%; aspect-ratio:3/2; background:#f5f5f0; border-bottom:1px solid var(--c-border-light); }
+.is-archive-card-placeholder { display:block; width:100%; aspect-ratio:3/2; background:#fff; border-bottom:1px solid var(--c-border-light); }
 .is-archive-card-anim {
   position:absolute; top:0; left:0; width:100%; height:100%;
   background:#fff; opacity:0; transition:opacity 0.18s;
@@ -1683,7 +1683,15 @@ body {
 .is-ann-toggle { margin-left:0.35rem; }
 .is-ann-toggle.on { border-color:var(--c-primary); color:var(--c-primary); background:rgba(var(--c-primary-rgb),0.07); }
 #is-ann-panel {
-  border-top:1px solid var(--c-border-light); margin-top:0.5rem; padding-top:0.8rem;
+  position: absolute;
+  top: 0; right: 0;
+  width: 52%; height: 100%;
+  background: rgba(252,252,248,0.97);
+  border-left: 1.5px solid #d8d8d0;
+  overflow-y: auto;
+  z-index: 5;
+  padding: 0.6rem 0.5rem;
+  box-sizing: border-box;
 }
 .is-ann-header { display:flex; align-items:baseline; gap:0.6rem; margin-bottom:0.6rem; }
 .is-ann-status { font-family:var(--font-mono); font-size:0.72rem; color:var(--c-text); font-weight:600; }
@@ -8317,6 +8325,7 @@ function buildISStudioSection() {
         <div class="is-canvas-wrap">
           <canvas id="is-canvas" width="1200" height="800"></canvas>
           <div class="is-canvas-placeholder" id="is-placeholder">Select a schema and draw here</div>
+          <div id="is-ann-panel" style="display:none"></div>
         </div>
         <div class="is-canvas-prompt" id="is-canvas-prompt">
           <div class="is-canvas-prompt-label">Drawing scene</div>
@@ -8324,7 +8333,6 @@ function buildISStudioSection() {
           <div class="is-canvas-prompt-label">How to draw it</div>
           <div class="is-drawing-instructions" id="is-prompt-instructions"></div>
         </div>
-        <div id="is-ann-panel" style="display:none"></div>
       </div>
     </div>
 
@@ -8900,17 +8908,31 @@ function isAnnRenderPanel() {
   if (!letters.length) { panel.innerHTML='<div class="is-ann-empty">Kellogg data not loaded.</div>'; return; }
 
   const tabs = letters.map((l,i) =>
-    `<button class="is-ann-tab${i===0?' active':''}" data-letter="${l}" onclick="isAnnTab(this)">${l}: ${IS_ANN_K_GROUP_NAMES[l]||l}</button>`
+    `<button class="is-ann-tab${i===0?' active':''}" data-letter="${l}" onclick="isAnnTab(this)">${l}</button>`
   ).join('');
 
   const groups = letters.map((l,i) => {
+    const grpColor = _isDet_groupColors['K-'+l] || '#888';
     const chips = (KELLOGG_GROUPS[l]||[]).map(entry => {
       const parts=entry.split(':'), num=parts[0], name=parts.slice(1).join(':');
       const code='K-'+l+'-'+num;
-      const on=selectedCodes.has(code)?' on':'';
-      return `<span class="is-ann-tag${on}" data-code="${code}" title="${name}" onclick="isAnnToggleCode('${code}')">${code}</span>`;
+      const on = selectedCodes.has(code);
+      const archSess = INDEX_DATA && INDEX_DATA.sessions
+        ? INDEX_DATA.sessions.find(s => s.code === code) : null;
+      const imgHtml = archSess
+        ? `<img src="${BASE_URL}img/${archSess.session_id}_thumb.png" loading="lazy" onerror="this.style.display='none'">`
+        : '<div class="k-card-chip-noimg"></div>';
+      return `<button class="k-card-chip${on?' on':''}${on?' active':''}" data-code="${code}"
+        style="border-color:${on?grpColor:'#e0e0d8'};color:${grpColor};"
+        onclick="isAnnToggleCode('${code}','${grpColor}')">
+        ${imgHtml}
+        <div class="k-card-chip-info">
+          <div class="k-card-chip-code">${code}</div>
+          <div class="k-card-chip-name">${name}</div>
+        </div>
+      </button>`;
     }).join('');
-    return `<div class="is-ann-tag-group" id="is-ann-tg-${l}" style="display:${i===0?'flex':'none'};flex-wrap:wrap;gap:0.22rem;">${chips}</div>`;
+    return `<div class="k-card-grid is-ann-tag-group" id="is-ann-tg-${l}" style="display:${i===0?'grid':'none'}">${chips}</div>`;
   }).join('');
 
   const groupsListHTML = isAnnotations.length
@@ -8922,7 +8944,7 @@ function isAnnRenderPanel() {
           <span class="is-ann-group-codes">${a.codes.join(' · ')||'(no codes)'}</span>
           <span class="is-ann-group-count">${a.indices.length} str.</span>
           ${note}
-          <button class="is-ann-del-btn" onclick="isAnnDeleteGroup(event,'${a.id}')" title="Delete">×</button>
+          <button class="is-ann-del-btn" onclick="isAnnDeleteGroup(event,'${a.id}')" title="Delete">&times;</button>
         </div>`;
       }).join('')
     : '<div class="is-ann-empty">No groups yet. Select strokes above, choose Kellogg codes, then click &ldquo;+ Label group&rdquo;.</div>';
@@ -8931,19 +8953,17 @@ function isAnnRenderPanel() {
   const canSave   = selCount > 0;
 
   panel.innerHTML = `
-    <div class="is-ann-header">
-      <span class="is-ann-status">${selCount>0 ? selCount+' stroke'+(selCount!==1?'s':'')+' selected' : 'Click a stroke to select it'}</span>
-      ${selCount>0 ? '<span class="is-ann-hint">shift+click to add more</span>' : ''}
+    <div class="k-picker-header">
+      ${selCount>0 ? selCount+' stroke'+(selCount!==1?'s':'')+' selected' : 'Click a stroke'}
     </div>
-    <div class="is-ann-section-label">Kellogg category</div>
-    <div class="is-ann-tabs">${tabs}</div>
+    <div class="k-picker-tabs">${tabs}</div>
     <div id="is-ann-tag-groups">${groups}</div>
     <input class="is-ann-note-inp" id="is-ann-note" type="text" placeholder="Optional note…" value="${editGroup ? editGroup.note.replace(/"/g,'&quot;') : ''}">
     <div class="is-ann-actions">
       ${canSave ? `<button class="ann-btn ann-primary" onclick="isAnnSaveGroup()">${saveLabel}</button>` : ''}
-      ${editGroup ? `<button class="ann-btn" style="color:#C0392B" onclick="isAnnDeleteGroup(null,'${editGroup.id}')">Delete group</button>` : ''}
+      ${editGroup ? `<button class="ann-btn" style="color:#C0392B;font-size:0.6rem;" onclick="isAnnDeleteGroup(null,'${editGroup.id}')">Delete group</button>` : ''}
     </div>
-    <div class="is-ann-section-label" style="margin-top:0.85rem">Annotation groups (${isAnnotations.length})</div>
+    <div class="k-picker-header" style="margin-top:0.5rem;">Groups (${isAnnotations.length})</div>
     <div class="is-ann-group-list">${groupsListHTML}</div>
   `;
 }
@@ -8954,16 +8974,19 @@ function isAnnTab(btn) {
   btn.classList.add('active');
   document.querySelectorAll('#is-ann-panel .is-ann-tag-group').forEach(g => g.style.display='none');
   const tg = document.getElementById('is-ann-tg-'+l);
-  if (tg) tg.style.display='flex';
+  if (tg) tg.style.display='grid';
 }
 
-function isAnnToggleCode(code) {
-  const chip = document.querySelector(`#is-ann-panel .is-ann-tag[data-code="${code}"]`);
-  if (chip) chip.classList.toggle('on');
+function isAnnToggleCode(code, grpColor) {
+  const chip = document.querySelector(`#is-ann-panel [data-code="${code}"]`);
+  if (!chip) return;
+  chip.classList.toggle('on');
+  chip.classList.toggle('active', chip.classList.contains('on'));
+  chip.style.borderColor = chip.classList.contains('on') ? (grpColor||'#888') : '#e0e0d8';
 }
 
 function isAnnSaveGroup() {
-  const codes = [...document.querySelectorAll('#is-ann-panel .is-ann-tag.on')].map(t=>t.dataset.code);
+  const codes = [...document.querySelectorAll('#is-ann-panel [data-code].on')].map(t=>t.dataset.code);
   const note  = (document.getElementById('is-ann-note')||{}).value||'';
   if (!codes.length) { alert('Select at least one Kellogg code first.'); return; }
   const indices = [...isAnnSelection];
@@ -9004,6 +9027,11 @@ function isSaveSession() {
   const schema    = isSelectedSchema;
   const sessionId = `IS_${schema.code}_${Date.now()}`;
 
+  // Capture canvas without annotation highlights
+  const wasAnnotating = isAnnotateMode;
+  const savedSel = new Set(isAnnSelection);
+  if (wasAnnotating) { isAnnotateMode = false; isAnnSelection.clear(); isRedrawCanvas(); }
+
   // Full-res PNG
   const fullDataUrl = canvas.toDataURL('image/png');
 
@@ -9015,19 +9043,26 @@ function isSaveSession() {
   tctx.drawImage(canvas, 0, 0, 300, 200);
   const thumbDataUrl = tc.toDataURL('image/png');
 
-  // Anim JSON: denormalize x,y; compute velocity (px/s) for each point
-  const animStrokes = isStrokes.map(s => s.pts.map((p, i) => {
-    let vel = 0;
-    if (i > 0) {
-      const pp = s.pts[i-1];
-      const dx = (p.x - pp.x) * 1200;
-      const dy = (p.y - pp.y) * 800;
-      const dt = Math.max(1, p.t - pp.t) / 1000; // seconds
-      vel = Math.round(Math.sqrt(dx*dx + dy*dy) / dt);
-    }
-    return { x: Math.round(p.x * 1200), y: Math.round(p.y * 800), t: p.t, pressure: p.pressure, velocity: vel };
+  // Restore annotation state
+  if (wasAnnotating) { isAnnotateMode = true; isAnnSelection = savedSel; isRedrawCanvas(); }
+
+  // Anim JSON: denormalize x,y; compute velocity (px/s) for each point; store stroke color+size
+  const animStrokes = isStrokes.map(s => ({
+    color: s.color || '#1A1A1E',
+    size: s.size || 2,
+    pts: s.pts.map((p, i) => {
+      let vel = 0;
+      if (i > 0) {
+        const pp = s.pts[i-1];
+        const dx = (p.x - pp.x) * 1200;
+        const dy = (p.y - pp.y) * 800;
+        const dt = Math.max(1, p.t - pp.t) / 1000; // seconds
+        vel = Math.round(Math.sqrt(dx*dx + dy*dy) / dt);
+      }
+      return { x: Math.round(p.x * 1200), y: Math.round(p.y * 800), t: p.t, pressure: p.pressure, velocity: vel };
+    })
   }));
-  const totalPoints = animStrokes.reduce((n, s) => n + s.length, 0);
+  const totalPoints = animStrokes.reduce((n, s) => n + s.pts.length, 0);
 
   const session = {
     session_id:         sessionId,
@@ -9136,12 +9171,17 @@ function isRenderArchive() {
       const placeholderCanvas = card.querySelector('canvas.is-archive-card-placeholder');
       if (placeholderCanvas) {
         const pctx = placeholderCanvas.getContext('2d');
-        pctx.strokeStyle = '#1A1A1E'; pctx.lineWidth = 1; pctx.lineCap = 'round';
+        pctx.lineCap = 'round'; pctx.lineJoin = 'round';
         const scX = 300/sess.anim.w, scY = 200/sess.anim.h;
+        const sc = Math.min(scX, scY);
         sess.anim.strokes.forEach(stroke => {
-          if (stroke.length < 2) return;
-          pctx.beginPath(); pctx.moveTo(stroke[0].x*scX, stroke[0].y*scY);
-          for (let i=1;i<stroke.length;i++) pctx.lineTo(stroke[i].x*scX, stroke[i].y*scY);
+          // Support both old format (array of pts) and new format ({color,size,pts})
+          const pts = Array.isArray(stroke) ? stroke : (stroke.pts || []);
+          if (pts.length < 2) return;
+          pctx.strokeStyle = Array.isArray(stroke) ? '#1A1A1E' : (stroke.color || '#1A1A1E');
+          pctx.lineWidth = Math.max(0.5, ((Array.isArray(stroke) ? 2 : (stroke.size || 2)) * sc));
+          pctx.beginPath(); pctx.moveTo(pts[0].x*scX, pts[0].y*scY);
+          for (let i=1;i<pts.length;i++) pctx.lineTo(pts[i].x*scX, pts[i].y*scY);
           pctx.stroke();
         });
       }
@@ -9174,11 +9214,13 @@ function isCardHoverStart(card, sess) {
   const W = cvs.width, H = cvs.height; // 300×200
   const anim = sess.anim;
   const scaleX = W / anim.w, scaleY = H / anim.h;
-  const allPts = anim.strokes.flat();
+  const sc = Math.min(scaleX, scaleY);
+  // Support both old format (array of pts) and new format ({color,size,pts})
+  const allPts = anim.strokes.flatMap(s => Array.isArray(s) ? s : (s.pts || []));
   if (!allPts.length) return;
   const tStart = allPts[0].t, tEnd = allPts[allPts.length - 1].t;
   const duration = Math.max(100, tEnd - tStart);
-  const animDuration = Math.max(800, duration); // real speed, min 0.8s
+  const animDuration = Math.max(800, duration);
 
   const startTime = performance.now();
   let rafId;
@@ -9188,13 +9230,15 @@ function isCardHoverStart(card, sess) {
     const progress = Math.min(1, (now - startTime) / animDuration);
     const tCur = tStart + progress * duration;
     ctx.clearRect(0, 0, W, H);
-    ctx.lineWidth = 1.5; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-    ctx.strokeStyle = '#1A1A1E'; ctx.fillStyle = '#1A1A1E';
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
     anim.strokes.forEach(stroke => {
-      if (!stroke.length) return;
+      const pts = Array.isArray(stroke) ? stroke : (stroke.pts || []);
+      if (!pts.length) return;
+      ctx.strokeStyle = Array.isArray(stroke) ? '#1A1A1E' : (stroke.color || '#1A1A1E');
+      ctx.lineWidth = Math.max(0.8, ((Array.isArray(stroke) ? 2 : (stroke.size || 2)) * sc));
       let started = false;
       ctx.beginPath();
-      for (const p of stroke) {
+      for (const p of pts) {
         if (p.t > tCur) break;
         const px = p.x * scaleX, py = p.y * scaleY;
         if (!started) { ctx.moveTo(px, py); started = true; } else ctx.lineTo(px, py);
