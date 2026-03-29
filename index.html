@@ -8249,26 +8249,23 @@ function _animPts(s)   { return Array.isArray(s) ? s : (s.pts || []); }
 function _animColor(s) { return Array.isArray(s) ? null : (s.color || null); }
 function _animSize(s)  { return Array.isArray(s) ? null : (s.size  || null); }
 
-// ── GitHub API cross-device sync ──────────────────────────────────────────────
-// Set GH_SYNC_TOKEN to sync sessions from any device (mobile, GitHub Pages, etc.)
-// Create a fine-grained GitHub PAT with "Contents: Read & Write" for ptoire/kellogg-data
-// WARNING: this token will be visible in the public repo — use a fine-grained PAT.
-const GH_SYNC_TOKEN = ''; // ← paste token here
-const _GH_API = 'https://api.github.com/repos/ptoire/kellogg-data/contents/data/is_sessions_local.json';
+// ── GitHub cross-device sync via Cloudflare Worker ────────────────────────────
+// The token lives in the Worker's environment — never in this file.
+// Set GH_WORKER_URL to your deployed Worker URL, e.g.:
+//   'https://kellogg-sync.YOUR-SUBDOMAIN.workers.dev'
+const GH_WORKER_URL = 'https://kellogg-sync.crampodigesso.workers.dev';
 const _GH_RAW = 'https://raw.githubusercontent.com/ptoire/kellogg-data/main/data/is_sessions_local.json';
 
 async function ghFetchSessions() {
   try {
-    const hdrs = GH_SYNC_TOKEN
-      ? { 'Authorization': `Bearer ${GH_SYNC_TOKEN}`, 'Accept': 'application/vnd.github.v3+json' }
-      : { 'Accept': 'application/vnd.github.v3+json' };
-    const resp = await fetch(_GH_API, { headers: hdrs });
-    if (resp.ok) {
-      const info = await resp.json();
-      const decoded = JSON.parse(atob(info.content.replace(/\s/g, '')));
-      return Array.isArray(decoded) ? decoded : [];
+    if (GH_WORKER_URL) {
+      const resp = await fetch(GH_WORKER_URL + '/sessions?t=' + Date.now());
+      if (resp.ok) {
+        const data = await resp.json();
+        return Array.isArray(data) ? data : [];
+      }
     }
-    // Fallback: raw URL (cached up to 5 min)
+    // Fallback: raw URL (cached up to 5 min, read-only)
     const raw = await fetch(_GH_RAW + '?t=' + Date.now());
     if (!raw.ok) return [];
     const data = await raw.json();
@@ -8277,33 +8274,14 @@ async function ghFetchSessions() {
 }
 
 async function ghSyncSessions(incoming) {
-  if (!GH_SYNC_TOKEN) return false;
+  if (!GH_WORKER_URL) return false;
   try {
-    const hdrs = {
-      'Authorization': `Bearer ${GH_SYNC_TOKEN}`,
-      'Accept': 'application/vnd.github.v3+json',
-      'Content-Type': 'application/json'
-    };
-    // Get current file + SHA
-    const getResp = await fetch(_GH_API, { headers: hdrs });
-    let sha = '', existing = [];
-    if (getResp.ok) {
-      const info = await getResp.json();
-      sha = info.sha;
-      existing = JSON.parse(atob(info.content.replace(/\s/g, '')));
-    }
-    // Merge by session_id
-    const byId = {};
-    (existing || []).forEach(s => { if (s.session_id) byId[s.session_id] = s; });
-    incoming.forEach(s => {
-      if (!s.session_id) return;
-      byId[s.session_id] = { ...(byId[s.session_id] || {}), ...s };
+    const resp = await fetch(GH_WORKER_URL + '/sessions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sessions: incoming })
     });
-    const upload = Object.values(byId).map(({ full_dataurl, ...r }) => r);
-    const content = btoa(unescape(encodeURIComponent(JSON.stringify(upload, null, 2))));
-    const body = JSON.stringify({ message: 'sync: IS Studio session', content, ...(sha ? { sha } : {}) });
-    const put = await fetch(_GH_API, { method: 'PUT', headers: hdrs, body });
-    return put.ok;
+    return resp.ok;
   } catch { return false; }
 }
 
