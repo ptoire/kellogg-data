@@ -1656,6 +1656,7 @@ body {
 .is-archive-card:hover { box-shadow:var(--shadow-md); transform:translateY(-2px); }
 .is-archive-card-img-wrap { position:relative; }
 .is-archive-card img { display:block; width:100%; aspect-ratio:3/2; object-fit:contain; background:#fff; border-bottom:1px solid var(--c-border-light); }
+.is-archive-card-placeholder { display:block; width:100%; aspect-ratio:3/2; background:#f5f5f0; border-bottom:1px solid var(--c-border-light); }
 .is-archive-card-anim {
   position:absolute; top:0; left:0; width:100%; height:100%;
   background:#fff; opacity:0; transition:opacity 0.18s;
@@ -9050,14 +9051,14 @@ function isRenderArchive() {
     const modLine = sess.modified_at
       ? `<div class="is-archive-card-mod">modified by author ${new Date(sess.modified_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}</div>`
       : '';
-    // Remote sessions (no image data) show a canvas placeholder
+    // Sessions with thumb show static image; without show canvas stroke preview
     const imgHtml = sess.thumb_dataurl
       ? `<img src="${sess.thumb_dataurl}" alt="${sess.schema_name}">`
-      : `<canvas class="is-archive-card-anim" width="300" height="200" style="background:#f5f5f0;"></canvas>`;
+      : `<canvas class="is-archive-card-placeholder" width="300" height="200"></canvas>`;
     card.innerHTML = `
       <div class="is-archive-card-img-wrap">
         ${imgHtml}
-        <canvas class="is-archive-card-anim" width="300" height="200" style="${sess.thumb_dataurl?'':'display:none'}"></canvas>
+        <canvas class="is-archive-card-anim" width="300" height="200"></canvas>
       </div>
       <div class="is-archive-card-info">
         <div class="is-archive-card-schema">${sess.schema_code}</div>
@@ -9089,9 +9090,9 @@ function isRenderArchive() {
       });
     }
     grid.appendChild(card);
-    // Draw static preview for remote sessions (no thumb)
+    // Draw static stroke preview for sessions without a thumbnail
     if (!sess.thumb_dataurl && sess.anim) {
-      const placeholderCanvas = card.querySelector('canvas.is-archive-card-anim');
+      const placeholderCanvas = card.querySelector('canvas.is-archive-card-placeholder');
       if (placeholderCanvas) {
         const pctx = placeholderCanvas.getContext('2d');
         pctx.strokeStyle = '#1A1A1E'; pctx.lineWidth = 1; pctx.lineCap = 'round';
@@ -9102,7 +9103,6 @@ function isRenderArchive() {
           for (let i=1;i<stroke.length;i++) pctx.lineTo(stroke[i].x*scX, stroke[i].y*scY);
           pctx.stroke();
         });
-        placeholderCanvas.style.display = 'block';
       }
     }
   });
