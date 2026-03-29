@@ -1670,6 +1670,7 @@ body {
 .is-archive-card-schema { font-family:var(--font-mono); font-size:0.6rem; font-weight:700; color:var(--c-text-tertiary); letter-spacing:0.04em; }
 .is-archive-card-name { font-family:var(--font-display); font-size:0.88rem; font-weight:600; line-height:1.2; }
 .is-archive-card-meta { font-family:var(--font-mono); font-size:0.58rem; color:var(--c-text-tertiary); margin-top:0.15rem; }
+.is-archive-card-loc { font-family:var(--font-mono); font-size:0.55rem; color:var(--c-text-tertiary); margin-top:0.1rem; opacity:0.7; }
 .is-archive-card-author { font-family:var(--font-mono); font-size:0.55rem; color:var(--c-accent); margin-top:0.1rem; }
 .is-archive-card-mod { font-family:var(--font-mono); font-size:0.52rem; color:#c0392b; margin-top:0.08rem; }
 .is-archive-card-del {
@@ -9178,8 +9179,27 @@ function isAnnDeleteGroup(e, id) {
   isAnnRenderPanel(); isRedrawCanvas();
 }
 
+// ── Geolocation helper ────────────────────────────────────────────────────────
+async function isGetLocation() {
+  try {
+    const pos = await new Promise((res, rej) =>
+      navigator.geolocation.getCurrentPosition(res, rej, { timeout: 5000 }));
+    const { latitude: lat, longitude: lon } = pos.coords;
+    const resp = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&zoom=10`,
+      { headers: { 'Accept-Language': 'en' } }
+    );
+    if (!resp.ok) return null;
+    const data = await resp.json();
+    const a = data.address || {};
+    const city = a.city || a.town || a.village || a.county || '';
+    const country = a.country || '';
+    return [city, country].filter(Boolean).join(', ') || null;
+  } catch { return null; }
+}
+
 // ── Save session ──────────────────────────────────────────────────────────────
-function isSaveSession() {
+async function isSaveSession() {
   if (!isSelectedSchema || !isStrokes.length) return;
   const canvas = document.getElementById('is-canvas');
   if (!canvas) return;
@@ -9223,6 +9243,7 @@ function isSaveSession() {
   }));
   const totalPoints = animStrokes.reduce((n, s) => n + s.pts.length, 0);
 
+  const location = await isGetLocation();
   const session = {
     session_id:         sessionId,
     schema_code:        schema.code,
@@ -9230,6 +9251,7 @@ function isSaveSession() {
     schema_group:       schema.group,
     timestamp:          new Date().toISOString(),
     author:             { username: isGetUsername(), created_at: new Date().toISOString() },
+    ...(location ? { location } : {}),
     thumb_dataurl:      thumbDataUrl,
     full_dataurl:       fullDataUrl,
     anim:               { w: 1200, h: 800, strokes: animStrokes },
@@ -9286,7 +9308,9 @@ function isRenderArchive() {
   [...sessions].reverse().forEach(sess => {
     const card = document.createElement('div');
     card.className = 'is-archive-card';
-    const date = new Date(sess.timestamp).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+    const _d = new Date(sess.timestamp);
+    const date = _d.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' })
+               + ' · ' + _d.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
     const author = sess.author?.username || 'unknown';
     const canDelete = !READONLY; // deletion only from localhost
     const authorLine = `<div class="is-archive-card-author">${author}</div>`;
@@ -9306,6 +9330,7 @@ function isRenderArchive() {
         <div class="is-archive-card-schema">${sess.schema_code}</div>
         <div class="is-archive-card-name">${sess.schema_name}</div>
         <div class="is-archive-card-meta">${sess.total_strokes} stroke${sess.total_strokes !== 1 ? 's' : ''} · ${date}</div>
+        ${sess.location ? `<div class="is-archive-card-loc">${sess.location}</div>` : ''}
         ${authorLine}${modLine}
       </div>
       ${(sess.stroke_annotations||[]).length ? '<div class="is-archive-card-ann">' + [...new Set((sess.stroke_annotations||[]).flatMap(a=>a.codes))].map(c=>'<span class="is-archive-card-ann-chip">'+c+'</span>').join('') + '</div>' : ''}
@@ -10914,7 +10939,8 @@ function gmBuildCorrespondenceTable() {
 <footer style="margin-top:4rem;padding:1.5rem 2rem;border-top:1px solid var(--c-border-light);background:var(--c-bg-card);font-family:var(--font-mono);font-size:0.6rem;color:var(--c-text-tertiary);line-height:1.8;text-align:center;">
   <span id="copyright-line"></span><br>
   This material may be freely used for educational, scientific, and research purposes with attribution.<br>
-  For publication or commercial use, contact <a href="mailto:crampodigesso@gmail.com" style="color:var(--c-accent);">crampodigesso@gmail.com</a>
+  For publication or commercial use, contact <a href="mailto:crampodigesso@gmail.com" style="color:var(--c-accent);">crampodigesso@gmail.com</a><br>
+  <span style="opacity:0.5;">v2026.03.30</span>
 </footer>
 <script>
   document.getElementById('copyright-line').textContent =
