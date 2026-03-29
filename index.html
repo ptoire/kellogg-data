@@ -8296,28 +8296,15 @@ async function isLoadFromServer() {
   const btn = document.getElementById('is-refresh-btn');
   if (btn) { btn.disabled = true; btn.textContent = '⟳ Loading…'; }
   try {
-    let serverSessions = [];
-    const resp = await fetch('/api/is_sessions');
-    if (resp.ok) {
-      const data = await resp.json();
-      serverSessions = data.sessions || [];
-      // On localhost: push all local sessions (with thumbs) back to server file
-      if (!READONLY) {
-        const local = isGetSessions();
-        if (local.length) {
-          const withThumbs = local.map(({full_dataurl, ...r}) => r);
-          fetch('/api/is_sessions', { method:'POST', headers:{'Content-Type':'application/json'},
-            body: JSON.stringify({sessions: withThumbs}) }).catch(()=>{});
-        }
-      }
-    } else {
-      // Not localhost: fetch from GitHub (always current)
-      serverSessions = await ghFetchSessions();
-    }
+    // Worker is the single source of truth for all devices
+    const serverSessions = await ghFetchSessions();
     const local = isGetSessions();
-    const localIds = new Set(local.map(s => s.session_id));
+    const localById = {};
+    local.forEach(s => { if (s.session_id) localById[s.session_id] = s; });
     let added = 0;
-    serverSessions.forEach(ss => { if (!localIds.has(ss.session_id)) { local.push(ss); added++; } });
+    serverSessions.forEach(ss => {
+      if (!localById[ss.session_id]) { local.push(ss); added++; }
+    });
     if (added > 0) { isSaveSessions(local); isRenderArchive(); isUpdateChipCounts(); }
   } catch {}
   finally {
@@ -9135,14 +9122,15 @@ function isSaveSession() {
   // Sync to server/GitHub (thumb included, full drawing excluded)
   const syncSessions = sessions.map(({ full_dataurl, ...r }) => r);
   if (!READONLY) {
-    // Localhost: POST to local server which will git-push
+    // Localhost: POST to local server for immediate local persistence
     fetch('/api/is_sessions', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ sessions: syncSessions }),
     }).catch(() => {});
-  } else {
-    // Public page: sync via GitHub API so other devices see this session
+  }
+  // Always sync via Worker so all devices see this session
+  if (GH_WORKER_URL) {
     const fb = document.getElementById('is-save-fb');
     ghSyncSessions(syncSessions).then(ok => {
       if (fb) fb.textContent = ok ? '✓ Synced to GitHub' : '✓ Saved locally';

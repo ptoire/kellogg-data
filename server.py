@@ -49,8 +49,7 @@ def _do_push():
     try:
         subprocess.run(
             ["git", "add",
-             "data/annotations_local.json",
-             "data/is_sessions_local.json"],
+             "data/annotations_local.json"],
             cwd=SITE_DIR, capture_output=True
         )
         diff = subprocess.run(
