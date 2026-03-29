@@ -8449,6 +8449,18 @@ function buildISStudioSection() {
   if (ud) ud.textContent = isGetUsername();
   // Load remote sessions in background
   isLoadFromServer();
+  // On localhost: push all local sessions (with thumbnails) to Worker on startup
+  if (!READONLY) {
+    const local = isGetSessions();
+    if (local.length) {
+      const withThumbs = local.map(({ full_dataurl, ...r }) => r);
+      fetch('/api/is_sessions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessions: withThumbs })
+      }).catch(() => {});
+    }
+  }
 }
 
 function isShowUsernameEdit() {
