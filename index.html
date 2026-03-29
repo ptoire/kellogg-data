@@ -8237,7 +8237,16 @@ let isCurrentStroke   = null;
 let isDrawColor       = BRUSH_PALETTE[0];
 let isBrushSize       = 6;
 const IS_SESSIONS_KEY = 'is_studio_sessions';
+const IS_DELETED_KEY  = 'is_studio_deleted'; // persisted set of locally-deleted session IDs
 const IS_USERNAME_KEY = 'is_username';
+
+function isGetDeleted() {
+  try { return new Set(JSON.parse(localStorage.getItem(IS_DELETED_KEY) || '[]')); } catch { return new Set(); }
+}
+function isAddDeleted(id) {
+  const s = isGetDeleted(); s.add(id);
+  try { localStorage.setItem(IS_DELETED_KEY, JSON.stringify([...s])); } catch {}
+}
 
 // ── Username (persistent across sessions) ─────────────────────────────────────
 function isGetUsername() {
@@ -8318,12 +8327,13 @@ async function isLoadFromServer() {
   try {
     // Worker is the single source of truth for all devices
     const serverSessions = await ghFetchSessions();
+    const deleted = isGetDeleted();
     const local = isGetSessions();
     const localById = {};
     local.forEach(s => { if (s.session_id) localById[s.session_id] = s; });
     let added = 0;
     serverSessions.forEach(ss => {
-      if (!localById[ss.session_id]) { local.push(ss); added++; }
+      if (!localById[ss.session_id] && !deleted.has(ss.session_id)) { local.push(ss); added++; }
     });
     if (added > 0) { isSaveSessions(local); isRenderArchive(); isUpdateChipCounts(); }
   } catch {}
@@ -9238,6 +9248,7 @@ function isRenderArchive() {
         if (confirm('Delete this session?')) {
           const updated = isGetSessions().filter(s => s.session_id !== sess.session_id);
           isSaveSessions(updated);
+          isAddDeleted(sess.session_id);
           // Propagate deletion
           if (!READONLY) {
             fetch('/api/is_sessions', { method:'POST', headers:{'Content-Type':'application/json'},
