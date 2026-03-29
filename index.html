@@ -1682,6 +1682,26 @@ body {
 /* IS Studio — Kellogg stroke annotation */
 .is-ann-toggle { margin-left:0.35rem; }
 .is-ann-toggle.on { border-color:var(--c-primary); color:var(--c-primary); background:rgba(var(--c-primary-rgb),0.07); }
+#is-ann-hint {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  display: none;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0.6rem;
+  background: rgba(252,252,248,0.82);
+  backdrop-filter: blur(3px);
+  border-top: 1px solid rgba(0,0,0,0.07);
+  pointer-events: auto;
+  z-index: 6;
+  min-height: 2rem;
+}
+.is-ann-hint-text {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  color: #888;
+  font-style: italic;
+}
 #is-ann-panel {
   position: absolute;
   top: 0; right: 0;
@@ -8353,6 +8373,7 @@ function buildISStudioSection() {
         <div class="is-canvas-wrap">
           <canvas id="is-canvas" width="1200" height="800"></canvas>
           <div class="is-canvas-placeholder" id="is-placeholder">Select a schema and draw here</div>
+          <div id="is-ann-hint"></div>
           <div id="is-ann-panel" style="display:none"></div>
         </div>
         <div class="is-canvas-prompt" id="is-canvas-prompt">
@@ -8889,9 +8910,28 @@ function isToggleAnnotateMode() {
   const btn = document.getElementById('is-ann-toggle');
   if (btn) btn.classList.toggle('on', isAnnotateMode);
   const panel = document.getElementById('is-ann-panel');
-  if (panel) panel.style.display = isAnnotateMode ? 'block' : 'none';
-  if (isAnnotateMode) isAnnRenderPanel();
+  if (panel) panel.style.display = 'none';
+  const hint = document.getElementById('is-ann-hint');
+  if (hint) hint.style.display = isAnnotateMode ? 'flex' : 'none';
+  if (isAnnotateMode) isAnnRenderHint();
   isRedrawCanvas();
+}
+
+function isAnnRenderHint() {
+  const hint = document.getElementById('is-ann-hint');
+  if (!hint || !isAnnotateMode) return;
+  const n = isAnnSelection.size;
+  if (n === 0) {
+    hint.innerHTML = `<span class="is-ann-hint-text">Click a stroke to select it, Shift+click to add more</span>`;
+  } else {
+    hint.innerHTML = `<span class="is-ann-hint-text">${n} stroke${n!==1?'s':''} selected</span>
+      <button class="ann-btn ann-primary" style="margin-left:auto;font-size:0.58rem;padding:0.18rem 0.5rem;" onclick="isAnnOpenPicker()">Choose category &#8594;</button>`;
+  }
+}
+
+function isAnnOpenPicker() {
+  const panel = document.getElementById('is-ann-panel');
+  if (panel) { panel.style.display = 'block'; isAnnRenderPanel(); }
 }
 
 function isAnnHandlePointer(e, canvas) {
@@ -8905,6 +8945,9 @@ function isAnnHandlePointer(e, canvas) {
     if (ann && !e.shiftKey) {
       isAnnEditId = ann.id;
       isAnnSelection = new Set(ann.indices);
+      // Auto-open picker when clicking an existing annotation group
+      const panel = document.getElementById('is-ann-panel');
+      if (panel) panel.style.display = 'block';
     } else if (e.shiftKey) {
       if (isAnnSelection.has(idx)) isAnnSelection.delete(idx);
       else isAnnSelection.add(idx);
@@ -8915,7 +8958,10 @@ function isAnnHandlePointer(e, canvas) {
       isAnnEditId = null;
     }
   }
-  isAnnRenderPanel(); isRedrawCanvas();
+  isAnnRenderHint();
+  const panel = document.getElementById('is-ann-panel');
+  if (panel && panel.style.display !== 'none') isAnnRenderPanel();
+  isRedrawCanvas();
 }
 
 function isAnnHandleHover(e, canvas) {
