@@ -9165,22 +9165,23 @@ function isSaveSession() {
   isRenderArchive();
   isUpdateChipCounts();
 
-  // Sync to server/GitHub (thumb included, full drawing excluded)
-  const syncSessions = sessions.map(({ full_dataurl, ...r }) => r);
+  // Sync — strip full_dataurl but keep thumb; send only the new session to Worker
+  const { full_dataurl: _fd, ...sessionToSync } = session;
   if (!READONLY) {
-    // Localhost: POST to local server for immediate local persistence
+    // Localhost: POST all sessions to local server
+    const syncAll = sessions.map(({ full_dataurl, ...r }) => r);
     fetch('/api/is_sessions', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ sessions: syncSessions }),
+      body: JSON.stringify({ sessions: syncAll }),
     }).catch(() => {});
   }
-  // Always sync via Worker so all devices see this session
+  // Always sync only the new session via Worker (keeps payload small)
   if (GH_WORKER_URL) {
-    const fb = document.getElementById('is-save-fb');
-    ghSyncSessions(syncSessions).then(ok => {
-      if (fb) fb.textContent = ok ? '✓ Synced to GitHub' : '✓ Saved locally';
-      setTimeout(() => { if (fb) fb.textContent = ''; }, 4000);
+    const fb2 = document.getElementById('is-save-fb');
+    ghSyncSessions([sessionToSync]).then(ok => {
+      if (fb2) fb2.textContent = ok ? '✓ Synced to GitHub' : '✓ Saved locally';
+      setTimeout(() => { if (fb2) fb2.textContent = ''; }, 4000);
     });
   }
 }
