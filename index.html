@@ -1685,7 +1685,7 @@ body {
 #is-ann-panel {
   position: absolute;
   top: 0; right: 0;
-  width: 52%; height: 100%;
+  width: 44%; height: 100%;
   background: rgba(252,252,248,0.97);
   border-left: 1.5px solid #d8d8d0;
   overflow-y: auto;
@@ -1768,23 +1768,23 @@ body {
   margin-bottom: 0.35rem;
 }
 .k-card-grid {
-  display: grid; grid-template-columns: repeat(2, 1fr);
-  gap: 0.3rem; overflow-y: auto;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(62px, 1fr));
+  gap: 0.18rem;
 }
 .k-card-chip {
   display: flex; flex-direction: column;
-  border: 1.5px solid #e0e0d8; border-radius: 3px;
+  border: 1.5px solid #e0e0d8; border-radius: 2px;
   cursor: pointer; background: #fff; overflow: hidden;
   padding: 0; text-align: left;
   transition: border-color 0.1s, box-shadow 0.1s;
 }
-.k-card-chip:hover { border-color: #aaa; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
-.k-card-chip.active { border-width: 2px; box-shadow: 0 0 0 1px currentColor; }
+.k-card-chip:hover { border-color: #aaa; }
+.k-card-chip.active { border-width: 2px; }
 .k-card-chip img { display:block; width:100%; aspect-ratio:4/3; object-fit:contain; background:#f5f5f0; }
 .k-card-chip-noimg { width:100%; aspect-ratio:4/3; background:#f0f0ec; }
-.k-card-chip-info { padding: 0.15rem 0.22rem 0.18rem; }
-.k-card-chip-code { font-family:var(--font-mono); font-size:0.47rem; color:#999; line-height:1.3; }
-.k-card-chip-name { font-family:var(--font-body); font-size:0.55rem; color:#333; line-height:1.25; font-weight:500; }
+.k-card-chip-info { padding: 0.1rem 0.15rem 0.12rem; }
+.k-card-chip-code { font-family:var(--font-mono); font-size:0.42rem; color:#999; line-height:1.2; }
+.k-card-chip-name { font-family:var(--font-body); font-size:0.46rem; color:#333; line-height:1.2; font-weight:500; }
 @media (max-width:900px) {
   .is-studio-body { grid-template-columns:1fr; }
   .is-left-panel  { position:static; max-height:none; }
@@ -9220,7 +9220,7 @@ function isCardHoverStart(card, sess) {
   if (!allPts.length) return;
   const tStart = allPts[0].t, tEnd = allPts[allPts.length - 1].t;
   const duration = Math.max(100, tEnd - tStart);
-  const animDuration = Math.max(800, duration);
+  const animDuration = Math.min(5000, Math.max(800, duration));
 
   const startTime = performance.now();
   let rafId;
@@ -9660,8 +9660,8 @@ function isTogglePlay() {
   if (allPts.length < 2) return;
   const tStart = allPts[0].t, tEnd = allPts[allPts.length - 1].t;
   const duration = Math.max(1, tEnd - tStart);
-  // Play at real speed, minimum 1s, maximum 10s
-  const animDuration = Math.min(10000, Math.max(1000, duration));
+  // Play at real speed, minimum 0.8s, maximum 5s
+  const animDuration = Math.min(5000, Math.max(800, duration));
   let startTime = performance.now();
   _isDetailPlaying = true;
   const btn = document.getElementById('btn-play');
