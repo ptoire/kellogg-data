@@ -9476,16 +9476,37 @@ let _isDet_labelMode   = false;
 let _isDet_selStroke   = null;   // currently selected stroke index
 let _isDet_labels      = {};     // { strokeIdx: string[] }  — multi-label
 let _isDet_pickerGroup = 'A';    // currently viewed group in picker
+let _isDet_canLabel    = false;  // whether current user may label this session
 
 function isDet_loadLabels(sid) {
+  // Prefer labels stored in the session object (synced across devices)
+  const sess = _isDetailSess;
+  if (sess && sess.stroke_kellogg && Object.keys(sess.stroke_kellogg).length) {
+    return sess.stroke_kellogg;
+  }
+  // Fall back to localStorage legacy key
   try { return JSON.parse(localStorage.getItem('is_stroke_kellogg') || '{}')[sid] || {}; } catch { return {}; }
 }
 function isDet_saveLabels(sid, labels) {
+  // 1. Legacy localStorage cache
   try {
     const all = JSON.parse(localStorage.getItem('is_stroke_kellogg') || '{}');
-    all[sid] = labels;
-    localStorage.setItem('is_stroke_kellogg', JSON.stringify(all));
+    all[sid] = labels; localStorage.setItem('is_stroke_kellogg', JSON.stringify(all));
   } catch {}
+  // 2. Update session object in localStorage so it propagates
+  const sessions = isGetSessions();
+  const idx = sessions.findIndex(s => s.session_id === sid);
+  if (idx < 0) return;
+  sessions[idx] = { ...sessions[idx], stroke_kellogg: { ...labels }, modified_at: new Date().toISOString() };
+  isSaveSessions(sessions);
+  const { full_dataurl, ...toSync } = sessions[idx];
+  // 3. Sync to server
+  if (!READONLY) {
+    fetch('/api/is_sessions', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sessions: [toSync] }) }).catch(() => {});
+  } else if (GH_WORKER_URL) {
+    ghSyncSessions([toSync]);
+  }
 }
 
 // Colors per Kellogg group for labeled strokes
@@ -9682,6 +9703,7 @@ function isDet_clearStroke(strokeIdx) {
 }
 
 function isDet_toggleLabelMode() {
+  if (!_isDet_canLabel) return;
   _isDet_labelMode = !_isDet_labelMode;
   _isDet_selStroke = null;
   _isDet_pickerGroup = 'A';
@@ -9722,6 +9744,8 @@ function isOpenDetail(sess) {
   _isDet_labels    = isDet_loadLabels(sess.session_id);
   _isDet_selStroke = null;
   _isDet_labelMode = false;
+  // Can label: always on localhost; on GitHub Pages only if username matches author
+  _isDet_canLabel  = !READONLY || (isGetUsername() === (sess.author?.username || ''));
 
   panel.innerHTML = `
     <div class="detail-header">
@@ -9739,7 +9763,7 @@ function isOpenDetail(sess) {
         <div class="anim-controls">
           <button class="anim-btn" id="btn-play" onclick="isTogglePlay()">&#9654; Play</button>
           <span class="anim-progress" id="anim-progress"></span>
-          <button class="anim-btn" id="btn-label" onclick="isDet_toggleLabelMode()" style="margin-left:auto;">&#9999; Label strokes</button>
+          ${_isDet_canLabel ? `<button class="anim-btn" id="btn-label" onclick="isDet_toggleLabelMode()" style="margin-left:auto;">&#9999; Label strokes</button>` : ''}
         </div>
         <div id="is-det-legend" style="margin-top:0.6rem;"></div>
       </div>

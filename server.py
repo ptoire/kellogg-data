@@ -15,6 +15,7 @@ Run:
     python server.py
 then open http://localhost:8080
 """
+import base64
 import json
 import os
 import re
@@ -27,6 +28,7 @@ from pathlib import Path
 SITE_DIR      = Path(__file__).resolve().parent
 SEGMENTED_DIR = SITE_DIR / ".." / ".." / "kellogg_downloader" / "data" / "images_segmented"
 ANNOT_FILE    = SITE_DIR / "data" / "annotations_local.json"
+DRAWINGS_DIR  = SITE_DIR / "data" / "drawings"
 IS_FILE       = SITE_DIR / "data" / "is_sessions_local.json"
 K_TO_IS_FILE  = SITE_DIR / "data" / "k_to_is_local.json"
 PORT          = 8080
@@ -124,6 +126,25 @@ def _forward_to_worker(sessions, deleted=None):
         print(f"·  Worker sync failed: {e}")
 
 
+def _save_drawing_files(session_id, dataurl=None, anim=None):
+    """Save full-res PNG and/or anim JSON for a session to data/drawings/."""
+    DRAWINGS_DIR.mkdir(parents=True, exist_ok=True)
+    if dataurl:
+        try:
+            _, b64 = dataurl.split(",", 1)
+            (DRAWINGS_DIR / f"{session_id}.png").write_bytes(base64.b64decode(b64))
+        except Exception as e:
+            print(f"·  Could not save PNG for {session_id}: {e}")
+    if anim:
+        try:
+            anim_path = DRAWINGS_DIR / f"{session_id}_anim.json"
+            if not anim_path.exists():
+                with open(anim_path, "w", encoding="utf-8") as f:
+                    json.dump(anim, f, ensure_ascii=False)
+        except Exception as e:
+            print(f"·  Could not save anim for {session_id}: {e}")
+
+
 def _save_is_sessions(incoming):
     """Merge incoming sessions (list) with existing ones by session_id, then persist."""
     existing = {}
@@ -139,6 +160,12 @@ def _save_is_sessions(incoming):
         sid = s.get("session_id")
         if not sid:
             continue
+        # Save full-res PNG and anim to disk if present
+        _save_drawing_files(
+            sid,
+            dataurl=s.get("full_dataurl") if not (DRAWINGS_DIR / f"{sid}.png").exists() else None,
+            anim=s.get("anim"),
+        )
         if sid in existing:
             # Update all fields except full_dataurl (thumb is allowed)
             existing[sid].update({k: v for k, v in s.items()
