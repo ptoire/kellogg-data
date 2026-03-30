@@ -26831,8 +26831,8 @@
               "soft": false
             }
           ],
-          "label": null,
-          "label_type": null
+          "label": "K-CF",
+          "label_type": "kellogg"
         }
       ],
       "status": "confirmed",
