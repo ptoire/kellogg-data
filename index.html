@@ -1851,6 +1851,89 @@ body {
   .is-studio-body { grid-template-columns:1fr; }
   .is-left-panel  { position:static; max-height:none; }
 }
+
+/* ── Mobile IS Studio (phones) ─────────────────────────────────────────── */
+@media (max-width:600px) {
+  /* Hide long intro text */
+  .is-studio-section .section-intro { display:none; }
+
+  /* Studio body: no gap between panels */
+  .is-studio-body { gap:0; }
+
+  /* Left panel: sticky chip bar just below nav */
+  .is-left-panel {
+    position: sticky;
+    top: 2.75rem;
+    z-index: 50;
+    padding: 0.4rem 0.5rem 0.3rem;
+    border-radius: 0;
+    border-left: none; border-right: none;
+    max-height: none;
+    overflow: visible;
+    gap: 0.2rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+  }
+
+  /* Chip grid: single horizontal scrollable row */
+  .is-chip-grid {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 0.1rem;
+    gap: 0.22rem;
+  }
+  .is-chip-grid::-webkit-scrollbar { display:none; }
+  .is-chip-group-sep { display:none; }
+
+  /* Chips: slightly smaller */
+  .is-chip { padding:0.18em 0.45em; font-size:0.6rem; }
+  .is-chip-code { font-size:0.58rem; }
+  .is-chip-name { display:none; } /* show code only, save space */
+
+  /* Guide bar: compact — name only, no chips */
+  .is-guide-bar { border-top:none; padding-top:0.15rem; gap:0.1rem; }
+  .is-guide-placeholder { font-size:0.58rem; padding:0.1rem 0; border:none; margin:0; text-align:left; }
+  .is-guide-name { font-size:0.85rem; line-height:1.2; }
+  .is-guide-prompt { display:none; }
+  .is-guide-chips { display:none; }
+
+  /* Canvas: full-width square */
+  .is-canvas-wrap {
+    width: 100% !important;
+    aspect-ratio: 1 / 1;
+    border-radius: 0;
+    border-left: none; border-right: none;
+  }
+
+  /* Toolbar: compact, no annotate button */
+  .is-toolbar { padding:0.35rem 0.5rem; gap:0.3rem; flex-wrap:wrap; }
+  .is-ann-toggle { display:none; }
+  #is-save-btn { font-size:0.82rem; padding:0.3rem 0.9rem; }
+
+  /* Drawing instructions: visible and compact below canvas */
+  .is-canvas-prompt {
+    margin-top:0.5rem; padding:0.6rem 0.75rem;
+    font-size:0.78rem; border-radius:3px;
+    border:1px solid var(--c-border-light);
+    background:var(--c-bg-warm);
+  }
+  .is-canvas-prompt-label { font-size:0.5rem; }
+  .is-drawing-scene { font-size:0.78rem; line-height:1.5; }
+  .is-drawing-instructions { font-size:0.78rem; line-height:1.5; }
+
+  /* Hide mapping/DISL details */
+  .is-details { display:none; }
+
+  /* Username bar: compact */
+  .is-studio-section [style*="display:flex"][style*="margin-top:1rem"] {
+    padding:0.3rem 0.5rem; flex-wrap:wrap; gap:0.3rem;
+  }
+
+  /* Archive: 2-column grid */
+  .is-archive-grid { grid-template-columns:repeat(2,1fr) !important; gap:0.5rem; }
+  .is-archive-card-meta { font-size:0.58rem; }
+}
 /* ═══════════════════════════════════════════════════════════
    IS<>Kellogg Associative Map section
    ═══════════════════════════════════════════════════════════ */
@@ -2742,19 +2825,20 @@ async function init() {
   buildBand3Section();
   buildBibliography();
   buildFooter();
-  await initSectionIntros();
 
-  // Deep-link: scroll to hash section after all content is built
+  // Deep-link: scroll to hash section after all sections are built (before async intro fetch)
   if (window.location.hash) {
-    const el = document.getElementById(window.location.hash.slice(1));
-    if (el) {
-      setTimeout(() => {
-        const navH = document.getElementById('nav')?.offsetHeight || 48;
-        const top  = el.getBoundingClientRect().top + window.scrollY - navH - 8;
-        window.scrollTo({ top, behavior: 'smooth' });
-      }, 150);
-    }
+    const hashId = window.location.hash.slice(1);
+    setTimeout(() => {
+      const el  = document.getElementById(hashId);
+      if (!el) return;
+      const navH = document.getElementById('nav')?.offsetHeight || 48;
+      el.style.scrollMarginTop = (navH + 8) + 'px';
+      el.scrollIntoView({ behavior: 'instant' });
+    }, 400);
   }
+
+  await initSectionIntros();
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -8407,7 +8491,7 @@ const KELLOGG_GROUP_COLORS = {
 };
 
 const K_THUMBS = {
-  'K-A-01':'img/K-A-01_0004_thumb.png','K-A-02':'img/K-A-02_0005_thumb.png',
+  'K-A-01':'img/K-A-01_0005_thumb.png','K-A-02':'img/K-A-02_0005_thumb.png',
   'K-A-03':'img/K-A-03_0006_thumb.png','K-A-04':'img/K-A-04_0001_thumb.png',
   'K-A-05':'img/K-A-05_0002_thumb.png','K-A-06':'img/K-A-06_0007_thumb.png',
   'K-A-07':'img/K-A-07_0008_thumb.png','K-A-08':'img/K-A-08_0009_thumb.png',

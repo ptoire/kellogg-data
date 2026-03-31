@@ -1,19 +1,19 @@
 {
   "sessions": [
     {
-      "session_id": "K-A-01_0004",
+      "session_id": "K-A-01_0005",
       "code": "K-A-01",
       "group": "Basic Scribbles",
       "name": "Dot",
       "total_strokes": 1,
-      "total_points": 61,
-      "timestamp": "2026-03-26T17:37:59.410061",
-      "canvas_w": 1580,
-      "canvas_h": 1009,
-      "crop_w": 71,
-      "crop_h": 72,
-      "crop_offset_x": 642,
-      "crop_offset_y": 485,
+      "total_points": 14,
+      "timestamp": "2026-03-29T17:30:42.488604",
+      "canvas_w": 1100,
+      "canvas_h": 850,
+      "crop_w": 48,
+      "crop_h": 42,
+      "crop_offset_x": 606,
+      "crop_offset_y": 343,
       "maurer": []
     },
     {
