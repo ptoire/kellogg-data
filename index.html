@@ -1854,9 +1854,6 @@ body {
 
 /* ── Mobile IS Studio (phones) ─────────────────────────────────────────── */
 @media (max-width:600px) {
-  /* Hide long intro text */
-  .is-studio-section .section-intro { display:none; }
-
   /* Studio body: no gap between panels */
   .is-studio-body { gap:0; }
 
@@ -1865,12 +1862,12 @@ body {
     position: sticky;
     top: 2.75rem;
     z-index: 50;
-    padding: 0.4rem 0.5rem 0.3rem;
+    padding: 0.4rem 0.5rem 0.35rem;
     border-radius: 0;
     border-left: none; border-right: none;
     max-height: none;
     overflow: visible;
-    gap: 0.2rem;
+    gap: 0.25rem;
     box-shadow: 0 2px 6px rgba(0,0,0,0.07);
   }
 
@@ -1886,17 +1883,18 @@ body {
   .is-chip-grid::-webkit-scrollbar { display:none; }
   .is-chip-group-sep { display:none; }
 
-  /* Chips: slightly smaller */
-  .is-chip { padding:0.18em 0.45em; font-size:0.6rem; }
+  /* Chips: smaller, code only */
+  .is-chip { padding:0.18em 0.5em; font-size:0.6rem; }
   .is-chip-code { font-size:0.58rem; }
-  .is-chip-name { display:none; } /* show code only, save space */
+  .is-chip-name { display:none; }
 
-  /* Guide bar: compact — name only, no chips */
-  .is-guide-bar { border-top:none; padding-top:0.15rem; gap:0.1rem; }
+  /* Guide bar: compact name + collapsible details */
+  .is-guide-bar { border-top:none; padding-top:0.15rem; gap:0.15rem; }
   .is-guide-placeholder { font-size:0.58rem; padding:0.1rem 0; border:none; margin:0; text-align:left; }
-  .is-guide-name { font-size:0.85rem; line-height:1.2; }
-  .is-guide-prompt { display:none; }
-  .is-guide-chips { display:none; }
+  .is-guide-name { font-size:0.9rem; line-height:1.2; }
+  .is-guide-prompt { font-size:0.68rem; line-height:1.4; }
+  .is-guide-chips { max-height:0; overflow:hidden; transition:max-height 0.3s ease; }
+  .is-guide-chips.mob-open { max-height:500px; }
 
   /* Canvas: full-width square */
   .is-canvas-wrap {
@@ -1906,12 +1904,12 @@ body {
     border-left: none; border-right: none;
   }
 
-  /* Toolbar: compact, no annotate button */
+  /* Toolbar: compact, hide annotate */
   .is-toolbar { padding:0.35rem 0.5rem; gap:0.3rem; flex-wrap:wrap; }
   .is-ann-toggle { display:none; }
   #is-save-btn { font-size:0.82rem; padding:0.3rem 0.9rem; }
 
-  /* Drawing instructions: visible and compact below canvas */
+  /* Drawing instructions: visible and compact */
   .is-canvas-prompt {
     margin-top:0.5rem; padding:0.6rem 0.75rem;
     font-size:0.78rem; border-radius:3px;
@@ -1919,11 +1917,29 @@ body {
     background:var(--c-bg-warm);
   }
   .is-canvas-prompt-label { font-size:0.5rem; }
-  .is-drawing-scene { font-size:0.78rem; line-height:1.5; }
-  .is-drawing-instructions { font-size:0.78rem; line-height:1.5; }
+  .is-drawing-scene, .is-drawing-instructions { font-size:0.78rem; line-height:1.5; }
 
-  /* Hide mapping/DISL details */
-  .is-details { display:none; }
+  /* Intro text: collapsed by default, expandable */
+  .is-studio-section .section-intro {
+    max-height: 4.2rem;
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(black 55%, transparent 100%);
+    mask-image: linear-gradient(black 55%, transparent 100%);
+    transition: max-height 0.35s ease;
+  }
+  .is-studio-section .section-intro.mob-open {
+    max-height: 3000px;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  /* Mobile toggle button */
+  .mob-toggle-btn {
+    display: block;
+    font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.05em;
+    color: var(--c-accent); background: none; border: none; cursor: pointer;
+    padding: 0.15rem 0; margin-bottom: 0.5rem;
+  }
 
   /* Username bar: compact */
   .is-studio-section [style*="display:flex"][style*="margin-top:1rem"] {
@@ -2828,6 +2844,7 @@ async function init() {
   buildFooter();
 
   await initSectionIntros();
+  initMobileToggles();
 
   // Deep-link: scroll after all content + images are loaded and layout is stable
   if (window.location.hash) {
@@ -3601,6 +3618,44 @@ async function saveAllIntros() {
     if (r.ok) console.log('Section intros saved.');
     else console.warn('Section intros save failed:', r.status);
   } catch(e) { console.error('Section intros save error:', e); }
+}
+
+function initMobileToggles() {
+  if (window.innerWidth > 600) return;
+
+  // Collapsible toggle for IS Studio intro text
+  const isIntro = document.querySelector('.is-studio-section .section-intro');
+  if (isIntro) {
+    const btn = document.createElement('button');
+    btn.className = 'mob-toggle-btn';
+    btn.textContent = '\u25bc Show introduction';
+    btn.addEventListener('click', () => {
+      const open = isIntro.classList.toggle('mob-open');
+      btn.textContent = open ? '\u25b2 Hide introduction' : '\u25bc Show introduction';
+    });
+    isIntro.after(btn);
+  }
+
+  // Collapsible toggle for Kellogg guide chips (shown when schema is selected)
+  const chips = document.getElementById('is-guide-chips');
+  if (chips) {
+    const btn = document.createElement('button');
+    btn.className = 'mob-toggle-btn';
+    btn.id = 'mob-chips-btn';
+    btn.style.display = 'none';
+    btn.textContent = '\u25bc Show related Kellogg forms';
+    btn.addEventListener('click', () => {
+      const open = chips.classList.toggle('mob-open');
+      btn.textContent = open ? '\u25b2 Hide Kellogg forms' : '\u25bc Show related Kellogg forms';
+    });
+    chips.before(btn);
+  }
+}
+
+function _mobShowChipsBtn() {
+  if (window.innerWidth > 600) return;
+  const btn = document.getElementById('mob-chips-btn');
+  if (btn) btn.style.display = 'block';
 }
 
 // Cite-link navigation: scroll so "References" heading is at top, then highlight entry
@@ -8757,7 +8812,7 @@ function buildISStudioSection() {
 
   section.innerHTML = `
     <h2>Image Schemata Studio</h2>
-    <p class="section-subtitle">Draw diagrams enacting cognitive image schemata: guided by the Kellogg taxonomy</p>
+    <p class="section-subtitle">Draw diagrams enacting cognitive image schemata, guided by the Kellogg taxonomy</p>
     <div class="section-intro" data-intro-key="is_studio">
       <p>Image schemata are a concept introduced simultaneously and independently by Mark Johnson in The Body in the Mind (1987) <a href="#ref-4" class="cite-link">[4]</a> and George Lakoff in Women, Fire, and Dangerous Things (1987) <a href="#ref-5" class="cite-link">[5]</a>. The theory proposes that a significant part of human conceptual structure, including abstract reasoning, is grounded in recurring patterns of sensorimotor experience. These patterns, which Johnson and Lakoff call image schemata, emerge from the body's repeated interactions with the physical world: the experience of being inside or outside something gives rise to the CONTAINER schema; the experience of moving from one place to another gives rise to the PATH schema; the experience of maintaining equilibrium gives rise to the BALANCE schema; the experience of exerting or resisting force gives rise to a family of force schemata including COMPULSION, BLOCKAGE, COUNTERFORCE, and ENABLEMENT. The theory has remained central to cognitive linguistics and embodied cognition research, and has been developed and refined by subsequent researchers including Hampe and Grady <a href="#ref-7" class="cite-link">[7]</a>, Mandler <a href="#ref-7" class="cite-link">[7]</a>, and Zlatev <a href="#ref-7" class="cite-link">[7]</a>, among others.</p>
       <p>One recurring difficulty in this field is the visual representation of image schemata. Because they are dynamic structures that unfold in time and involve change, force, and spatial relation, static diagrams can only partially capture them. The diagrams used across the cognitive linguistics literature have no shared formal language and are not mutually comparable. The Diagrammatic Image Schema Language (DISL), developed by Hedblom, Neuhaus, and Mossakowski (2025) <a href="#ref-8" class="cite-link">[8]</a>, represents the most systematic attempt so far to address this: a standardised notation in which each schema is decomposed into conceptual primitives and described as a sequence of spatial scenes. DISL is itself a static notation in the sense that it produces a strip of discrete frames, but it is formally defined and internally consistent in a way that previous informal diagrams were not, and it can in principle be serialised and processed computationally. A related research direction by Olivier and Bouraoui (2025) <a href="#ref-9" class="cite-link">[9]</a> argues that any adequate formalism for image schemata must be qualitative, typed, temporal, and capable of non-monotonic reasoning, since image schemata involve default behaviours, force dynamics, and change over time.</p>
@@ -8969,6 +9024,7 @@ function isRenderGuide() {
   name.style.display   = '';
   prompt.style.display = '';
   name.textContent     = isSelectedSchema.name;
+  _mobShowChipsBtn();
   chips.innerHTML      = '';
   const kMap = {};
   if (INDEX_DATA && INDEX_DATA.sessions)
