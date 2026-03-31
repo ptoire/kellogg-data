@@ -31,6 +31,7 @@ ANNOT_FILE    = SITE_DIR / "data" / "annotations_local.json"
 DRAWINGS_DIR  = SITE_DIR / "data" / "drawings"
 IS_FILE       = SITE_DIR / "data" / "is_sessions_local.json"
 K_TO_IS_FILE  = SITE_DIR / "data" / "k_to_is_local.json"
+INTROS_FILE   = SITE_DIR / "data" / "section_intros.json"
 PORT          = 8080
 WORKER_URL    = "https://kellogg-sync.crampodigesso.workers.dev"
 
@@ -53,7 +54,8 @@ def _do_push():
     try:
         subprocess.run(
             ["git", "add",
-             "data/annotations_local.json"],
+             "data/annotations_local.json",
+             "data/section_intros.json"],
             cwd=SITE_DIR, capture_output=True
         )
         diff = subprocess.run(
@@ -262,6 +264,18 @@ class Handler(SimpleHTTPRequestHandler):
                 with open(ANNOT_FILE, "w", encoding="utf-8") as f:
                     json.dump(data, f, ensure_ascii=False, indent=2)
                 self._send_json({"ok": True})
+                schedule_push()
+            except Exception as e:
+                self._send_json({"error": str(e)}, 500)
+
+        elif self.path == "/api/section_intros":
+            try:
+                data = json.loads(self._read_body())
+                INTROS_FILE.parent.mkdir(exist_ok=True)
+                with open(INTROS_FILE, "w", encoding="utf-8") as f:
+                    json.dump(data, f, ensure_ascii=False, indent=2)
+                self._send_json({"ok": True})
+                print("✓  Section intros saved")
                 schedule_push()
             except Exception as e:
                 self._send_json({"error": str(e)}, 500)
