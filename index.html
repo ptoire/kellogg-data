@@ -1862,53 +1862,51 @@ body {
 
 /* ── Mobile IS Studio (phones) ─────────────────────────────────────────── */
 @media (max-width:600px) {
-  /* Prevent chip grid from widening page */
-  .is-studio-section { overflow-x:clip; }
-
-  /* Studio body: no gap between panels */
+  /* Studio body: single column, no gap */
   .is-studio-body { gap:0; }
 
-  /* Left panel: sticky chip bar just below nav */
+  /* Left panel: static (not sticky), full width */
   .is-left-panel {
-    position: sticky;
-    top: 2.75rem;
-    z-index: 50;
-    padding: 0.4rem 0.5rem 0.35rem;
-    border-radius: 0;
-    border-left: none; border-right: none;
+    position: static;
     max-height: none;
     overflow: visible;
-    max-width: 100%;
-    gap: 0.25rem;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+    padding: 0.6rem 0.75rem 0.5rem;
+    border-radius: 0;
+    border-left: none; border-right: none;
+    gap: 0.4rem;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
   }
 
-  /* Chip grid: single horizontal scrollable row */
+  /* Chip grid: wrapped, vertically scrollable box — all schemata accessible */
   .is-chip-grid {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    padding-bottom: 0.1rem;
-    gap: 0.22rem;
+    flex-wrap: wrap;
+    max-height: 8.5rem;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: var(--c-border) transparent;
+    gap: 0.28rem;
+    padding-right: 0.2rem;
+    padding-bottom: 0.25rem;
   }
-  .is-chip-grid::-webkit-scrollbar { display:none; }
+  .is-chip-grid::-webkit-scrollbar { width:3px; }
+  .is-chip-grid::-webkit-scrollbar-thumb { background:var(--c-border); border-radius:2px; }
   .is-chip-group-sep { display:none; }
 
-  /* Chips: smaller, code only */
-  .is-chip { padding:0.18em 0.5em; font-size:0.6rem; }
+  /* Chips: compact, show both code and name */
+  .is-chip { padding:0.22em 0.55em; font-size:0.6rem; }
   .is-chip-code { font-size:0.58rem; }
-  .is-chip-name { display:none; }
+  .is-chip-name { display:inline; font-size:0.52rem; opacity:0.65; margin-left:0.18em; }
 
-  /* Guide bar: compact name + collapsible details */
-  .is-guide-bar { border-top:none; padding-top:0.15rem; gap:0.15rem; }
-  .is-guide-placeholder { font-size:0.58rem; padding:0.1rem 0; border:none; margin:0; text-align:left; }
+  /* Guide bar: fully visible, no collapsing */
+  .is-guide-bar { border-top:1px solid var(--c-border-light); padding-top:0.45rem; gap:0.2rem; }
+  .is-guide-placeholder { font-size:0.62rem; padding:0.15rem 0; }
   .is-guide-name { font-size:0.9rem; line-height:1.2; }
-  .is-guide-prompt { font-size:0.68rem; line-height:1.4; }
+  .is-guide-prompt { font-size:0.7rem; line-height:1.45; }
   .is-guide-chips { max-height:0; overflow:hidden; transition:max-height 0.3s ease; }
-  .is-guide-chips.mob-open { max-height:500px; }
+  .is-guide-chips.mob-open { max-height:600px; }
 
-  /* Canvas: full-width square, capped to viewport */
+  /* Canvas: full-width square */
   .is-canvas-wrap {
     width: 100% !important;
     max-width: 100vw;
@@ -1918,13 +1916,13 @@ body {
   }
 
   /* Toolbar: compact, hide annotate */
-  .is-toolbar { padding:0.35rem 0.5rem; gap:0.3rem; flex-wrap:wrap; }
+  .is-toolbar { padding:0.35rem 0.6rem; gap:0.3rem; flex-wrap:wrap; }
   .is-ann-toggle { display:none; }
   #is-save-btn { font-size:0.82rem; padding:0.3rem 0.9rem; }
 
-  /* Drawing instructions: visible and compact */
+  /* Drawing instructions: fully visible */
   .is-canvas-prompt {
-    margin-top:0.5rem; padding:0.6rem 0.75rem;
+    margin-top:0.5rem; padding:0.65rem 0.75rem;
     font-size:0.78rem; border-radius:3px;
     border:1px solid var(--c-border-light);
     background:var(--c-bg-warm);
