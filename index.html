@@ -1304,8 +1304,10 @@ body {
 }
 @media (max-width: 900px) {
   .annotator-body { grid-template-columns: 1fr; }
-  .annotator-image-panel { position: static; max-width: 100%; overflow-x: hidden; }
-  .ann-img-viewport { max-width: 100% !important; }
+  .annotator-image-panel { position: static; max-width: 100%; }
+  .ann-img-viewport { max-width: 100% !important; overflow: hidden !important; }
+  .annotator-img-wrap { max-width: 100%; }
+  .annotator-img-wrap img { max-width: 100% !important; height: auto !important; }
 }
 .ann-zoom-wrap {
   display: flex;
