@@ -1930,15 +1930,15 @@ body {
   .is-canvas-prompt-label { font-size:0.5rem; }
   .is-drawing-scene, .is-drawing-instructions { font-size:0.78rem; line-height:1.5; }
 
-  /* Intro text: collapsed by default, expandable */
-  .is-studio-section .section-intro {
+  /* All section intros: collapsed by default, expandable */
+  .section-intro {
     max-height: 4.2rem;
     overflow: hidden;
     -webkit-mask-image: linear-gradient(black 55%, transparent 100%);
     mask-image: linear-gradient(black 55%, transparent 100%);
     transition: max-height 0.35s ease;
   }
-  .is-studio-section .section-intro.mob-open {
+  .section-intro.mob-open {
     max-height: 3000px;
     -webkit-mask-image: none;
     mask-image: none;
@@ -3634,18 +3634,17 @@ async function saveAllIntros() {
 function initMobileToggles() {
   if (window.innerWidth > 600) return;
 
-  // Collapsible toggle for IS Studio intro text
-  const isIntro = document.querySelector('.is-studio-section .section-intro');
-  if (isIntro) {
+  // Collapsible toggle for all section intros
+  document.querySelectorAll('.section-intro').forEach(intro => {
     const btn = document.createElement('button');
     btn.className = 'mob-toggle-btn';
-    btn.textContent = '\u25bc Show introduction';
+    btn.textContent = '\u25bc Show full text';
     btn.addEventListener('click', () => {
-      const open = isIntro.classList.toggle('mob-open');
-      btn.textContent = open ? '\u25b2 Hide introduction' : '\u25bc Show introduction';
+      const open = intro.classList.toggle('mob-open');
+      btn.textContent = open ? '\u25b2 Hide text' : '\u25bc Show full text';
     });
-    isIntro.after(btn);
-  }
+    intro.after(btn);
+  });
 
   // Collapsible toggle for Kellogg guide chips (shown when schema is selected)
   const chips = document.getElementById('is-guide-chips');
@@ -10650,9 +10649,11 @@ function buildAssociativeMapSection() {
     <p>The association map connects the visual taxonomy reconstructed in this project, covering the non-referential portion of Kellogg's classification, to an inventory of image schemata. It is presented as an interactive network graph. Each node represents either a Kellogg graphic category or an image schema. Edges connect them according to proposed structural correspondences, weighted to distinguish primary from secondary associations.</p>
     <p>The map is speculative. It is not derived from empirical data about what children think or intend when they draw, which is not directly accessible. It is derived from the structural properties of the graphic forms themselves, read against the definitions of image schemata in the cognitive linguistics literature. A closed circle produces an inside and an outside: this corresponds structurally to the CONTAINER schema. A cross connects two axes at a point: this corresponds structurally to LINK and CONTACT. The map proposes that these correspondences are consistent enough to be worth making explicit, and uses them as the basis for the drawing instructions in the IS Studio. It is a working document and will be revised as the annotation dataset grows and as IS Studio sessions accumulate.</p>
   `;
-  sect.appendChild(mapIntroDiv);
-
   sect.appendChild(tmpl.content.cloneNode(true));
+  // Insert intro after the <h2> heading
+  const h2 = sect.querySelector('h2');
+  if (h2) h2.after(mapIntroDiv);
+  else sect.prepend(mapIntroDiv);
   main.appendChild(sect);
 
   initGMSection();
