@@ -1309,6 +1309,16 @@ body {
   .annotator-img-wrap { max-width: 100%; }
   .annotator-img-wrap img { max-width: 100% !important; height: auto !important; }
 }
+@media (max-width: 600px) {
+  /* Reduce panel padding so JS width measurement matches available space */
+  .annotator-image-panel { padding: 0.4rem; }
+  /* Prevent any overflow from reaching viewport level */
+  .annotator-section { overflow-x: hidden; }
+  /* Counter takes full row; Prev + Next go to their own row */
+  .ann-counter-wrap { flex-basis: 100%; min-width: 0; }
+  /* Hide label/categories panel on mobile */
+  #ann-panel { display: none !important; }
+}
 .ann-zoom-wrap {
   display: flex;
   align-items: center;
