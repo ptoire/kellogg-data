@@ -3537,16 +3537,16 @@ function buildBibliography() {
   bib.id = 'bibliography';
   bib.innerHTML = `
     <h3>References</h3>
-    <p id="ref-1">Welchman, J. C. (2004). <em>Minor histories: Statements, conversations, proposals.</em> MIT Press. <a href="#" class="bib-back" onclick="history.back();return false;">&#8593; back</a></p>
-    <p id="ref-2">Kellogg, R. (1969). <em>Analyzing children's art.</em> National Press Books. <a href="#" class="bib-back" onclick="history.back();return false;">&#8593; back</a></p>
-    <p id="ref-3">Maurer, D., &amp; Riboni, C. (2010/2016). <em>Wie Bilder entstehen. Band 3: Beschreibende Methode.</em> Lit Verlag. <a href="#" class="bib-back" onclick="history.back();return false;">&#8593; back</a></p>
-    <p id="ref-4">Johnson, M. (1987). <em>The body in the mind: The bodily basis of meaning, imagination, and reason.</em> University of Chicago Press. <a href="#" class="bib-back" onclick="history.back();return false;">&#8593; back</a></p>
-    <p id="ref-5">Lakoff, G. (1987). <em>Women, fire, and dangerous things: What categories reveal about the mind.</em> University of Chicago Press. <a href="#" class="bib-back" onclick="history.back();return false;">&#8593; back</a></p>
-    <p id="ref-6">Maurer, D. (n.d.). Early pictures: Kellogg archive online. <a href="https://www.early-pictures.ch/kellogg/en/" style="color:var(--c-accent);">https://www.early-pictures.ch/kellogg/en/</a> <a href="#" class="bib-back" onclick="history.back();return false;">&#8593; back</a></p>
-    <p id="ref-7">Hampe, B., &amp; Grady, J. E. (Eds.). (2005). <em>From perception to meaning: Image schemas in cognitive linguistics.</em> Mouton de Gruyter. <a href="#" class="bib-back" onclick="history.back();return false;">&#8593; back</a></p>
-    <p id="ref-8">Hedblom, M. M., Neuhaus, F., &amp; Mossakowski, T. (2025). The Diagrammatic Image Schema Language (DISL). <em>Spatial Cognition &amp; Computation, 25</em>(2), 138-175. <a href="https://doi.org/10.1080/13875868.2024.2377284" style="color:var(--c-accent);">https://doi.org/10.1080/13875868.2024.2377284</a> <a href="#" class="bib-back" onclick="history.back();return false;">&#8593; back</a></p>
-    <p id="ref-9">Olivier, F., &amp; Bouraoui, Z. (2025). Grounding agent reasoning in image schemas: A neurosymbolic approach to embodied cognition. In <em>Proceedings of the 24th International Conference on Autonomous Agents and Multiagent Systems (AAMAS 2025), Blue Sky Ideas Track.</em> IFAAMAS. <a href="#" class="bib-back" onclick="history.back();return false;">&#8593; back</a></p>
-    <p id="ref-10">Bastian, M., Heymann, S., &amp; Jacomy, M. (2009). Gephi: An open source software for exploring and manipulating networks. <em>Proceedings of the Third International ICWSM Conference.</em> <a href="#" class="bib-back" onclick="history.back();return false;">&#8593; back</a></p>
+    <p id="ref-1">Welchman, J. C. (2004). <em>Minor histories: Statements, conversations, proposals.</em> MIT Press. <a href="#" class="bib-back" onclick="bibBack(this.closest('p').id);return false;">&#8593; back</a></p>
+    <p id="ref-2">Kellogg, R. (1969). <em>Analyzing children's art.</em> National Press Books. <a href="#" class="bib-back" onclick="bibBack(this.closest('p').id);return false;">&#8593; back</a></p>
+    <p id="ref-3">Maurer, D., &amp; Riboni, C. (2010/2016). <em>Wie Bilder entstehen. Band 3: Beschreibende Methode.</em> Lit Verlag. <a href="#" class="bib-back" onclick="bibBack(this.closest('p').id);return false;">&#8593; back</a></p>
+    <p id="ref-4">Johnson, M. (1987). <em>The body in the mind: The bodily basis of meaning, imagination, and reason.</em> University of Chicago Press. <a href="#" class="bib-back" onclick="bibBack(this.closest('p').id);return false;">&#8593; back</a></p>
+    <p id="ref-5">Lakoff, G. (1987). <em>Women, fire, and dangerous things: What categories reveal about the mind.</em> University of Chicago Press. <a href="#" class="bib-back" onclick="bibBack(this.closest('p').id);return false;">&#8593; back</a></p>
+    <p id="ref-6">Maurer, D. (n.d.). Early pictures: Kellogg archive online. <a href="https://www.early-pictures.ch/kellogg/en/" style="color:var(--c-accent);">https://www.early-pictures.ch/kellogg/en/</a> <a href="#" class="bib-back" onclick="bibBack(this.closest('p').id);return false;">&#8593; back</a></p>
+    <p id="ref-7">Hampe, B., &amp; Grady, J. E. (Eds.). (2005). <em>From perception to meaning: Image schemas in cognitive linguistics.</em> Mouton de Gruyter. <a href="#" class="bib-back" onclick="bibBack(this.closest('p').id);return false;">&#8593; back</a></p>
+    <p id="ref-8">Hedblom, M. M., Neuhaus, F., &amp; Mossakowski, T. (2025). The Diagrammatic Image Schema Language (DISL). <em>Spatial Cognition &amp; Computation, 25</em>(2), 138-175. <a href="https://doi.org/10.1080/13875868.2024.2377284" style="color:var(--c-accent);">https://doi.org/10.1080/13875868.2024.2377284</a> <a href="#" class="bib-back" onclick="bibBack(this.closest('p').id);return false;">&#8593; back</a></p>
+    <p id="ref-9">Olivier, F., &amp; Bouraoui, Z. (2025). Grounding agent reasoning in image schemas: A neurosymbolic approach to embodied cognition. In <em>Proceedings of the 24th International Conference on Autonomous Agents and Multiagent Systems (AAMAS 2025), Blue Sky Ideas Track.</em> IFAAMAS. <a href="#" class="bib-back" onclick="bibBack(this.closest('p').id);return false;">&#8593; back</a></p>
+    <p id="ref-10">Bastian, M., Heymann, S., &amp; Jacomy, M. (2009). Gephi: An open source software for exploring and manipulating networks. <em>Proceedings of the Third International ICWSM Conference.</em> <a href="#" class="bib-back" onclick="bibBack(this.closest('p').id);return false;">&#8593; back</a></p>
   `;
   main.appendChild(bib);
 }
@@ -3670,10 +3670,12 @@ function _mobShowChipsBtn() {
 }
 
 // Cite-link navigation: scroll so "References" heading is at top, then highlight entry
+let _lastCiteEl = null;
 document.addEventListener('click', function(e) {
   const link = e.target.closest('.cite-link');
   if (!link) return;
   e.preventDefault();
+  _lastCiteEl = link;
   const targetId = link.getAttribute('href').slice(1); // e.g. "ref-3"
   const target = document.getElementById(targetId);
   const bib    = document.getElementById('bibliography');
@@ -3691,9 +3693,19 @@ document.addEventListener('click', function(e) {
     target.classList.add('bib-highlight');
     setTimeout(() => target.classList.remove('bib-highlight'), 3200);
   }, 600);
-
-  history.pushState(null, '', '#' + targetId);
 });
+
+// Bib-back: scroll back to the cite-link in the text that triggered navigation
+function bibBack(refId) {
+  const navH = document.getElementById('nav')?.offsetHeight || 48;
+  // Prefer the last clicked cite-link if it matches this ref
+  let el = (_lastCiteEl && _lastCiteEl.getAttribute('href') === '#' + refId)
+    ? _lastCiteEl
+    : document.querySelector('.cite-link[href="#' + refId + '"]');
+  if (!el) return;
+  const top = el.getBoundingClientRect().top + window.scrollY - navH - 40;
+  window.scrollTo({ top, behavior: 'smooth' });
+}
 
 /* ═══════════════════════════════════════════════════════════
    ANNOTATOR
