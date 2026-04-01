@@ -1305,13 +1305,13 @@ body {
 @media (max-width: 900px) {
   .annotator-body { grid-template-columns: 1fr; }
   .annotator-image-panel { position: static; max-width: 100%; }
-  .ann-img-viewport { max-width: 100% !important; overflow: hidden !important; }
+  .ann-img-viewport { max-width: 100% !important; }
   .annotator-img-wrap { max-width: 100%; }
   .annotator-img-wrap img { max-width: 100% !important; height: auto !important; }
 }
 @media (max-width: 600px) {
-  /* Reduce panel padding so JS width measurement matches available space */
-  .annotator-image-panel { padding: 0.4rem; }
+  /* Remove panel padding so JS width measurement matches available content width */
+  .annotator-image-panel { padding: 0 !important; background: none; border: none; }
   /* Prevent any overflow from reaching viewport level */
   .annotator-section { overflow-x: hidden; }
   /* Counter takes full row; Prev + Next go to their own row */
@@ -1978,6 +1978,7 @@ body {
   .arch-grid { grid-template-columns:repeat(6,1fr) !important; gap:0.2rem !important; margin-top:0.4rem; }
   .arch-card img { aspect-ratio:1/1; padding:0.1rem; }
   .arch-card-meta { display:none; }
+  .arch-mobile-label { grid-column:1/-1; font-family:var(--font-mono); font-size:0.7rem; color:var(--c-accent); padding:0.3rem 0.1rem 0.1rem; }
 
   /* Associative Map: compact height, hide legend, enable touch */
   #gm-map-container { height:380px; }
@@ -4107,7 +4108,15 @@ function archiveRender() {
     grid.innerHTML = '<div class="arch-empty">No images found for the selected categories.</div>';
     return;
   }
-  grid.innerHTML = results.map(({ item, prefillSet, manualSet }) => {
+  // On mobile with a single selection, show the category name above the grid
+  let mobileLabel = '';
+  if (window.innerWidth <= 600 && archiveSelected.size === 1) {
+    const selCode = [...archiveSelected][0];
+    const btn = document.querySelector(`.arch-btn[data-code="${selCode}"]`);
+    const name = btn?.title || '';
+    if (name) mobileLabel = `<div class="arch-mobile-label">${selCode} · ${name}</div>`;
+  }
+  grid.innerHTML = mobileLabel + results.map(({ item, prefillSet, manualSet }) => {
     // Build chip list: manual first (highlighted), then prefill-only
     const allCodes = new Set([...manualSet, ...prefillSet]);
     const chips = [...allCodes].sort().map(code => {
