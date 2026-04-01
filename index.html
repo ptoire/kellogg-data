@@ -1304,7 +1304,8 @@ body {
 }
 @media (max-width: 900px) {
   .annotator-body { grid-template-columns: 1fr; }
-  .annotator-image-panel { position: static; }
+  .annotator-image-panel { position: static; max-width: 100%; overflow-x: hidden; }
+  .ann-img-viewport { max-width: 100% !important; }
 }
 .ann-zoom-wrap {
   display: flex;
