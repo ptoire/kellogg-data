@@ -9050,6 +9050,37 @@ function buildISStudioSection() {
       }).catch(() => {});
     }
   }
+  // Re-check Worker when tab becomes visible again (covers other-device saves without polling)
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') isAutoSync();
+  });
+}
+
+// Silent one-way sync: pull any sessions from Worker that aren't in local cache yet.
+// Called on page-load completion, on tab-focus, and after saving a session.
+async function isAutoSync() {
+  try {
+    const serverSessions = await ghFetchSessions();
+    if (!serverSessions.length) return;
+    const deleted = isGetDeleted();
+    const local = isGetSessions();
+    const localIds = new Set(local.map(s => s.session_id));
+    const newSessions = serverSessions.filter(
+      ss => ss.session_id && !localIds.has(ss.session_id) && !deleted.has(ss.session_id)
+    );
+    if (!newSessions.length) return;
+    isSaveSessions([...local, ...newSessions]);
+    isRenderArchive();
+    isUpdateChipCounts();
+    // On localhost: forward new sessions to local server so they persist to disk
+    if (!READONLY) {
+      fetch('/api/is_sessions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessions: newSessions.map(({ full_dataurl, ...r }) => r) })
+      }).catch(() => {});
+    }
+  } catch {}
 }
 
 function isShowUsernameEdit() {
@@ -9826,7 +9857,12 @@ async function isSaveSession() {
     ghSyncSessions([sessionToSync]).then(ok => {
       if (fb2) fb2.textContent = ok ? '✓ Synced to GitHub' : '✓ Saved locally';
       setTimeout(() => { if (fb2) fb2.textContent = ''; }, 4000);
+      // After pushing own session, pull any concurrent new sessions from others
+      isAutoSync();
     });
+  } else {
+    // Localhost: after the server forwards to Worker, also pull any new sessions
+    isAutoSync();
   }
 }
 
