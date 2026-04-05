@@ -1138,6 +1138,18 @@ body {
   border-bottom: 1px solid var(--c-border-light);
 }
 .ann-section:last-child { border-bottom: none; }
+.ann-deprecated-notice {
+  margin-top: 0.6rem;
+  padding: 0.5rem 0.65rem;
+  background: rgba(212,180,90,0.08);
+  border-left: 2px solid rgba(212,180,90,0.5);
+  border-radius: 0 3px 3px 0;
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  line-height: 1.55;
+  color: var(--c-text-secondary);
+}
+.ann-deprecated-notice strong { color: var(--c-text); }
 .ann-section-label {
   font-family: var(--font-mono);
   font-size: 0.65rem;
@@ -2424,31 +2436,38 @@ const ANN_TAXONOMY = {
     "K-CP":"Implied Triangular Shape","K-CQ":"Pre-Diagrams"},
   "K-D":{
     "K-DA":"Greek Cross","K-DB":"Square or Rectangle","K-DC":"Circle or Oval",
-    "K-DD":"Triangular Shape","K-DE":"Odd Shape","K-DF":"Diagonal Cross","K-DG":"K-DG"},
+    "K-DD":"Triangular Shape","K-DE":"Odd Shape","K-DF":"Diagonal Cross",
+    "K-DG":"Diagrams in Placement Patterns"},
   "K-E":{
     "K-EA":"Cross with Square or Circle or Odd Shape","K-EB":"Greek Cross and Diagonal Cross",
     "K-EC":"Divided Square","K-ED":"Two Squares","K-EE":"Square with Circle or Odd Shape",
     "K-EF":"Two Circles","K-EG":"Triangle and Other Diagram","K-EH":"Odd Shape and Circles",
-    "K-EI":"Two Odd Shapes","K-EJ":"Combines as Implied Diagrams","K-EK":"K-EK"},
+    "K-EI":"Two Odd Shapes","K-EJ":"Combines as Implied Diagrams",
+    "K-EK":"Combines in Placement Patterns"},
   "K-F":{
     "K-FA":"Circles Only","K-FB":"Squares Only","K-FC":"Crosses, Circles and Squares",
     "K-FD":"Odd Shapes Only","K-FE":"Square and Odd Shapes","K-FF":"Circles and Odd Shapes",
     "K-FG":"Multilined Areas","K-FH":"Multicrossed Areas","K-FI":"Three Diagrams in Combination",
     "K-FJ":"Aggregates as Implied Squares","K-FK":"Aggregates as Implied Circles",
     "K-FL":"Aggregates as Implied Triangles","K-FM":"Aggregates as Implied Odd Shapes",
-    "K-FN":"K-FN","K-FO":"K-FO","K-FP":"K-FP","K-FQ":"K-FQ","K-FR":"K-FR",
-    "K-FS":"K-FS","K-FT":"K-FT","K-FU":"K-FU","K-FV":"K-FV"},
+    "K-FN":"Aggregates in Placement Patterns, var. 1","K-FO":"Aggregates in Placement Patterns, var. 2",
+    "K-FP":"Aggregates in Placement Patterns, var. 3","K-FQ":"Aggregates in Placement Patterns, var. 4",
+    "K-FR":"Aggregates in Placement Patterns, var. 5","K-FS":"Aggregates in Placement Patterns, var. 6",
+    "K-FT":"Aggregates in Placement Patterns, var. 7","K-FU":"Aggregates in Placement Patterns, var. 8",
+    "K-FV":"Aggregates in Placement Patterns, var. 9"},
   "K-G":{
     "K-GA":"Inherent One-line Center Crossings","K-GB":"Inherent Multilined Half-crossed Circles",
     "K-GC":"Inherent Multilined Crossed Circles","K-GD":"Mandaloid Scribblings",
     "K-GE":"Mandaloid Structuring","K-GF":"Cross Mandalas","K-GG":"Cross and Square Mandalas",
     "K-GH":"Cross and Circle or Odd Shape Mandalas","K-GI":"Cross and Circle and Square Mandalas",
-    "K-GJ":"Concentric Mandalas","K-GK":"Little Mandalas","K-GL":"Imperfect Mandalas","K-GM":"K-GM"},
+    "K-GJ":"Concentric Mandalas","K-GK":"Little Mandalas","K-GL":"Imperfect Mandalas",
+    "K-GM":"Mandalas in Placement Patterns"},
   "K-H":{
     "K-HA":"Pre-Sun Scribblings","K-HB":"Attempted Suns","K-HC":"Suns with Center Markings",
     "K-HD":"Clear-center Suns","K-HE":"Sun Faces","K-HF":"Sun Humans","K-HG":"Suns in Aggregates",
     "K-HH":"Suns with Loop Rays","K-HI":"Suns with Other Rays","K-HJ":"Sun Designs",
-    "K-HK":"Enclosed Suns","K-HL":"Suns as Implied Diagrams","K-HM":"K-HM"},
+    "K-HK":"Enclosed Suns","K-HL":"Suns as Implied Diagrams",
+    "K-HM":"Suns in Placement Patterns"},
   "K-I":{
     "K-IA":"Inherent Radials in Circular Scribbling","K-IB":"Lines Crisscrossing at a Point",
     "K-IC":"Circumference Marks on Circular Scribbling","K-ID":"Lines Radiating from a Point",
@@ -3786,6 +3805,19 @@ let annItems = [];  // items from annotator_index.json
 const ANN_GROUP_NAMES = { A:'Basic', B:'Placement', C:'Emergent', D:'Diagrams', E:'Combines', F:'Aggregates', G:'Mandalas', H:'Suns', I:'Radials' };
 const ANN_NON_B = ['A','C','D','E','F','G','H','I'];
 
+// Codes removed from the annotation system: compound "X in Placement Patterns" categories.
+// Placement patterns are now annotated separately via K-B codes, so these sub-categories
+// are redundant and have been retired. Images that carried these codes are pre-filled with
+// their parent group only.
+const ANN_DEPRECATED_CODES = {
+  'K-DG': 'K-D',
+  'K-EK': 'K-E',
+  'K-FN': 'K-F', 'K-FO': 'K-F', 'K-FP': 'K-F', 'K-FQ': 'K-F', 'K-FR': 'K-F',
+  'K-FS': 'K-F', 'K-FT': 'K-F', 'K-FU': 'K-F', 'K-FV': 'K-F',
+  'K-GM': 'K-G',
+  'K-HM': 'K-H',
+};
+
 function taxEntries(prefix) {
   return Object.entries(ANN_TAXONOMY[prefix] || {})
     .filter(([code, name]) => name !== code) // exclude placeholders (no real name yet)
@@ -4377,11 +4409,32 @@ function annBuildPanel(item, ann) {
     return `<span class="ann-tag${sel}" data-code="${m.code}" data-name="${m.name}" data-desc="${m.desc}">${m.code}</span>`;
   }).join('');
 
-  // Prefill info row
-  const prefillRow = item.prefill_labels.length
+  // Prefill info row — with deprecation notice for retired compound categories
+  const depCodes = (item.prefill_labels || []).filter(c => ANN_DEPRECATED_CODES[c]);
+  const depNotice = depCodes.length
+    ? `<div class="ann-deprecated-notice">
+         <strong>Note:</strong> This image was originally classified under
+         ${depCodes.map(c => `<em>${c}: ${(ANN_TAXONOMY[c.substring(0,3)] || {})[c] || c}</em>`).join(', ')}.
+         These sub-categories have been removed from the annotation system: each drawing is already
+         annotated with a Placement Pattern (K-B) separately, making compound
+         "X in Placement Patterns" categories redundant.
+         The prefill has been remapped to the parent group.
+       </div>` : '';
+  const prefillChips = (item.prefill_labels || []).map(c => {
+    const dep = ANN_DEPRECATED_CODES[c];
+    const displayCode = dep || c;
+    const displayName = (ANN_INDEX_DATA.label_names || {})[displayCode] || (ANN_TAXONOMY[displayCode.substring(0,3)] || {})[displayCode] || '';
+    const style = dep ? 'opacity:0.55;cursor:default;text-decoration:line-through;' : 'opacity:0.7;cursor:default;';
+    const title = dep
+      ? `Originally: ${c} (${(ANN_TAXONOMY[c.substring(0,3)]||{})[c]||c}) — remapped to ${displayCode}`
+      : displayName;
+    return `<span class="ann-tag" style="${style}" title="${title}">${displayCode}</span>`;
+  }).join('');
+  const prefillRow = (item.prefill_labels || []).length
     ? `<div class="ann-section" style="background:var(--c-bg-warm);">
          <div class="ann-section-label">PREFILL · Original label(s)<span class="ann-hint">from the archive, read-only</span></div>
-         <div class="ann-tags">${item.prefill_labels.map(c => `<span class="ann-tag" style="opacity:0.7;cursor:default;" title="${(ANN_INDEX_DATA.label_names||{})[c]||''}">${c}</span>`).join('')}</div>
+         <div class="ann-tags">${prefillChips}</div>
+         ${depNotice}
        </div>` : '';
 
   panel.innerHTML = `
