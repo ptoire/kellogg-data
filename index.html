@@ -163,7 +163,7 @@ body {
 /* ═══════════════════════════════════════════════════════════
    MAIN
    ═══════════════════════════════════════════════════════════ */
-.main { max-width: 1400px; margin: 0 auto; padding: 0 1.5rem 4rem; }
+.main { max-width: 960px; margin: 0 auto; padding: 0 1.5rem 4rem; }
 
 /* ═══════════════════════════════════════════════════════════
    GROUP SECTIONS
@@ -2909,7 +2909,7 @@ async function init() {
   buildAssociativeMapSection();
   gmBuildCorrespondenceTable();
   buildMaurerAnnotationSection();
-  buildBand3Section();
+  // buildBand3Section();  /* commented out: Band 3 Complete Descriptive Catalogue */
   buildBibliography();
   buildFooter();
 
@@ -3546,8 +3546,9 @@ function buildMaurerAnnotationSection() {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   BAND 3 FULL CATALOGUE SECTION
+   BAND 3 FULL CATALOGUE SECTION  (commented out — preserved for reference)
    ═══════════════════════════════════════════════════════════ */
+/* BAND3_DISABLED_START
 function buildBand3Section() {
   const main = document.getElementById('main');
   const section = document.createElement('section');
@@ -3616,6 +3617,7 @@ function buildBand3Section() {
 
   main.appendChild(section);
 }
+BAND3_DISABLED_END */
 
 /* ═══════════════════════════════════════════════════════════
    FOOTER
