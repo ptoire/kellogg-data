@@ -10093,7 +10093,7 @@ function isDet_ptToStroke(anim, x, y) {
 function isDet_renderStrokes() {
   const canvas = document.getElementById('detail-canvas');
   const sess = _isDetailSess;
-  if (!canvas || !sess) return;
+  if (!canvas || !sess || !sess.anim) return;
   const ctx = canvas.getContext('2d');
   ctx.clearRect(0, 0, 1200, 800);
   ctx.lineCap = 'round'; ctx.lineJoin = 'round';
@@ -10494,10 +10494,17 @@ function isDet_saveGroupAnnotations() {
   }
 }
 
-function isOpenDetail(sess) {
+async function isOpenDetail(sess) {
   const overlay = document.getElementById('overlay');
   const panel   = document.getElementById('detail-panel');
   if (!overlay || !panel) return;
+  // Load anim from disk if not inline (stripped from localStorage to save quota)
+  if (!sess.anim) {
+    try {
+      const r = await fetch(BASE_URL + `data/drawings/${sess.session_id}_anim.json`);
+      if (r.ok) sess = { ...sess, anim: await r.json() };
+    } catch {}
+  }
   _isDetailSess    = sess;
   _isDetailPlaying = false;
   if (_isDetailAnimId) { cancelAnimationFrame(_isDetailAnimId); _isDetailAnimId = null; }
