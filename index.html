@@ -3285,36 +3285,6 @@ function stopCardAnim(card) {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   MAURER AUTO-FILL
-   Infer Band 3 codes from Kellogg taxonomy code.
-   Only high-confidence mappings are included.
-   ═══════════════════════════════════════════════════════════ */
-function getMaurerAutoFill(code) {
-  const D = '\u2013'; // en-dash used in Band 3 codes
-  const result = [`T${D}DAA`, `T${D}EAA`]; // always: monochromatic, pen execution
-  const parts = code.split('-');
-  const group = parts.slice(0, 2).join('-'); // e.g. "K-B"
-  const num   = parts[2] || '';              // e.g. "05"
-  if (group === 'K-B') result.push(`T${D}CBA`);  // Placement Pattern
-  if (group === 'K-G') result.push(`T${D}ADEC`); // Mandalas
-  if (group === 'K-H') result.push(`T${D}AEI`);  // Suns → central body + radial extensions
-  if (group === 'K-I') result.push(`T${D}AEE`);  // Radials → early radial arrangements
-  if (group === 'K-A') {
-    if (num === '01') result.push(`T${D}ACAC`);                          // Dot
-    if (['02','03','04'].includes(num)) result.push(`T${D}ACAB`);        // Straight lines
-    if (num === '05') result.push(`T${D}ACAA`);                          // Curved line
-    if (num === '12') result.push(`T${D}ACADA`);                         // Zigzag/wavy
-    if (num === '15') result.push(`T${D}ACAE`);                          // Spiral
-  }
-  if (group === 'K-D') {
-    if (num === '02') result.push(`T${D}ACBCC`);  // Square/Rectangle → Rectangle
-    if (num === '03') result.push(`T${D}ACBBA`);  // Circle/Oval → round closed form
-    if (num === '04') result.push(`T${D}ACBCE`);  // Triangle
-  }
-  return result;
-}
-
-/* ═══════════════════════════════════════════════════════════
    DETAIL VIEW
    ═══════════════════════════════════════════════════════════ */
 async function openDetail(session) {
@@ -3354,26 +3324,9 @@ async function openDetail(session) {
         <div class="info-row"><span class="info-label">Crop Size</span><span class="info-value">${session.crop_w} × ${session.crop_h} px</span></div>
         <div class="info-row"><span class="info-label">Recorded</span><span class="info-value">${new Date(session.timestamp).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})}</span></div>
         ${anim ? `<div class="info-row"><span class="info-label">Duration</span><span class="info-value">${getDuration(anim)}s</span></div>` : ''}
-        <h3>Maurer Band 3</h3>
-        <div class="maurer-carousel-nav">
-          <button class="maurer-nav-btn" onclick="maurerNavShift(-1)">&#x2039;</button>
-          <span class="maurer-carousel-label" id="maurer-group-label"></span>
-          <button class="maurer-nav-btn" onclick="maurerNavShift(1)">&#x203a;</button>
-        </div>
-        <div class="maurer-tags" id="detail-maurer-tags"></div>
       </div>
     </div>
   `;
-
-  detailMaurerSid = sid;
-  detailMaurerGroupIdx = BAND3_GROUPS.findIndex(g => g.code === 'T\u2013C');
-  if (detailMaurerGroupIdx < 0) detailMaurerGroupIdx = 0;
-  // Auto-fill inferrable categories on first open
-  if (getMaurerForSession(sid).length === 0) {
-    const fill = getMaurerAutoFill(session.code);
-    if (fill.length) saveMaurerForSession(sid, fill);
-  }
-  buildMaurerCarouselGroup(sid, detailMaurerGroupIdx);
 
   overlay.classList.add('active');
   document.body.style.overflow = 'hidden';
@@ -3467,57 +3420,6 @@ function resetDetailAnim() {
   const session = INDEX_DATA.sessions.find(s => s.code === codeEl.textContent);
   if (session && ANIM_CACHE[session.session_id]) drawStaticOnCanvas(ANIM_CACHE[session.session_id]);
   document.getElementById('anim-progress').textContent = '0%';
-}
-
-/* ═══════════════════════════════════════════════════════════
-   MAURER PERSISTENCE
-   ═══════════════════════════════════════════════════════════ */
-function getMaurerForSession(sid) {
-  try { return JSON.parse(localStorage.getItem('maurer_annotations')||'{}')[sid] || []; } catch { return []; }
-}
-function saveMaurerForSession(sid, codes) {
-  if (READONLY) return;
-  try { const d = JSON.parse(localStorage.getItem('maurer_annotations')||'{}'); d[sid]=codes; localStorage.setItem('maurer_annotations',JSON.stringify(d)); } catch {}
-  postAnnotationsToServer();
-}
-
-/* ═══════════════════════════════════════════════════════════
-   MAURER BAND 3 CAROUSEL (detail view)
-   ═══════════════════════════════════════════════════════════ */
-let detailMaurerSid = null;
-let detailMaurerGroupIdx = 0;
-
-function maurerNavShift(delta) {
-  detailMaurerGroupIdx = (detailMaurerGroupIdx + delta + BAND3_GROUPS.length) % BAND3_GROUPS.length;
-  buildMaurerCarouselGroup(detailMaurerSid, detailMaurerGroupIdx);
-}
-
-function buildMaurerCarouselGroup(sid, idx) {
-  const g = BAND3_GROUPS[idx];
-  const labelEl = document.getElementById('maurer-group-label');
-  if (labelEl) labelEl.textContent = `${g.code} · ${g.english}  (${idx + 1}/${BAND3_GROUPS.length})`;
-  const container = document.getElementById('detail-maurer-tags');
-  if (!container) return;
-  container.innerHTML = '';
-  const tagRows = g.rows.length > 0 ? g.rows : [[g.code, g.german, g.english, '']];
-  tagRows.forEach(row => {
-    const code = row[0];
-    const saved = getMaurerForSession(sid);
-    const tag = document.createElement('span');
-    tag.className = 'maurer-tag' + (saved.includes(code) ? ' active' : '');
-    tag.textContent = code;
-    tag.dataset.name = row[2];
-    tag.dataset.desc = row[3] || '';
-    if (!READONLY) tag.onclick = () => {
-      tag.classList.toggle('active');
-      const freshSaved = getMaurerForSession(sid);
-      const otherCodes = freshSaved.filter(c => !tagRows.some(r => r[0] === c));
-      const thisCodes = Array.from(container.querySelectorAll('.maurer-tag.active')).map(t => t.textContent);
-      saveMaurerForSession(sid, [...otherCodes, ...thisCodes]);
-    };
-    if (READONLY) tag.style.cssText += ';cursor:default;pointer-events:none;';
-    container.appendChild(tag);
-  });
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -3868,11 +3770,10 @@ function annGet(sha) {
   if (item) return {
     human_where:     item.human_where     || [],
     human_secondary: item.human_secondary || [],
-    maurer_tc:       item.maurer_tc       || [],
     status:          item.status          || 'seeded_unconfirmed',
     updated_at:      item.updated_at      || null,
   };
-  return { human_where:[], human_secondary:[], maurer_tc:[], status:'unconfirmed', updated_at:null };
+  return { human_where:[], human_secondary:[], status:'unconfirmed', updated_at:null };
 }
 
 function annSet(sha, data) {
@@ -3885,7 +3786,7 @@ function annCountDone() {
   const store = annStore();
   return annItems.filter(item => {
     const a = store[item.sha] || item;
-    return a.human_where?.length || a.human_secondary?.length || a.maurer_tc?.length;
+    return a.human_where?.length || a.human_secondary?.length;
   }).length;
 }
 
@@ -3900,7 +3801,6 @@ function exportAnnotationsJSON() {
       human_where:     a.human_where     || [],
       human_primary:   item.prefill_labels,
       human_secondary: a.human_secondary || [],
-      maurer_tc:       a.maurer_tc       || [],
       status:          a.status          || 'unconfirmed',
       updated_at:      a.updated_at      || null,
     };
@@ -4417,12 +4317,6 @@ function annBuildPanel(item, ann) {
     return `<div class="ann-tags" id="ann-sg-${l}" style="display:${i===0?'flex':'none'};flex-wrap:wrap;gap:0.28rem;">${tags}</div>`;
   }).join('');
 
-  // MAURER T-C: multi-select (T-CBA = Placement Pattern is captured by the placement brush, not a manual tag)
-  const maurerTags = MAURER_TC.filter(m => m.code !== 'T-CBA').map(m => {
-    const sel = (ann.maurer_tc || []).includes(m.code) ? ' sel-maurer' : '';
-    return `<span class="ann-tag${sel}" data-code="${m.code}" data-name="${m.name}" data-desc="${m.desc}">${m.code}</span>`;
-  }).join('');
-
   // Prefill info row — deprecated compound codes shown as parent group + notice
   const depCodes = (item.prefill_labels || []).filter(c => ANN_DEPRECATED_CODES[c]);
   const depNotice = depCodes.map(c => {
@@ -4463,10 +4357,6 @@ function annBuildPanel(item, ann) {
       <div class="ann-macro-tabs" id="ann-secondary-tabs">${catTabs}</div>
       <div id="ann-secondary-groups">${catGroups}</div>
     </div>
-    <div class="ann-section">
-      <div class="ann-section-label">MAURER T–C · Spatial Arrangements<span class="ann-hint">multiple</span></div>
-      <div class="ann-tags" id="ann-maurer-tags">${maurerTags}</div>
-    </div>
     <div class="ann-save-bar"${READONLY ? ' style="display:none"' : ''}>
       <button class="ann-btn ann-primary" onclick="annSave()">Save</button>
       <button class="ann-btn" onclick="annClear()">Clear</button>
@@ -4476,10 +4366,9 @@ function annBuildPanel(item, ann) {
 
   annAttach('ann-where-tags', 'sel-where', false);
   ANN_NON_B.forEach(l => annAttach(`ann-sg-${l}`, 'sel-secondary', true));
-  annAttach('ann-maurer-tags', 'sel-maurer', true);
 
   // Hover tooltips: active in both readonly and editable mode
-  ['ann-where-tags', ...ANN_NON_B.map(l => `ann-sg-${l}`), 'ann-maurer-tags']
+  ['ann-where-tags', ...ANN_NON_B.map(l => `ann-sg-${l}`)]
     .forEach(id => { const el = document.getElementById(id); if (el) annAddHoverHandlers(el); });
 }
 
@@ -4582,7 +4471,6 @@ function annUpdateJsonPreview(sha, item, ann) {
     human_primary:        item.prefill_labels,
     human_where:          ann.human_where          || [],
     human_secondary:      ann.human_secondary      || [],
-    maurer_tc:            ann.maurer_tc             || [],
     spatial_annotations:  sa_summary,
     status:               ann.status               || 'unconfirmed',
     updated_at:           ann.updated_at           || null,
@@ -4598,12 +4486,11 @@ function annSave() {
   // secondary = user-selected codes (exclude locked prefill ones)
   const human_secondary = annSelCodes('#ann-panel .ann-tag.sel-secondary')
     .filter(c => !new Set(item.prefill_labels).has(c));
-  const maurer_tc = annSelCodes('#ann-maurer-tags .ann-tag.sel-maurer');
   const spatial_annotations = saAnnotations;
-  const hasData = human_where.length || human_secondary.length || maurer_tc.length || spatial_annotations.length;
+  const hasData = human_where.length || human_secondary.length || spatial_annotations.length;
   const status = hasData ? 'confirmed' : 'unconfirmed';
-  annSet(sha, { human_where, human_primary, human_secondary, maurer_tc, spatial_annotations, status });
-  annUpdateJsonPreview(sha, item, { human_where, human_primary, human_secondary, maurer_tc, spatial_annotations, status, updated_at: new Date().toISOString() });
+  annSet(sha, { human_where, human_primary, human_secondary, spatial_annotations, status });
+  annUpdateJsonPreview(sha, item, { human_where, human_primary, human_secondary, spatial_annotations, status, updated_at: new Date().toISOString() });
   annSetResume(annIdx);
   annBadge(status);
   annUpdateMetaName(item, human_secondary);
@@ -4617,7 +4504,7 @@ function annSave() {
 
 function annClear() {
   const item = annItems[annIdx];
-  annSet(item.sha, { human_where:[], human_primary: item.prefill_labels, human_secondary:[], maurer_tc:[], status:'unconfirmed' });
+  annSet(item.sha, { human_where:[], human_primary: item.prefill_labels, human_secondary:[], status:'unconfirmed' });
   annLoad(annIdx);
 }
 
@@ -10670,6 +10557,8 @@ function isOpenDetail(sess) {
         <div class="info-row"><span class="info-label">Points</span><span class="info-value">${sess.total_points}</span></div>
         <div class="info-row"><span class="info-label">Recorded</span><span class="info-value">${date}</span></div>
         ${sess.modified_at ? `<div class="info-row"><span class="info-label" style="color:#c0392b;">Modified</span><span class="info-value" style="color:#c0392b;">${new Date(sess.modified_at).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})}</span></div>` : ''}
+        <div class="detail-section-label" style="margin-top:1.2rem;">Maurer T–C · Spatial Arrangements</div>
+        <div id="is-det-maurer-tc"></div>
         ${!READONLY ? `
         <div class="detail-section-label" style="margin-top:1rem;">Admin</div>
         <div style="display:flex;flex-direction:column;gap:0.35rem;">
@@ -10685,6 +10574,7 @@ function isOpenDetail(sess) {
   `;
 
   isDet_renderStrokes();
+  isDet_renderMaurerTC(sess);
   // Canvas click: stroke selection in label mode or group annotate mode
   const canvas = document.getElementById('detail-canvas');
   if (canvas) {
@@ -10718,6 +10608,49 @@ function isOpenDetail(sess) {
   overlay.classList.add('active');
   document.body.style.overflow = 'hidden';
   if (Object.keys(_isDet_labels).length) isDet_buildLegend();
+}
+
+function isDet_renderMaurerTC(sess) {
+  const container = document.getElementById('is-det-maurer-tc');
+  if (!container) return;
+  const selected = sess.maurer_tc || [];
+  const canEdit = _isDet_canLabel;
+  container.innerHTML = '';
+  MAURER_TC.forEach(m => {
+    const chip = document.createElement('span');
+    chip.className = 'ann-tag is-det-tc-chip' + (selected.includes(m.code) ? ' sel-maurer' : '');
+    chip.textContent = m.code;
+    chip.title = m.name + (m.desc ? ': ' + m.desc : '');
+    if (!canEdit) {
+      chip.style.cssText = 'cursor:default;pointer-events:none;opacity:' + (selected.includes(m.code) ? '1' : '0.28') + ';';
+    } else {
+      chip.style.cursor = 'pointer';
+      chip.addEventListener('click', () => {
+        chip.classList.toggle('sel-maurer');
+        const codes = Array.from(container.querySelectorAll('.ann-tag.sel-maurer')).map(c => c.textContent);
+        isDet_saveMaurerTC(codes);
+      });
+    }
+    container.appendChild(chip);
+  });
+  container.style.cssText = 'display:flex;flex-wrap:wrap;gap:0.25rem;margin-top:0.4rem;';
+}
+
+function isDet_saveMaurerTC(codes) {
+  if (!_isDetailSess) return;
+  const sessions = isGetSessions();
+  const idx = sessions.findIndex(s => s.session_id === _isDetailSess.session_id);
+  if (idx < 0) return;
+  sessions[idx] = { ...sessions[idx], maurer_tc: codes, modified_at: new Date().toISOString() };
+  _isDetailSess = sessions[idx];
+  isSaveSessions(sessions);
+  const { full_dataurl, ...toSync } = sessions[idx];
+  if (!READONLY) {
+    fetch('/api/is_sessions', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sessions: [toSync] }) }).catch(() => {});
+  } else if (GH_WORKER_URL) {
+    ghSyncSessions([toSync]);
+  }
 }
 
 function isCloseDetail() {
