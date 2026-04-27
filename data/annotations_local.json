@@ -51,13 +51,7 @@
         "K-H",
         "K-HE"
       ],
-      "human_secondary": [
-        "K-ACL",
-        "K-CF",
-        "K-DC",
-        "K-EF",
-        "K-HG"
-      ],
+      "human_secondary": [],
       "maurer_tc": [],
       "spatial_annotations": [
         {
